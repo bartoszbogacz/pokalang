@@ -18,7 +18,7 @@ function wordAdd(stack: PokaValue[]): void {
   } else if (a._type === "DoubleVector" && b._type === "DoubleVector") {
     stack.push(pokaDoubleVectorMake(doubleVectorAddVector(b.value, a.value)));
   } else {
-    throw pokaDescribeNoImplementation([a, b], "add");
+    throw pokaShowNoImplFor([a, b], "add");
   }
 }
 
@@ -31,10 +31,46 @@ function wordCat(stack: PokaValue[]): void {
   if (b === undefined || b._type !== "StringScalar") {
     throw "RuntimeError";
   }
-  stack.push({ _type: "StringScalar", value: b.value + a.value });
+  stack.push(pokaStringScalarMake(b.value + a.value));
+}
+
+function wordSplit(stack: PokaValue[]): void {
+  const separator = stack.pop();
+  const value = stack.pop();
+
+  if (separator === undefined) {
+    throw "`split` requires two arguments";
+  }
+  if (value === undefined) {
+    throw "`split` requires two arguments";
+  }
+
+  if (separator._type === "StringScalar" && value._type === "StringScalar") {
+    stack.push(pokaStringVectorMake(stringScalarSplitScalar(separator.value, value.value)));
+  } else {
+    throw pokaShowNoImplFor([separator, value], "split");
+  }
+}
+
+function wordToDouble(stack: PokaValue[]): void {
+  const value = stack.pop();
+
+  if (value === undefined) {
+    throw "`toDouble` requires one argument";
+  }
+
+  if (value._type === "StringScalar") {
+    stack.push(pokaDoubleScalarMake(stringScalarToDouble(value.value)));
+  } else if (value._type === "StringVector") {
+    stack.push(pokaDoubleVectorMake(stringVectorToDouble(value.value)));
+  } else {
+    throw pokaShowNoImplFor([value], "toDouble");
+  }
 }
 
 const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
   add: wordAdd,
   cat: wordCat,
+  split: wordSplit,
+  toDouble: wordToDouble,
 };

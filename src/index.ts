@@ -52,7 +52,7 @@ function pokaStringVectorMake(value: StringVector): PokaStringVector {
   return { _type: "StringVector", value: value };
 }
 
-function pokaDescribeNoImplementation(values: PokaValue[], wordName: string): string {
+function pokaShowNoImplFor(values: PokaValue[], wordName: string): string {
   return "`" +
       wordName +
       "` not implemented for: " +
@@ -73,7 +73,7 @@ function showValue(value: PokaValue): string {
   } else if (value._type === "StringScalar") {
     return '"' + value.value + '"';
   } else if (value._type === "StringVector") {
-    return "StringVector";
+    return stringVectorShow(value.value);
   } else {
     throw "Unreachable";
   }

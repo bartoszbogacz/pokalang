@@ -11,7 +11,7 @@ function pokaDoubleVectorMake(value) {
 function pokaStringVectorMake(value) {
     return { _type: "StringVector", value: value };
 }
-function pokaDescribeNoImplementation(values, wordName) {
+function pokaShowNoImplFor(values, wordName) {
     return "`" +
         wordName +
         "` not implemented for: " +
@@ -35,7 +35,7 @@ function showValue(value) {
         return '"' + value.value + '"';
     }
     else if (value._type === "StringVector") {
-        return "StringVector";
+        return stringVectorShow(value.value);
     }
     else {
         throw "Unreachable";
