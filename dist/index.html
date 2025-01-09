@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        max-width: 40em;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      #input_id {
+        box-sizing: border-box;
+        font-family: Consolas, monospace;
+        font-size: 16pt;
+        width: 100%;
+      }
+      .output_class {
+        box-sizing: border-box;
+        /* background-color: lavender; */
+        /* border: 0.3em solid lavender; */
+        /* border-radius: 0.3em; */
+        font-family: Consolas, monospace;
+        font-size: 16pt;
+        margin-top: 1em;
+        width: 100%;
+      }
+      textarea {
+        box-sizing: border-box;
+        background-color: white;
+        font-family: Consolas, monospace;
+        font-size: 16pt;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="libDouble.js"></script>
+    <script src="libString.js"></script>
+    <script src="binding.js"></script>
+    <script src="index.js"></script>
+    <input id="input_id" type="text" placeholder="?" oninput="onInput(event)" />
+    <div id="output_preview" class="output_class"></div>
+    <div id="output_history" class="output_class"></div>
+  </body>
+</html>

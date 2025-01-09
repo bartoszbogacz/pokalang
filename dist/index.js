@@ -1,0 +1,272 @@
+"use strict";
+function pokaDoubleScalarMake(value) {
+    return { _type: "DoubleScalar", value: value };
+}
+function pokaStringScalarMake(value) {
+    return { _type: "StringScalar", value: value };
+}
+function pokaDoubleVectorMake(value) {
+    return { _type: "DoubleVector", value: value };
+}
+function pokaStringVectorMake(value) {
+    return { _type: "StringVector", value: value };
+}
+function pokaDescribeNoImplementation(values, wordName) {
+    return "`" +
+        wordName +
+        "` not implemented for: " +
+        values
+            .slice()
+            .reverse()
+            .map((v) => showValue(v) + "::" + v._type)
+            .join(" ");
+}
+function showValue(value) {
+    if (value._type === "Error") {
+        return "Error: " + value.value;
+    }
+    else if (value._type === "DoubleScalar") {
+        return value.value.toString();
+    }
+    else if (value._type === "DoubleVector") {
+        return doubleVectorShow(value.value);
+    }
+    else if (value._type === "StringScalar") {
+        return '"' + value.value + '"';
+    }
+    else if (value._type === "StringVector") {
+        return "StringVector";
+    }
+    else {
+        throw "Unreachable";
+    }
+}
+function showInterpreterState(state) {
+    const result = [];
+    for (const value of state.stack.slice().reverse()) {
+        result.push(showValue(value));
+    }
+    return result.join("\n");
+}
+function consumeError(state, message) {
+    state.stack.push({ _type: "Error", value: message });
+    state.pos = state.line.length;
+}
+function peekNumber(state) {
+    const c = state.line.charAt(state.pos);
+    return c >= "0" && c <= "9";
+}
+function consumeNumber(state) {
+    const start = state.pos;
+    while (true) {
+        const c = state.line.charAt(state.pos);
+        if (c >= "0" && c <= "9") {
+            state.pos++;
+        }
+        else {
+            break;
+        }
+    }
+    if (state.line.charAt(state.pos) === ".") {
+        state.pos++;
+        while (true) {
+            const c = state.line.charAt(state.pos);
+            if (c >= "0" && c <= "9") {
+                state.pos++;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    if (start === state.pos) {
+        throw "Expected number";
+    }
+    const token = state.line.slice(start, state.pos);
+    const value = parseFloat(token);
+    if (isNaN(value)) {
+        state.stack.push({
+            _type: "Error",
+            value: "`" + token + "` is not a number.",
+        });
+    }
+    else {
+        state.stack.push({ _type: "DoubleScalar", value: value });
+    }
+}
+function peekString(state) {
+    return state.line.charAt(state.pos) === '"';
+}
+function consumeString(state) {
+    if (state.line.charAt(state.pos) !== '"') {
+        throw "Expected starting quote for string";
+    }
+    state.pos++;
+    const start = state.pos;
+    while (state.line.charAt(state.pos) !== '"') {
+        if (state.pos >= state.line.length) {
+            state.stack.push({ _type: "Error", value: "Unterminated string" });
+            return;
+        }
+        state.pos++;
+    }
+    const token = state.line.slice(start, state.pos);
+    state.pos++; // Skip closing quote
+    console.log("String:", token);
+    state.stack.push({ _type: "StringScalar", value: token });
+}
+function peekList(state) {
+    return peekLiteral(state, "[");
+}
+function consumeList(state) {
+    const outerStack = state.stack;
+    state.stack = [];
+    consumeLiteral(state, "[");
+    while (!peekLiteral(state, "]") && !peekEOL(state)) {
+        consumeExpression(state);
+    }
+    consumeLiteral(state, "]");
+    const values = state.stack;
+    state.stack = outerStack;
+    const valuesDouble = [];
+    const valuesString = [];
+    const valuesError = [];
+    for (const value of values) {
+        if (value._type === "DoubleScalar") {
+            valuesDouble.push(value.value);
+        }
+        else if (value._type === "StringScalar") {
+            valuesString.push(value.value);
+        }
+        else if (value._type === "Error") {
+            valuesError.push(value);
+        }
+        else {
+            //
+        }
+    }
+    if (valuesDouble.length === values.length - valuesError.length) {
+        state.stack.push(pokaDoubleVectorMake(doubleVectorMake(valuesDouble)));
+    }
+    else if (valuesString.length === values.length - valuesError.length) {
+        state.stack.push(pokaStringVectorMake(stringVectorMake(valuesString)));
+    }
+    else {
+        state.stack.push({ _type: "Error", value: "Inhomogenous vector" });
+    }
+    for (const err of valuesError) {
+        state.stack.push(err);
+    }
+}
+function peekIdentifier(state) {
+    const c = state.line.charAt(state.pos);
+    return c >= "a" && c <= "z";
+}
+function consumeIdentifer(state) {
+    const start = state.pos;
+    while (true) {
+        const c = state.line.charAt(state.pos);
+        if ((c >= "a" && c <= "z") ||
+            (c >= "A" && c <= "Z") ||
+            (c >= "0" && c <= "9")) {
+            state.pos++;
+        }
+        else {
+            break;
+        }
+    }
+    if (start === state.pos) {
+        throw "Expected identifier";
+    }
+    const token = state.line.slice(start, state.pos);
+    console.log("Identifier:", '"' + token + '"');
+    const wordFun = POKA_WORDS[token];
+    if (wordFun === undefined) {
+        state.stack.push({
+            _type: "Error",
+            value: "`" + token + "` identifier unknown",
+        });
+    }
+    else {
+        try {
+            wordFun(state.stack);
+        }
+        catch (exc) {
+            state.stack.push({
+                _type: "Error",
+                value: "" + exc,
+            });
+        }
+    }
+}
+function peekLiteral(state, literal) {
+    for (let i = 0; i < literal.length; i++) {
+        const c = state.line.charAt(state.pos + i);
+        if (c !== literal.charAt(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+function consumeLiteral(state, literal) {
+    for (let i = 0; i < literal.length; i++) {
+        const c = state.line.charAt(state.pos++);
+        if (c !== literal.charAt(i)) {
+            consumeError(state, "Expected: " + literal);
+            return;
+        }
+    }
+    console.log("Literal: " + literal);
+}
+function consumeWhitespace(state) {
+    while (state.line.charAt(state.pos) === " ") {
+        state.pos++;
+    }
+    console.log("Whitespace");
+}
+function peekEOL(state) {
+    return state.pos >= state.line.length;
+}
+function consumeExpression(state) {
+    consumeWhitespace(state);
+    if (peekIdentifier(state)) {
+        consumeIdentifer(state);
+    }
+    else if (peekNumber(state)) {
+        consumeNumber(state);
+    }
+    else if (peekString(state)) {
+        consumeString(state);
+    }
+    else if (peekList(state)) {
+        consumeList(state);
+    }
+    else {
+        consumeError(state, "Expected expression");
+    }
+    consumeWhitespace(state);
+}
+function run(line) {
+    const state = {
+        line: line,
+        pos: 0,
+        stack: [],
+    };
+    while (!peekEOL(state)) {
+        consumeExpression(state);
+    }
+    return state;
+}
+function onInput(ev) {
+    const target = ev.target;
+    if (!(target instanceof HTMLInputElement)) {
+        throw "target is: " + target;
+    }
+    const preview = document.getElementById("output_preview");
+    if (preview === undefined || !(preview instanceof HTMLDivElement)) {
+        throw "No preview";
+    }
+    const text = target.value;
+    const state = run(text);
+    preview.innerText = showInterpreterState(state);
+}
