@@ -40,14 +40,14 @@ function PokaDoubleVectorMake(values: number[]): PokaDoubleVector {
   return {
     _type: "DoubleVector",
     value: DoubleVectorMake(values),
-  }
+  };
 }
 
 function PokaStringVectorMake(values: string[]): PokaStringVector {
   return {
     _type: "StringVector",
     value: StringVectorMake(values),
-  }
+  };
 }
 
 function showValue(value: PokaValue): string {
@@ -76,7 +76,9 @@ function showInterpreterState(state: InterpreterState): string {
 
 function showTypeError(values: PokaValue[], wordName: string): string {
   return (
-    "`" + wordName + "` not implemented for: " +
+    "`" +
+    wordName +
+    "` not implemented for: " +
     values
       .slice()
       .reverse()
@@ -122,7 +124,10 @@ function consumeNumber(state: InterpreterState): void {
   const token = state.line.slice(start, state.pos);
   const value = parseFloat(token);
   if (isNaN(value)) {
-    state.stack.push({ _type: "Error", value: "`" + token + "` is not a number."});
+    state.stack.push({
+      _type: "Error",
+      value: "`" + token + "` is not a number.",
+    });
   } else {
     state.stack.push({ _type: "DoubleScalar", value: value });
   }
@@ -140,7 +145,7 @@ function consumeString(state: InterpreterState): void {
   const start = state.pos;
   while (state.line.charAt(state.pos) !== '"') {
     if (state.pos >= state.line.length) {
-      state.stack.push({_type: "Error", value: "Unterminated string"});
+      state.stack.push({ _type: "Error", value: "Unterminated string" });
       return;
     }
     state.pos++;
@@ -184,12 +189,12 @@ function consumeList(state: InterpreterState): void {
     }
   }
 
-  if (valuesDouble.length === (values.length - valuesError.length)) {
+  if (valuesDouble.length === values.length - valuesError.length) {
     state.stack.push(PokaDoubleVectorMake(valuesDouble));
-  } else if (valuesString.length === (values.length - valuesError.length)) {
+  } else if (valuesString.length === values.length - valuesError.length) {
     state.stack.push(PokaStringVectorMake(valuesString));
   } else {
-    state.stack.push({_type: "Error", value: "Inhomogenous vector"});
+    state.stack.push({ _type: "Error", value: "Inhomogenous vector" });
   }
 
   for (const err of valuesError) {
@@ -223,7 +228,10 @@ function consumeIdentifer(state: InterpreterState): void {
   console.log("Identifier:", '"' + token + '"');
   const wordFun = POKA_WORDS[token];
   if (wordFun === undefined) {
-    state.stack.push({_type: "Error", value: "`" + token + "` identifier unknown"})
+    state.stack.push({
+      _type: "Error",
+      value: "`" + token + "` identifier unknown",
+    });
   } else {
     wordFun(state.stack);
   }
