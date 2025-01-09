@@ -36,18 +36,31 @@ interface InterpreterState {
   stack: PokaValue[];
 }
 
-function PokaDoubleVectorMake(values: number[]): PokaDoubleVector {
-  return {
-    _type: "DoubleVector",
-    value: DoubleVectorMake(values),
-  };
+function pokaDoubleScalarMake(value: number): PokaDoubleScalar {
+  return { _type: "DoubleScalar", value: value};
 }
 
-function PokaStringVectorMake(values: string[]): PokaStringVector {
-  return {
-    _type: "StringVector",
-    value: StringVectorMake(values),
-  };
+function pokaStringScalarMake(value: string): PokaStringScalar {
+  return { _type: "StringScalar", value: value};
+}
+
+function pokaDoubleVectorMake(value: DoubleVector): PokaDoubleVector {
+  return { _type: "DoubleVector", value: value };
+}
+
+function pokaStringVectorMake(value: StringVector): PokaStringVector {
+  return { _type: "StringVector", value: value };
+}
+
+function pokaDescribeNoImplementation(values: PokaValue[], wordName: string): string {
+  return "`" +
+      wordName +
+      "` not implemented for: " +
+      values
+        .slice()
+        .reverse()
+        .map((v) => showValue(v) + "::" + v._type)
+        .join(" ")
 }
 
 function showValue(value: PokaValue): string {
@@ -56,7 +69,7 @@ function showValue(value: PokaValue): string {
   } else if (value._type === "DoubleScalar") {
     return value.value.toString();
   } else if (value._type === "DoubleVector") {
-    return "DoubleVector";
+    return doubleVectorShow(value.value);
   } else if (value._type === "StringScalar") {
     return '"' + value.value + '"';
   } else if (value._type === "StringVector") {
@@ -72,19 +85,6 @@ function showInterpreterState(state: InterpreterState): string {
     result.push(showValue(value));
   }
   return result.join("\n");
-}
-
-function showTypeError(values: PokaValue[], wordName: string): string {
-  return (
-    "`" +
-    wordName +
-    "` not implemented for: " +
-    values
-      .slice()
-      .reverse()
-      .map((v) => showValue(v) + "::" + v._type)
-      .join(" ")
-  );
 }
 
 function consumeError(state: InterpreterState, message: string): void {
@@ -190,9 +190,9 @@ function consumeList(state: InterpreterState): void {
   }
 
   if (valuesDouble.length === values.length - valuesError.length) {
-    state.stack.push(PokaDoubleVectorMake(valuesDouble));
+    state.stack.push(pokaDoubleVectorMake(doubleVectorMake(valuesDouble)));
   } else if (valuesString.length === values.length - valuesError.length) {
-    state.stack.push(PokaStringVectorMake(valuesString));
+    state.stack.push(pokaStringVectorMake(stringVectorMake(valuesString)));
   } else {
     state.stack.push({ _type: "Error", value: "Inhomogenous vector" });
   }
@@ -233,7 +233,14 @@ function consumeIdentifer(state: InterpreterState): void {
       value: "`" + token + "` identifier unknown",
     });
   } else {
-    wordFun(state.stack);
+    try {
+      wordFun(state.stack);
+    } catch (exc) {
+      state.stack.push({
+        _type: "Error",
+        value: "" + exc,
+      });
+    }
   }
 }
 
