@@ -119,15 +119,28 @@ function peekList(state) {
     return peekLiteral(state, "[");
 }
 function consumeList(state) {
-    const outerStack = state.stack;
-    state.stack = [];
+    const values = [];
+    const origStack = state.stack;
     consumeLiteral(state, "[");
     while (!peekLiteral(state, "]") && !peekEOL(state)) {
-        consumeExpression(state);
+        state.stack = origStack.slice();
+        while (!peekLiteral(state, "]") && !peekEOL(state)) {
+            if (peekLiteral(state, ",")) {
+                consumeLiteral(state, ",");
+                break;
+            }
+            consumeExpression(state);
+        }
+        const value = state.stack.pop();
+        if (value === undefined) {
+            values.push({ _type: "Error", value: "Stack empty in fork expression" });
+        }
+        else {
+            values.push(value);
+        }
     }
     consumeLiteral(state, "]");
-    const values = state.stack;
-    state.stack = outerStack;
+    state.stack = origStack;
     const valuesDouble = [];
     const valuesString = [];
     const valuesError = [];
@@ -142,7 +155,7 @@ function consumeList(state) {
             valuesError.push(value);
         }
         else {
-            //
+            throw "Unreachable";
         }
     }
     if (valuesDouble.length === values.length - valuesError.length) {
