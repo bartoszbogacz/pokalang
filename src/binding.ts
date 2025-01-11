@@ -10,15 +10,15 @@ function wordAdd(stack: PokaValue[]): void {
   }
 
   if (a._type === "DoubleScalar" && b._type === "DoubleScalar") {
-    stack.push(pokaDoubleScalarMake(a.value + b.value));
+    stack.push(pokaMakeDoubleScalar(a.value + b.value));
   } else if (a._type === "DoubleVector" && b._type === "DoubleScalar") {
-    stack.push(pokaDoubleVectorMake(doubleVectorAddScalar(a.value, b.value)));
+    stack.push(pokaMakeDoubleVector(doubleVectorAddScalar(a.value, b.value)));
   } else if (a._type === "DoubleScalar" && b._type === "DoubleVector") {
-    stack.push(pokaDoubleVectorMake(doubleVectorAddScalar(b.value, a.value)));
+    stack.push(pokaMakeDoubleVector(doubleVectorAddScalar(b.value, a.value)));
   } else if (a._type === "DoubleVector" && b._type === "DoubleVector") {
-    stack.push(pokaDoubleVectorMake(doubleVectorAddVector(b.value, a.value)));
+    stack.push(pokaMakeDoubleVector(doubleVectorAddVector(b.value, a.value)));
   } else {
-    throw pokaShowNoImplFor([a, b], "add");
+    stack.push(pokaMakeErrorNoImplFor([a, b], "add"));
   }
 }
 
@@ -34,6 +34,24 @@ function wordCat(stack: PokaValue[]): void {
   stack.push(pokaStringScalarMake(b.value + a.value));
 }
 
+function wordCol(stack: PokaValue[]): void {
+  const a = stack.pop();
+  const b = stack.pop();
+  if (a === undefined) {
+    throw "col requires two arguments";
+  }
+
+  if (b === undefined) {
+    throw "col requires two arguments";
+  }
+
+  if (a._type === "DoubleScalar" && b._type === "DoubleVector") {
+    stack.push(pokaMakeDoubleVector(doubleVectorNthColumn(b.value, a.value)));
+  } else {
+    stack.push(pokaMakeErrorNoImplFor([a, b], "col"));
+  }
+}
+
 function wordSplit(stack: PokaValue[]): void {
   const separator = stack.pop();
   const value = stack.pop();
@@ -46,9 +64,23 @@ function wordSplit(stack: PokaValue[]): void {
   }
 
   if (separator._type === "StringScalar" && value._type === "StringScalar") {
-    stack.push(pokaStringVectorMake(stringScalarSplitScalar(separator.value, value.value)));
+    stack.push(pokaMakeStringVector(stringScalarSplitScalar(separator.value, value.value)));
   } else {
-    throw pokaShowNoImplFor([separator, value], "split");
+    stack.push(pokaMakeErrorNoImplFor([separator, value], "split"));
+  }
+}
+
+function wordSum(stack: PokaValue[]): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "`sum` requires one argument";
+  }
+
+  if (a._type === "DoubleVector") {
+    stack.push(pokaMakeDoubleScalar(doubleVectorSum(a.value)));
+  } else {
+    stack.push(pokaMakeErrorNoImplFor([a], "sum"));
   }
 }
 
@@ -60,17 +92,19 @@ function wordToDouble(stack: PokaValue[]): void {
   }
 
   if (value._type === "StringScalar") {
-    stack.push(pokaDoubleScalarMake(stringScalarToDouble(value.value)));
+    stack.push(pokaMakeDoubleScalar(stringScalarToDouble(value.value)));
   } else if (value._type === "StringVector") {
-    stack.push(pokaDoubleVectorMake(stringVectorToDouble(value.value)));
+    stack.push(pokaMakeDoubleVector(stringVectorToDouble(value.value)));
   } else {
-    throw pokaShowNoImplFor([value], "toDouble");
+    stack.push(pokaMakeErrorNoImplFor([value], "toDouble"));
   }
 }
 
 const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
   add: wordAdd,
   cat: wordCat,
+  col: wordCol,
+  sum: wordSum,
   split: wordSplit,
   toDouble: wordToDouble,
 };
