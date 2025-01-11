@@ -61,7 +61,10 @@ function wordSplit(stack) {
         throw "`split` requires two arguments";
     }
     if (separator._type === "StringScalar" && value._type === "StringScalar") {
-        stack.push(pokaMakeStringVector(stringScalarSplitScalar(separator.value, value.value)));
+        stack.push(pokaMakeStringVector(stringScalarSplitScalar(value.value, separator.value)));
+    }
+    else if (separator._type === "StringScalar" && value._type === "StringVector") {
+        stack.push(pokaMakeStringVector(stringVectorSplitScalar(value.value, separator.value)));
     }
     else {
         stack.push(pokaMakeErrorNoImplFor([separator, value], "split"));
