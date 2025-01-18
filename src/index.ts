@@ -3,6 +3,11 @@ interface PokaError {
   value: string;
 }
 
+interface PokaScalarBoolean {
+  _type: "ScalarBoolean";
+  value: boolean;
+}
+
 interface PokaScalarDouble {
   _type: "ScalarDouble";
   value: number;
@@ -25,6 +30,7 @@ interface PokaVectorString {
 
 type PokaValue =
   | PokaError
+  | PokaScalarBoolean
   | PokaScalarDouble
   | PokaVectorDouble
   | PokaScalarString
@@ -58,6 +64,10 @@ function showInterpreterState(state: InterpreterState): string {
     result.push(showValue(value));
   }
   return result.join("\n");
+}
+
+function pokaMakeScalarBoolean(value: boolean): PokaScalarBoolean {
+  return { _type: "ScalarBoolean", value: value };
 }
 
 function pokaMakeScalarDouble(value: number): PokaScalarDouble {

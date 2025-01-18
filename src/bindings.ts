@@ -34,6 +34,17 @@ function wordCat(stack: PokaValue[]): void {
   stack.push(pokaScalarStringMake(b.value + a.value));
 }
 
+function wordEquals(a: PokaValue, b: PokaValue): PokaValue {
+  if (a._type !== b._type) {
+    return pokaMakeScalarBoolean(false);
+  }
+  if (a._type === "VectorDouble" && b._type === "VectorDouble") {
+    return pokaMakeScalarBoolean(vectorDoubleEquals(a.value, b.value));
+  } else {
+    throw "NotImplemented";
+  }
+}
+
 function wordCol(stack: PokaValue[]): void {
   const a = stack.pop();
   const b = stack.pop();
@@ -123,6 +134,7 @@ function wordToDouble(stack: PokaValue[]): void {
 
 const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
   add: wordAdd,
+  equals: pokaWord2(wordEquals),
   cat: wordCat,
   col: wordCol,
   sum: wordSum,

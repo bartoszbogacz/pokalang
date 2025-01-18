@@ -51,6 +51,26 @@ function vectorDoubleAddVector(a: VectorDouble, b: VectorDouble): VectorDouble {
   return { shape: a.shape, values: r };
 }
 
+function vectorDoubleEquals(a: VectorDouble, b: VectorDouble): boolean {
+  if (a.shape.length !== b.shape.length) {
+    throw "Incongruent shapes";
+  }
+
+  for (let i = 0; i < a.shape.length; i++) {
+    if (a.shape[i] !== b.shape[i]) {
+      throw "Incongruent shapes";
+    }
+  }
+
+  for (let i = 0; i < a.values.length; i++) {
+    if (a.values[i] !== b.values[i]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function vectorDoubleStackCols(values: VectorDouble[]): VectorDouble {
   const allShapeLens = (values[0] as VectorDouble).shape.length;
   for (const value of values) {

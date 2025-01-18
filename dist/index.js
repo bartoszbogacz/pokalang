@@ -26,6 +26,9 @@ function showInterpreterState(state) {
     }
     return result.join("\n");
 }
+function pokaMakeScalarBoolean(value) {
+    return { _type: "ScalarBoolean", value: value };
+}
 function pokaMakeScalarDouble(value) {
     return { _type: "ScalarDouble", value: value };
 }
