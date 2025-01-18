@@ -3,32 +3,32 @@ interface PokaError {
   value: string;
 }
 
-interface PokaDoubleScalar {
-  _type: "DoubleScalar";
+interface PokaScalarDouble {
+  _type: "ScalarDouble";
   value: number;
 }
 
-interface PokaDoubleVector {
-  _type: "DoubleVector";
-  value: DoubleVector;
+interface PokaVectorDouble {
+  _type: "VectorDouble";
+  value: VectorDouble;
 }
 
-interface PokaStringScalar {
-  _type: "StringScalar";
+interface PokaScalarString {
+  _type: "ScalarString";
   value: string;
 }
 
-interface PokaStringVector {
-  _type: "StringVector";
-  value: StringVector;
+interface PokaVectorString {
+  _type: "VectorString";
+  value: VectorString;
 }
 
 type PokaValue =
   | PokaError
-  | PokaDoubleScalar
-  | PokaDoubleVector
-  | PokaStringScalar
-  | PokaStringVector;
+  | PokaScalarDouble
+  | PokaVectorDouble
+  | PokaScalarString
+  | PokaVectorString;
 
 interface InterpreterState {
   line: string;
@@ -39,14 +39,14 @@ interface InterpreterState {
 function showValue(value: PokaValue): string {
   if (value._type === "Error") {
     return "Error: " + value.value;
-  } else if (value._type === "DoubleScalar") {
+  } else if (value._type === "ScalarDouble") {
     return value.value.toString();
-  } else if (value._type === "DoubleVector") {
-    return doubleVectorShow(value.value);
-  } else if (value._type === "StringScalar") {
+  } else if (value._type === "VectorDouble") {
+    return vectorDoubleShow(value.value);
+  } else if (value._type === "ScalarString") {
     return '"' + value.value + '"';
-  } else if (value._type === "StringVector") {
-    return stringVectorShow(value.value);
+  } else if (value._type === "VectorString") {
+    return vectorStringShow(value.value);
   } else {
     throw "Unreachable";
   }
@@ -60,38 +60,44 @@ function showInterpreterState(state: InterpreterState): string {
   return result.join("\n");
 }
 
-function pokaMakeDoubleScalar(value: number): PokaDoubleScalar {
-  return { _type: "DoubleScalar", value: value};
+function pokaMakeScalarDouble(value: number): PokaScalarDouble {
+  return { _type: "ScalarDouble", value: value };
 }
 
-function pokaStringScalarMake(value: string): PokaStringScalar {
-  return { _type: "StringScalar", value: value};
+function pokaScalarStringMake(value: string): PokaScalarString {
+  return { _type: "ScalarString", value: value };
 }
 
-function pokaMakeDoubleVector(value: DoubleVector): PokaDoubleVector {
-  return { _type: "DoubleVector", value: value };
+function pokaMakeVectorDouble(value: VectorDouble): PokaVectorDouble {
+  return { _type: "VectorDouble", value: value };
 }
 
-function pokaMakeStringVector(value: StringVector): PokaStringVector {
-  return { _type: "StringVector", value: value };
+function pokaMakeVectorString(value: VectorString): PokaVectorString {
+  return { _type: "VectorString", value: value };
 }
 
-function pokaMakeErrorNoImplFor(values: PokaValue[], wordName: string): PokaError {
+function pokaMakeErrorNoImplFor(
+  values: PokaValue[],
+  wordName: string,
+): PokaError {
   return {
     _type: "Error",
-    value: "`" +
+    value:
+      "`" +
       wordName +
       "` not implemented for: " +
       values
         .slice()
         .reverse()
         .map((v) => showValue(v) + "::" + v._type)
-        .join(" ")
-  }
+        .join(" "),
+  };
 }
 
-function pokaWord2(wordFun: (a: PokaValue, b: PokaValue) => PokaValue): (stack: PokaValue[]) => void {
-  return function(stack: PokaValue[]): void {
+function pokaWord2(
+  wordFun: (a: PokaValue, b: PokaValue) => PokaValue,
+): (stack: PokaValue[]) => void {
+  return function (stack: PokaValue[]): void {
     const a = stack.pop();
     if (a === undefined) {
       throw "Two arguments required";
@@ -101,9 +107,8 @@ function pokaWord2(wordFun: (a: PokaValue, b: PokaValue) => PokaValue): (stack: 
       throw "Two arguments required";
     }
     stack.push(wordFun(a, b));
-  }
+  };
 }
-
 
 function consumeError(state: InterpreterState, message: string): void {
   state.stack.push({ _type: "Error", value: message });
@@ -112,14 +117,14 @@ function consumeError(state: InterpreterState, message: string): void {
 
 function peekNumber(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
-  return c === "-" || c >= "0" && c <= "9";
+  return c === "-" || (c >= "0" && c <= "9");
 }
 
 function consumeNumber(state: InterpreterState): void {
   const start = state.pos;
   while (true) {
     const c = state.line.charAt(state.pos);
-    if (c === "-" || c >= "0" && c <= "9") {
+    if (c === "-" || (c >= "0" && c <= "9")) {
       state.pos++;
     } else {
       break;
@@ -147,7 +152,7 @@ function consumeNumber(state: InterpreterState): void {
       value: "`" + token + "` is not a number.",
     });
   } else {
-    state.stack.push({ _type: "DoubleScalar", value: value });
+    state.stack.push({ _type: "ScalarDouble", value: value });
   }
 }
 
@@ -171,7 +176,7 @@ function consumeString(state: InterpreterState): void {
   const token = state.line.slice(start, state.pos);
   state.pos++; // Skip closing quote
   console.log("String:", token);
-  state.stack.push({ _type: "StringScalar", value: token });
+  state.stack.push({ _type: "ScalarString", value: token });
 }
 
 function peekList(state: InterpreterState): boolean {
@@ -194,7 +199,7 @@ function consumeList(state: InterpreterState): void {
     }
     const value = state.stack.pop();
     if (value === undefined) {
-      values.push({_type: "Error", value: "Stack empty in fork expression"});
+      values.push({ _type: "Error", value: "Stack empty in fork expression" });
     } else {
       values.push(value);
     }
@@ -204,20 +209,20 @@ function consumeList(state: InterpreterState): void {
   state.stack = origStack;
 
   const valuesError: PokaValue[] = [];
-  const valuesDoubleScalar: number[] = [];
-  const valuesDoubleVector: DoubleVector[] = [];
-  const valuesStringScalar: string[] = [];
-  const valuesStringVector: StringVector[] = [];
+  const valuesScalarDouble: number[] = [];
+  const valuesVectorDouble: VectorDouble[] = [];
+  const valuesScalarString: string[] = [];
+  const valuesVectorString: VectorString[] = [];
 
   for (const value of values) {
-    if (value._type === "DoubleScalar") {
-      valuesDoubleScalar.push(value.value);
-    } else if (value._type === "DoubleVector") {
-      valuesDoubleVector.push(value.value);
-    } else if (value._type === "StringScalar") {
-      valuesStringScalar.push(value.value);
-    } else if (value._type === "StringVector") {
-      valuesStringVector.push(value.value);
+    if (value._type === "ScalarDouble") {
+      valuesScalarDouble.push(value.value);
+    } else if (value._type === "VectorDouble") {
+      valuesVectorDouble.push(value.value);
+    } else if (value._type === "ScalarString") {
+      valuesScalarString.push(value.value);
+    } else if (value._type === "VectorString") {
+      valuesVectorString.push(value.value);
     } else if (value._type === "Error") {
       valuesError.push(value);
     } else {
@@ -225,14 +230,24 @@ function consumeList(state: InterpreterState): void {
     }
   }
 
-  if (valuesDoubleScalar.length === values.length - valuesError.length) {
-    state.stack.push(pokaMakeDoubleVector(doubleVectorMake(valuesDoubleScalar)));
-  } else if (valuesDoubleVector.length === values.length - valuesError.length) {
-    state.stack.push(pokaMakeDoubleVector(doubleVectorConcatenate(valuesDoubleVector)));
-  } else if (valuesStringScalar.length === values.length - valuesError.length) {
-    state.stack.push(pokaMakeStringVector(stringVectorMake(valuesStringScalar)));
+  if (valuesScalarDouble.length === values.length - valuesError.length) {
+    state.stack.push(
+      pokaMakeVectorDouble(
+        vectorDoubleMake([valuesScalarDouble.length], valuesScalarDouble),
+      ),
+    );
+  } else if (valuesVectorDouble.length === values.length - valuesError.length) {
+    state.stack.push(
+      pokaMakeVectorDouble(vectorDoubleStackCols(valuesVectorDouble)),
+    );
+  } else if (valuesScalarString.length === values.length - valuesError.length) {
+    state.stack.push(
+      pokaMakeVectorString(
+        vectorStringMake([valuesScalarString.length], valuesScalarString),
+      ),
+    );
   } else {
-    state.stack.push({ _type: "Error", value: "Inhomogenous vector" });
+    state.stack.push({ _type: "Error", value: "Inhomogeneous vector" });
   }
 
   for (const err of valuesError) {
