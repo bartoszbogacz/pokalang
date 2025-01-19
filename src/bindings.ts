@@ -1,3 +1,17 @@
+function wordAbs(stack: PokaValue[]): void {
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "`abs` requires two arguments";
+  }
+  if (a._type === "ScalarDouble") {
+    stack.push(pokaMakeScalarDouble(Math.abs(a.value)));
+  } else if (a._type === "VectorDouble") {
+    stack.push(pokaMakeVectorDouble(vectorDoubleAbs(a.value)));
+  } else {
+    stack.push(pokaMakeErrorNoImplFor([a], "abs"));
+  }
+}
+
 function wordAdd(stack: PokaValue[]): void {
   const a = stack.pop();
   const b = stack.pop();
@@ -76,6 +90,15 @@ function wordCol(stack: PokaValue[]): void {
   }
 }
 
+function wordDup(stack: PokaValue[]): void {
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "`dup` requires one argument";
+  }
+  stack.push(a);
+  stack.push(a);
+}
+
 function wordSumCols(stack: PokaValue[]): void {
   const a = stack.pop();
   if (a === undefined) {
@@ -136,6 +159,42 @@ function wordSplit(stack: PokaValue[]): void {
   }
 }
 
+function wordSpreadCols(stack: PokaValue[]): void {
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "`spreadCols` requires one argument";
+  }
+  if (a._type === "VectorDouble") {
+    for (let i = 0; i < a.value.countCols; i++) {
+      stack.push(pokaMakeVectorDouble(vectorDoubleNthCol(a.value, i)));
+    }
+  }
+}
+
+function wordSub(stack: PokaValue[]): void {
+  const a = stack.pop();
+  const b = stack.pop();
+
+  if (a === undefined) {
+    throw "`sub` requires two arguments";
+  }
+  if (b === undefined) {
+    throw "`sub` requires two arguments";
+  }
+
+  if (a._type === "ScalarDouble" && b._type === "ScalarDouble") {
+    stack.push(pokaMakeScalarDouble(a.value + b.value));
+  } else if (a._type === "VectorDouble" && b._type === "ScalarDouble") {
+    stack.push(pokaMakeVectorDouble(vectorDoubleSubScalar(a.value, b.value)));
+  } else if (a._type === "ScalarDouble" && b._type === "VectorDouble") {
+    stack.push(pokaMakeVectorDouble(vectorDoubleSubScalar(b.value, a.value)));
+  } else if (a._type === "VectorDouble" && b._type === "VectorDouble") {
+    stack.push(pokaMakeVectorDouble(vectorDoubleSubVector(b.value, a.value)));
+  } else {
+    stack.push(pokaMakeErrorNoImplFor([a, b], "sub"));
+  }
+}
+
 function wordSum(stack: PokaValue[]): void {
   const a = stack.pop();
 
@@ -181,14 +240,18 @@ function wordToDouble(stack: PokaValue[]): void {
 }
 
 const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
+  abs: wordAbs,
   add: wordAdd,
   equals: wordEquals,
   cat: wordCat,
   col: wordCol,
+  dup: wordDup,
+  sub: wordSub,
   sum: wordSum,
   sumCols: wordSumCols,
   sortCols: wordSortCols,
   split: wordSplit,
+  spreadCols: wordSpreadCols,
   prod: wordProd,
   toDouble: wordToDouble,
 };

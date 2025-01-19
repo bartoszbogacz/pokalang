@@ -15,3 +15,5 @@ function pokaTest(expr: string): void {
 pokaTest(
   '"1 2 3,4 5 6" "," split " " split toDouble [0 col, -1 col] [[1, 4], [3, 6]] equals',
 );
+
+pokaTest("[[1, 2], [2, 1]] sortCols [[1, 2], [1, 2]] equals");

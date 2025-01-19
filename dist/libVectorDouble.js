@@ -26,6 +26,9 @@ function vectorDoubleNthCol(a, n) {
     }
     return vectorDoubleMake(a.countPages, 1, a.countRows, values);
 }
+function vectorDoubleAbs(a) {
+    return vectorDoubleMake(a.countPages, a.countCols, a.countRows, a.values.map(Math.abs));
+}
 function vectorDoubleAddScalar(a, b) {
     const values2 = [];
     for (let i = 0; i < a.values.length; i++) {
@@ -42,6 +45,25 @@ function vectorDoubleAddVector(a, b) {
     const values2 = [];
     for (let i = 0; i < a.values.length; i++) {
         values2.push(a.values[i] + b.values[i]);
+    }
+    return vectorDoubleMake(a.countPages, a.countCols, a.countRows, values2);
+}
+function vectorDoubleSubScalar(a, b) {
+    const values2 = [];
+    for (let i = 0; i < a.values.length; i++) {
+        values2.push(a.values[i] - b);
+    }
+    return vectorDoubleMake(a.countRows, a.countCols, a.countRows, values2);
+}
+function vectorDoubleSubVector(a, b) {
+    if (a.countRows !== b.countRows ||
+        a.countCols !== b.countCols ||
+        a.countPages !== b.countPages) {
+        throw "Shapes do not match";
+    }
+    const values2 = [];
+    for (let i = 0; i < a.values.length; i++) {
+        values2.push(a.values[i] - b.values[i]);
     }
     return vectorDoubleMake(a.countPages, a.countCols, a.countRows, values2);
 }
