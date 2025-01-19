@@ -35,12 +35,20 @@ function wordCat(stack) {
     }
     stack.push(pokaScalarStringMake(b.value + a.value));
 }
-function wordEquals(a, b) {
+function wordEquals(stack) {
+    const a = stack.pop();
+    const b = stack.pop();
+    if (a === undefined) {
+        throw "equals requires two arguments";
+    }
+    if (b === undefined) {
+        throw "equals requires two arguments";
+    }
     if (a._type !== b._type) {
-        return pokaMakeScalarBoolean(false);
+        stack.push(pokaMakeScalarBoolean(false));
     }
     if (a._type === "VectorDouble" && b._type === "VectorDouble") {
-        return pokaMakeScalarBoolean(vectorDoubleEquals(a.value, b.value));
+        stack.push(pokaMakeScalarBoolean(vectorDoubleEquals(a.value, b.value)));
     }
     else {
         throw "NotImplemented";
@@ -110,6 +118,18 @@ function wordSum(stack) {
         stack.push(pokaMakeErrorNoImplFor([a], "sum"));
     }
 }
+function wordProd(stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "`prod` requires one argument";
+    }
+    if (a._type === "VectorDouble") {
+        stack.push(pokaMakeScalarDouble(vectorDoubleProd(a.value)));
+    }
+    else {
+        stack.push(pokaMakeErrorNoImplFor([a], "prod"));
+    }
+}
 function wordToDouble(stack) {
     const value = stack.pop();
     if (value === undefined) {
@@ -127,11 +147,12 @@ function wordToDouble(stack) {
 }
 const POKA_WORDS = {
     add: wordAdd,
-    equals: pokaWord2(wordEquals),
+    equals: wordEquals,
     cat: wordCat,
     col: wordCol,
     colSum: wordColSum,
     sum: wordSum,
     split: wordSplit,
+    prod: wordProd,
     toDouble: wordToDouble,
 };

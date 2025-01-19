@@ -104,22 +104,6 @@ function pokaMakeErrorNoImplFor(
   };
 }
 
-function pokaWord2(
-  wordFun: (a: PokaValue, b: PokaValue) => PokaValue,
-): (stack: PokaValue[]) => void {
-  return function (stack: PokaValue[]): void {
-    const a = stack.pop();
-    if (a === undefined) {
-      throw "Two arguments required";
-    }
-    const b = stack.pop();
-    if (b === undefined) {
-      throw "Two arguments required";
-    }
-    stack.push(wordFun(a, b));
-  };
-}
-
 function consumeError(state: InterpreterState, message: string): void {
   state.stack.push({ _type: "Error", value: message });
   state.pos = state.line.length;

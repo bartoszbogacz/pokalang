@@ -1,9 +1,14 @@
 "use strict";
 function vectorDoubleMake(countPages, countCols, countRows, values) {
-    if ((countPages * countCols * countRows) !== values.length) {
+    if (countPages * countCols * countRows !== values.length) {
         throw "Error";
     }
-    return { countPages: countPages, countCols: countCols, countRows: countRows, values: values };
+    return {
+        countPages: countPages,
+        countCols: countCols,
+        countRows: countRows,
+        values: values,
+    };
 }
 function vectorDoubleShow(a) {
     return "[" + a.values.map((v) => v.toFixed(2)).join(" ") + "]";
@@ -29,7 +34,9 @@ function vectorDoubleAddScalar(a, b) {
     return vectorDoubleMake(a.countRows, a.countCols, a.countRows, values2);
 }
 function vectorDoubleAddVector(a, b) {
-    if (a.countRows !== b.countRows || a.countCols !== b.countCols || a.countPages !== b.countPages) {
+    if (a.countRows !== b.countRows ||
+        a.countCols !== b.countCols ||
+        a.countPages !== b.countPages) {
         throw "Shapes do not match";
     }
     const values2 = [];
@@ -53,7 +60,9 @@ function vectorDoubleColSum(a) {
     return vectorDoubleMake(a.countPages, a.countCols, 1, values2);
 }
 function vectorDoubleEquals(a, b) {
-    if (a.countRows !== b.countRows || a.countCols !== b.countCols || a.countPages !== b.countPages) {
+    if (a.countRows !== b.countRows ||
+        a.countCols !== b.countCols ||
+        a.countPages !== b.countPages) {
         throw "Shapes do not match";
     }
     for (let i = 0; i < a.values.length; i++) {
@@ -90,4 +99,7 @@ function vectorDoubleCatCols(values) {
 }
 function vectorDoubleSum(a) {
     return a.values.reduce((a, b) => a + b);
+}
+function vectorDoubleProd(a) {
+    return a.values.reduce((a, b) => a * b);
 }

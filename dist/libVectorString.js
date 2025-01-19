@@ -1,9 +1,14 @@
 "use strict";
 function vectorStringMake(countPages, countCols, countRows, values) {
-    if ((countPages * countCols * countRows) !== values.length) {
+    if (countPages * countCols * countRows !== values.length) {
         throw "Error";
     }
-    return { countPages: countPages, countCols: countCols, countRows: countRows, values: values };
+    return {
+        countPages: countPages,
+        countCols: countCols,
+        countRows: countRows,
+        values: values,
+    };
 }
 function vectorStringShow(value) {
     return "[" + value.values.map((v) => '"' + v + '"').join(" ") + "]";

@@ -130,3 +130,7 @@ function vectorDoubleCatCols(values: VectorDouble[]): VectorDouble {
 function vectorDoubleSum(a: VectorDouble): number {
   return a.values.reduce((a, b) => a + b);
 }
+
+function vectorDoubleProd(a: VectorDouble): number {
+  return a.values.reduce((a, b) => a * b);
+}
