@@ -1,57 +1,60 @@
 "use strict";
-function vectorDoubleMake(shape, values) {
-    if (shape.reduce((a, b) => a * b) !== values.length) {
-        throw "Shape does not values";
+function vectorDoubleMake(countPages, countCols, countRows, values) {
+    if ((countPages * countCols * countRows) !== values.length) {
+        throw "Error";
     }
-    return { shape: shape, values: values };
+    return { countPages: countPages, countCols: countCols, countRows: countRows, values: values };
 }
 function vectorDoubleShow(a) {
     return "[" + a.values.map((v) => v.toFixed(2)).join(" ") + "]";
 }
 function vectorDoubleNthColumn(a, n) {
-    if (a.shape.length === 1) {
-        throw "Vector already single column";
+    if (a.countPages !== 1) {
+        throw "NotImplemented";
     }
-    else if (a.shape.length === 2) {
-        const colElems = a.shape[1];
-        if (n < 0) {
-            n = colElems + 1 + n;
-        }
-        const values = [];
-        for (let i = 0; i < colElems; i++) {
-            values.push(a.values[n * colElems + i]);
-        }
-        return { shape: [values.length], values: values };
+    if (n < 0) {
+        n = a.countRows + 1 + n;
     }
-    else {
-        throw "Not implemented";
+    const values = [];
+    for (let i = 0; i < a.countRows; i++) {
+        values.push(a.values[n * a.countRows + i]);
     }
+    return vectorDoubleMake(a.countPages, 1, a.countRows, values);
 }
 function vectorDoubleAddScalar(a, b) {
-    const r = [];
+    const values2 = [];
     for (let i = 0; i < a.values.length; i++) {
-        r.push(a.values[i] + b);
+        values2.push(a.values[i] + b);
     }
-    return { shape: a.shape, values: r };
+    return vectorDoubleMake(a.countRows, a.countCols, a.countRows, values2);
 }
 function vectorDoubleAddVector(a, b) {
-    if (a.values.length !== b.values.length) {
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols || a.countPages !== b.countPages) {
         throw "Shapes do not match";
     }
-    const r = [];
+    const values2 = [];
     for (let i = 0; i < a.values.length; i++) {
-        r.push(a.values[i] + b.values[i]);
+        values2.push(a.values[i] + b.values[i]);
     }
-    return { shape: a.shape, values: r };
+    return vectorDoubleMake(a.countPages, a.countCols, a.countRows, values2);
+}
+function vectorDoubleColSum(a) {
+    const values2 = [];
+    for (let i = 0; i < a.countPages; i++) {
+        for (let j = 0; j < a.countCols; j++) {
+            let colSum = 0;
+            for (let k = 0; k < a.countRows; k++) {
+                let index = i * a.countCols * a.countRows + j * a.countRows + k;
+                colSum += a.values[index];
+            }
+            values2.push(colSum);
+        }
+    }
+    return vectorDoubleMake(a.countPages, a.countCols, 1, values2);
 }
 function vectorDoubleEquals(a, b) {
-    if (a.shape.length !== b.shape.length) {
-        throw "Incongruent shapes";
-    }
-    for (let i = 0; i < a.shape.length; i++) {
-        if (a.shape[i] !== b.shape[i]) {
-            throw "Incongruent shapes";
-        }
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols || a.countPages !== b.countPages) {
+        throw "Shapes do not match";
     }
     for (let i = 0; i < a.values.length; i++) {
         if (a.values[i] !== b.values[i]) {
@@ -60,31 +63,30 @@ function vectorDoubleEquals(a, b) {
     }
     return true;
 }
-function vectorDoubleStackCols(values) {
-    const allShapeLens = values[0].shape.length;
-    for (const value of values) {
-        if (value.shape.length !== allShapeLens) {
-            throw "Inhomogeneous vectors";
-        }
+function vectorDoubleCatCols(values) {
+    const first = values[0];
+    if (first === undefined) {
+        throw "Error";
     }
-    const allColLens = values[0].shape[0];
+    const countPages = first.countPages;
     for (const value of values) {
-        if (value.shape[0] !== allColLens) {
+        if (value.countPages !== countPages) {
             throw "Inhomogenous vectors";
         }
     }
-    if (allShapeLens === 1) {
-        const values2 = [];
-        for (const value of values) {
-            for (const elem of value.values) {
-                values2.push(elem);
-            }
+    const countRows = first.countRows;
+    for (const value of values) {
+        if (value.countRows !== countRows) {
+            throw "Inhomogenous vectors";
         }
-        return vectorDoubleMake([values.length, allColLens], values2);
     }
-    else {
-        throw "NotImplemented";
+    const values2 = [];
+    for (const value of values) {
+        for (const elem of value.values) {
+            values2.push(elem);
+        }
     }
+    return vectorDoubleMake(countPages, values.length, countRows, values2);
 }
 function vectorDoubleSum(a) {
     return a.values.reduce((a, b) => a + b);

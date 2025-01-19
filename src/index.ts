@@ -243,17 +243,17 @@ function consumeList(state: InterpreterState): void {
   if (valuesScalarDouble.length === values.length - valuesError.length) {
     state.stack.push(
       pokaMakeVectorDouble(
-        vectorDoubleMake([valuesScalarDouble.length], valuesScalarDouble),
+        vectorDoubleMake(1, 1, valuesScalarDouble.length, valuesScalarDouble),
       ),
     );
   } else if (valuesVectorDouble.length === values.length - valuesError.length) {
     state.stack.push(
-      pokaMakeVectorDouble(vectorDoubleStackCols(valuesVectorDouble)),
+      pokaMakeVectorDouble(vectorDoubleCatCols(valuesVectorDouble)),
     );
   } else if (valuesScalarString.length === values.length - valuesError.length) {
     state.stack.push(
       pokaMakeVectorString(
-        vectorStringMake([valuesScalarString.length], valuesScalarString),
+        vectorStringMake(1, 1, valuesScalarString.length, valuesScalarString),
       ),
     );
   } else {

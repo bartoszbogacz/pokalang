@@ -1,13 +1,15 @@
 interface VectorString {
-  shape: number[];
+  countPages: number;
+  countCols: number;
+  countRows: number;
   values: string[];
 }
 
-function vectorStringMake(shape: number[], values: string[]): VectorString {
-  if (shape.reduce((a, b) => a * b) !== values.length) {
-    throw "Shape does not values";
+function vectorStringMake(countPages: number, countCols: number, countRows: number, values: string[]): VectorString {
+  if ((countPages * countCols * countRows) !== values.length) {
+    throw "Error";
   }
-  return { shape: shape, values: values };
+  return {countPages: countPages, countCols: countCols, countRows: countRows, values: values};
 }
 
 function vectorStringShow(value: VectorString): string {
@@ -18,32 +20,29 @@ function vectorStringSplitScalar(
   value: VectorString,
   separator: string,
 ): VectorString {
-  if (value.shape.length === 1) {
-    const rows: string[][] = [];
-    for (const v of value.values) {
-      rows.push(v.split(separator));
-    }
-    const maxRowLen = Math.max(...rows.map((v) => v.length));
-    const values2: string[] = [];
-    for (let i = 0; i < maxRowLen; i++) {
-      for (const row of rows) {
-        if (i < row.length) {
-          values2.push(row[i] as string);
-        } else {
-          values2.push("");
-        }
-      }
-    }
-    return { shape: [maxRowLen, rows.length], values: values2 };
-  } else {
+  if (value.countPages > 1 || value.countCols > 1) {
     throw "NotImplemented";
   }
+
+  const rows: string[][] = [];
+  for (const v of value.values) {
+    rows.push(v.split(separator));
+  }
+  const maxRowLen = Math.max(...rows.map((v) => v.length));
+  const values2: string[] = [];
+  for (let i = 0; i < maxRowLen; i++) {
+    for (const row of rows) {
+      if (i < row.length) {
+        values2.push(row[i] as string);
+      } else {
+        values2.push("");
+      }
+    }
+  }
+
+  return vectorStringMake(1, rows.length, maxRowLen, values2);
 }
 
 function vectorStringToDouble(value: VectorString): VectorDouble {
-  return { shape: value.shape, values: value.values.map(parseFloat) };
-}
-
-function vectorStringSqueeze(value: VectorString): VectorString {
-  return { shape: value.shape.filter((a) => a > 1), values: value.values };
+  return vectorDoubleMake(value.countPages, value.countRows, value.countCols, value.values.map(parseFloat));
 }

@@ -66,6 +66,18 @@ function wordCol(stack) {
         stack.push(pokaMakeErrorNoImplFor([a, b], "col"));
     }
 }
+function wordColSum(stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "colSum requires one argument";
+    }
+    if (a._type === "VectorDouble") {
+        stack.push(pokaMakeVectorDouble(vectorDoubleColSum(a.value)));
+    }
+    else {
+        stack.push(pokaMakeErrorNoImplFor([a], "colSum"));
+    }
+}
 function wordSplit(stack) {
     const separator = stack.pop();
     const value = stack.pop();
@@ -76,7 +88,7 @@ function wordSplit(stack) {
         throw "`split` requires two arguments";
     }
     if (separator._type === "ScalarString" && value._type === "ScalarString") {
-        stack.push(pokaMakeVectorString(vectorStringSqueeze(vectorStringSplitScalar(vectorStringMake([1], [value.value]), separator.value))));
+        stack.push(pokaMakeVectorString(vectorStringSplitScalar(vectorStringMake(1, 1, 1, [value.value]), separator.value)));
     }
     else if (separator._type === "ScalarString" &&
         value._type === "VectorString") {
@@ -118,6 +130,7 @@ const POKA_WORDS = {
     equals: pokaWord2(wordEquals),
     cat: wordCat,
     col: wordCol,
+    colSum: wordColSum,
     sum: wordSum,
     split: wordSplit,
     toDouble: wordToDouble,

@@ -186,13 +186,13 @@ function consumeList(state) {
         }
     }
     if (valuesScalarDouble.length === values.length - valuesError.length) {
-        state.stack.push(pokaMakeVectorDouble(vectorDoubleMake([valuesScalarDouble.length], valuesScalarDouble)));
+        state.stack.push(pokaMakeVectorDouble(vectorDoubleMake(1, 1, valuesScalarDouble.length, valuesScalarDouble)));
     }
     else if (valuesVectorDouble.length === values.length - valuesError.length) {
-        state.stack.push(pokaMakeVectorDouble(vectorDoubleStackCols(valuesVectorDouble)));
+        state.stack.push(pokaMakeVectorDouble(vectorDoubleCatCols(valuesVectorDouble)));
     }
     else if (valuesScalarString.length === values.length - valuesError.length) {
-        state.stack.push(pokaMakeVectorString(vectorStringMake([valuesScalarString.length], valuesScalarString)));
+        state.stack.push(pokaMakeVectorString(vectorStringMake(1, 1, valuesScalarString.length, valuesScalarString)));
     }
     else {
         state.stack.push({ _type: "Error", value: "Inhomogeneous vector" });
