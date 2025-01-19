@@ -5,11 +5,21 @@ interface VectorString {
   values: string[];
 }
 
-function vectorStringMake(countPages: number, countCols: number, countRows: number, values: string[]): VectorString {
-  if ((countPages * countCols * countRows) !== values.length) {
+function vectorStringMake(
+  countPages: number,
+  countCols: number,
+  countRows: number,
+  values: string[],
+): VectorString {
+  if (countPages * countCols * countRows !== values.length) {
     throw "Error";
   }
-  return {countPages: countPages, countCols: countCols, countRows: countRows, values: values};
+  return {
+    countPages: countPages,
+    countCols: countCols,
+    countRows: countRows,
+    values: values,
+  };
 }
 
 function vectorStringShow(value: VectorString): string {
@@ -44,5 +54,10 @@ function vectorStringSplitScalar(
 }
 
 function vectorStringToDouble(value: VectorString): VectorDouble {
-  return vectorDoubleMake(value.countPages, value.countRows, value.countCols, value.values.map(parseFloat));
+  return vectorDoubleMake(
+    value.countPages,
+    value.countRows,
+    value.countCols,
+    value.values.map(parseFloat),
+  );
 }

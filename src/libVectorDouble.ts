@@ -5,11 +5,21 @@ interface VectorDouble {
   values: number[];
 }
 
-function vectorDoubleMake(countPages: number, countCols: number, countRows: number, values: number[]): VectorDouble {
-  if ((countPages * countCols * countRows) !== values.length) {
+function vectorDoubleMake(
+  countPages: number,
+  countCols: number,
+  countRows: number,
+  values: number[],
+): VectorDouble {
+  if (countPages * countCols * countRows !== values.length) {
     throw "Error";
   }
-  return {countPages: countPages, countCols: countCols, countRows: countRows, values: values};
+  return {
+    countPages: countPages,
+    countCols: countCols,
+    countRows: countRows,
+    values: values,
+  };
 }
 
 function vectorDoubleShow(a: VectorDouble): string {
@@ -39,7 +49,11 @@ function vectorDoubleAddScalar(a: VectorDouble, b: number): VectorDouble {
 }
 
 function vectorDoubleAddVector(a: VectorDouble, b: VectorDouble): VectorDouble {
-  if (a.countRows !== b.countRows || a.countCols !== b.countCols || a.countPages !== b.countPages) {
+  if (
+    a.countRows !== b.countRows ||
+    a.countCols !== b.countCols ||
+    a.countPages !== b.countPages
+  ) {
     throw "Shapes do not match";
   }
   const values2: number[] = [];
@@ -60,14 +74,18 @@ function vectorDoubleColSum(a: VectorDouble): VectorDouble {
         colSum += a.values[index] as number;
       }
       values2.push(colSum);
-   }
+    }
   }
 
   return vectorDoubleMake(a.countPages, a.countCols, 1, values2);
 }
 
 function vectorDoubleEquals(a: VectorDouble, b: VectorDouble): boolean {
-  if (a.countRows !== b.countRows || a.countCols !== b.countCols || a.countPages !== b.countPages) {
+  if (
+    a.countRows !== b.countRows ||
+    a.countCols !== b.countCols ||
+    a.countPages !== b.countPages
+  ) {
     throw "Shapes do not match";
   }
 
