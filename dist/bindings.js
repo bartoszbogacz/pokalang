@@ -62,8 +62,14 @@ function wordEquals(stack) {
     if (a._type !== b._type) {
         stack.push(pokaMakeScalarBoolean(false));
     }
-    if (a._type === "VectorDouble" && b._type === "VectorDouble") {
+    if (a._type === "ScalarDouble" && b._type === "ScalarDouble") {
+        stack.push(pokaMakeScalarBoolean(a.value === b.value));
+    }
+    else if (a._type === "VectorDouble" && b._type === "VectorDouble") {
         stack.push(pokaMakeScalarBoolean(vectorDoubleEquals(a.value, b.value)));
+    }
+    else if (a._type === "ScalarString" && b._type === "ScalarString") {
+        stack.push(pokaMakeScalarBoolean(a.value === b.value));
     }
     else {
         throw "NotImplemented";
