@@ -26,7 +26,7 @@ function vectorDoubleShow(a: VectorDouble): string {
   return "[" + a.values.map((v) => v.toFixed(2)).join(" ") + "]";
 }
 
-function vectorDoubleNthColumn(a: VectorDouble, n: number): VectorDouble {
+function vectorDoubleNthCol(a: VectorDouble, n: number): VectorDouble {
   if (a.countPages !== 1) {
     throw "NotImplemented";
   }
@@ -63,7 +63,7 @@ function vectorDoubleAddVector(a: VectorDouble, b: VectorDouble): VectorDouble {
   return vectorDoubleMake(a.countPages, a.countCols, a.countRows, values2);
 }
 
-function vectorDoubleColSum(a: VectorDouble): VectorDouble {
+function vectorDoubleSumCols(a: VectorDouble): VectorDouble {
   const values2: number[] = [];
 
   for (let i = 0; i < a.countPages; i++) {
@@ -129,6 +129,23 @@ function vectorDoubleCatCols(values: VectorDouble[]): VectorDouble {
 
 function vectorDoubleSum(a: VectorDouble): number {
   return a.values.reduce((a, b) => a + b);
+}
+
+function vectorDoubleSortCols(a: VectorDouble): VectorDouble {
+  const values2: number[] = [];
+
+  for (let i = 0; i < a.countPages; i++) {
+    for (let j = 0; j < a.countCols; j++) {
+      const column2: number[] = a.values.slice(
+        i * a.countPages * a.countCols + j * a.countRows,
+        i * a.countPages * a.countCols + j * a.countRows + a.countRows,
+      );
+      column2.sort();
+      values2.push(...column2);
+    }
+  }
+
+  return vectorDoubleMake(a.countPages, a.countCols, a.countRows, values2);
 }
 
 function vectorDoubleProd(a: VectorDouble): number {

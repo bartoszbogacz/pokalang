@@ -67,7 +67,7 @@ function wordCol(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleNthColumn(b.value, a.value)));
+    stack.push(pokaMakeVectorDouble(vectorDoubleNthCol(b.value, a.value)));
   } else if (a._type === "ScalarDouble" && b._type === "VectorString") {
     // stack.push(pokaMakeVectorDouble(vectorDoubleNthColumn(b.value, a.value)));
     throw "NotImplemented";
@@ -76,16 +76,29 @@ function wordCol(stack: PokaValue[]): void {
   }
 }
 
-function wordColSum(stack: PokaValue[]): void {
+function wordSumCols(stack: PokaValue[]): void {
   const a = stack.pop();
   if (a === undefined) {
-    throw "colSum requires one argument";
+    throw "sumCols requires one argument";
   }
 
   if (a._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleColSum(a.value)));
+    stack.push(pokaMakeVectorDouble(vectorDoubleSumCols(a.value)));
   } else {
-    stack.push(pokaMakeErrorNoImplFor([a], "colSum"));
+    stack.push(pokaMakeErrorNoImplFor([a], "sumCols"));
+  }
+}
+
+function wordSortCols(stack: PokaValue[]): void {
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "sortCols requires one argument";
+  }
+
+  if (a._type === "VectorDouble") {
+    stack.push(pokaMakeVectorDouble(vectorDoubleSortCols(a.value)));
+  } else {
+    stack.push(pokaMakeErrorNoImplFor([a], "sortCols"));
   }
 }
 
@@ -172,8 +185,9 @@ const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
   equals: wordEquals,
   cat: wordCat,
   col: wordCol,
-  colSum: wordColSum,
   sum: wordSum,
+  sumCols: wordSumCols,
+  sortCols: wordSortCols,
   split: wordSplit,
   prod: wordProd,
   toDouble: wordToDouble,
