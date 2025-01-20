@@ -22,9 +22,23 @@ function vectorStringMake(
   };
 }
 
-function vectorStringShow(value: VectorString): string {
-  return "[" + value.values.map((v) => '"' + v + '"').join(" ") + "]";
+function vectorStringShow(a: VectorString): string {
+  const page: string[] = [];
+  for (let i = 0; i < a.countPages; i++) {
+    const row: string[] = [];
+    for (let j = 0; j < a.countCols; j++) {
+      const column: string[] = [];
+      for (let k = 0; k < a.countRows; k++) {
+        const index = a.countCols * a.countRows * i + a.countRows * j + k;
+        column.push('"' + a.values[index] + '"');
+      }
+      row.push("[" + column.join(", ") + "]");
+    }
+    page.push("[" + row.join(", ") + "]");
+  }
+  return "[" + page.join(", ") + "]";
 }
+
 
 function vectorStringSplitScalar(
   value: VectorString,
@@ -49,6 +63,11 @@ function vectorStringSplitScalar(
       }
     }
   }
+
+  throw "ContinueHere: Must spill maxRowLen to next higher dimension"
+  // (1, 1, a) -> (1, maxElems, a)
+  // (1, a, b) -> (maxElems, a, b)
+  // (a, b, c) -> error
 
   return vectorStringMake(1, rows.length, maxRowLen, values2);
 }

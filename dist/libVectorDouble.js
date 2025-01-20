@@ -11,7 +11,20 @@ function vectorDoubleMake(countPages, countCols, countRows, values) {
     };
 }
 function vectorDoubleShow(a) {
-    return "[" + a.values.map((v) => v.toFixed(2)).join(" ") + "]";
+    const page = [];
+    for (let i = 0; i < a.countPages; i++) {
+        const row = [];
+        for (let j = 0; j < a.countCols; j++) {
+            const column = [];
+            for (let k = 0; k < a.countRows; k++) {
+                const index = a.countCols * a.countRows * i + a.countRows * j + k;
+                column.push(a.values[index].toFixed(2));
+            }
+            row.push("[" + column.join(", ") + "]");
+        }
+        page.push("[" + row.join(", ") + "]");
+    }
+    return "[" + page.join(", ") + "]";
 }
 function vectorDoubleNthCol(a, n) {
     if (a.countPages !== 1) {

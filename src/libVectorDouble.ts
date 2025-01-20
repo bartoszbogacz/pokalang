@@ -23,7 +23,20 @@ function vectorDoubleMake(
 }
 
 function vectorDoubleShow(a: VectorDouble): string {
-  return "[" + a.values.map((v) => v.toFixed(2)).join(" ") + "]";
+  const page: string[] = [];
+  for (let i = 0; i < a.countPages; i++) {
+    const row: string[] = [];
+    for (let j = 0; j < a.countCols; j++) {
+      const column: string[] = [];
+      for (let k = 0; k < a.countRows; k++) {
+        const index = a.countCols * a.countRows * i + a.countRows * j + k;
+        column.push((a.values[index] as number).toFixed(2));
+      }
+      row.push("[" + column.join(", ") + "]");
+    }
+    page.push("[" + row.join(", ") + "]");
+  }
+  return "[" + page.join(", ") + "]";
 }
 
 function vectorDoubleNthCol(a: VectorDouble, n: number): VectorDouble {
