@@ -27,30 +27,34 @@ function vectorStringShow(a) {
     return "[" + page.join(", ") + "]";
 }
 function vectorStringSplitScalar(value, separator) {
-    if (value.countPages > 1 || value.countCols > 1) {
-        throw "NotImplemented";
-    }
-    const rows = [];
+    const elems = [];
     for (const v of value.values) {
-        rows.push(v.split(separator));
+        elems.push(v.split(separator));
     }
-    const maxRowLen = Math.max(...rows.map((v) => v.length));
+    const maxLen = Math.max(...elems.map((v) => v.length));
     const values2 = [];
-    for (let i = 0; i < maxRowLen; i++) {
-        for (const row of rows) {
-            if (i < row.length) {
-                values2.push(row[i]);
+    for (const elem of elems) {
+        for (let i = 0; i < maxLen; i++) {
+            if (i < elem.length) {
+                values2.push(elem[i]);
             }
             else {
                 values2.push("");
             }
         }
     }
-    throw "ContinueHere: Must spill maxRowLen to next higher dimension";
-    // (1, 1, a) -> (1, maxElems, a)
-    // (1, a, b) -> (maxElems, a, b)
-    // (a, b, c) -> error
-    return vectorStringMake(1, rows.length, maxRowLen, values2);
+    if (value.countRows === 1) {
+        return vectorStringMake(1, 1, maxLen, values2);
+    }
+    else if (value.countCols === 1) {
+        return vectorStringMake(1, value.countRows, maxLen, values2);
+    }
+    else if (value.countPages === 1) {
+        return vectorStringMake(value.countCols, value.countRows, maxLen, values2);
+    }
+    else {
+        throw "No free dimension to expand split result into";
+    }
 }
 function vectorStringToDouble(value) {
     return vectorDoubleMake(value.countPages, value.countRows, value.countCols, value.values.map(parseFloat));
