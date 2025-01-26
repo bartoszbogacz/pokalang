@@ -3,17 +3,20 @@ function showValue(value) {
     if (value._type === "Error") {
         return "Error: " + value.value;
     }
+    else if (value._type === "ScalarBoolean") {
+        return value.value ? "True" : "False";
+    }
     else if (value._type === "ScalarDouble") {
         return value.value.toString();
     }
-    else if (value._type === "VectorDouble") {
-        return vectorDoubleShow(value.value);
+    else if (value._type === "MatrixDouble") {
+        return value.value.show();
     }
     else if (value._type === "ScalarString") {
         return '"' + value.value + '"';
     }
-    else if (value._type === "VectorString") {
-        return vectorStringShow(value.value);
+    else if (value._type === "MatrixString") {
+        return value.value.show();
     }
     else {
         throw "Unreachable";
@@ -35,11 +38,11 @@ function pokaMakeScalarDouble(value) {
 function pokaScalarStringMake(value) {
     return { _type: "ScalarString", value: value };
 }
-function pokaMakeVectorDouble(value) {
-    return { _type: "VectorDouble", value: value };
+function pokaMakeMatrixDouble(value) {
+    return { _type: "MatrixDouble", value: value };
 }
-function pokaMakeVectorString(value) {
-    return { _type: "VectorString", value: value };
+function pokaMakeMatrixString(value) {
+    return { _type: "MatrixString", value: value };
 }
 function pokaMakeErrorNoImplFor(values, wordName) {
     return {
@@ -149,21 +152,21 @@ function consumeList(state) {
     state.stack = origStack;
     const valuesError = [];
     const valuesScalarDouble = [];
-    const valuesVectorDouble = [];
+    const valuesMatrixDouble = [];
     const valuesScalarString = [];
-    const valuesVectorString = [];
+    const valuesMatrixString = [];
     for (const value of values) {
         if (value._type === "ScalarDouble") {
             valuesScalarDouble.push(value.value);
         }
-        else if (value._type === "VectorDouble") {
-            valuesVectorDouble.push(value.value);
+        else if (value._type === "MatrixDouble") {
+            valuesMatrixDouble.push(value.value);
         }
         else if (value._type === "ScalarString") {
             valuesScalarString.push(value.value);
         }
-        else if (value._type === "VectorString") {
-            valuesVectorString.push(value.value);
+        else if (value._type === "MatrixString") {
+            valuesMatrixString.push(value.value);
         }
         else if (value._type === "Error") {
             valuesError.push(value);
@@ -173,13 +176,13 @@ function consumeList(state) {
         }
     }
     if (valuesScalarDouble.length === values.length - valuesError.length) {
-        state.stack.push(pokaMakeVectorDouble(vectorDoubleMake(1, 1, valuesScalarDouble.length, valuesScalarDouble)));
+        state.stack.push(pokaMakeMatrixDouble(new MatrixDouble(1, valuesScalarDouble.length, valuesScalarDouble)));
     }
-    else if (valuesVectorDouble.length === values.length - valuesError.length) {
-        state.stack.push(pokaMakeVectorDouble(vectorDoubleCatCols(valuesVectorDouble)));
+    else if (valuesMatrixDouble.length === values.length - valuesError.length) {
+        state.stack.push(pokaMakeMatrixDouble(MatrixDouble.catRows(valuesMatrixDouble)));
     }
     else if (valuesScalarString.length === values.length - valuesError.length) {
-        state.stack.push(pokaMakeVectorString(vectorStringMake(1, 1, valuesScalarString.length, valuesScalarString)));
+        state.stack.push(pokaMakeMatrixString(new MatrixString(1, valuesScalarString.length, valuesScalarString)));
     }
     else {
         state.stack.push({ _type: "Error", value: "Inhomogeneous vector" });

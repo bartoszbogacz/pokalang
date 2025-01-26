@@ -13,9 +13,9 @@ interface PokaScalarDouble {
   value: number;
 }
 
-interface PokaVectorDouble {
-  _type: "VectorDouble";
-  value: VectorDouble;
+interface PokaMatrixDouble {
+  _type: "MatrixDouble";
+  value: MatrixDouble;
 }
 
 interface PokaScalarString {
@@ -23,18 +23,18 @@ interface PokaScalarString {
   value: string;
 }
 
-interface PokaVectorString {
-  _type: "VectorString";
-  value: VectorString;
+interface PokaMatrixString {
+  _type: "MatrixString";
+  value: MatrixString;
 }
 
 type PokaValue =
   | PokaError
   | PokaScalarBoolean
   | PokaScalarDouble
-  | PokaVectorDouble
+  | PokaMatrixDouble
   | PokaScalarString
-  | PokaVectorString;
+  | PokaMatrixString;
 
 interface InterpreterState {
   line: string;
@@ -45,14 +45,16 @@ interface InterpreterState {
 function showValue(value: PokaValue): string {
   if (value._type === "Error") {
     return "Error: " + value.value;
+  } else if (value._type === "ScalarBoolean") {
+    return value.value ? "True" : "False";
   } else if (value._type === "ScalarDouble") {
     return value.value.toString();
-  } else if (value._type === "VectorDouble") {
-    return vectorDoubleShow(value.value);
+  } else if (value._type === "MatrixDouble") {
+    return value.value.show();
   } else if (value._type === "ScalarString") {
     return '"' + value.value + '"';
-  } else if (value._type === "VectorString") {
-    return vectorStringShow(value.value);
+  } else if (value._type === "MatrixString") {
+    return value.value.show();
   } else {
     throw "Unreachable";
   }
@@ -78,12 +80,12 @@ function pokaScalarStringMake(value: string): PokaScalarString {
   return { _type: "ScalarString", value: value };
 }
 
-function pokaMakeVectorDouble(value: VectorDouble): PokaVectorDouble {
-  return { _type: "VectorDouble", value: value };
+function pokaMakeMatrixDouble(value: MatrixDouble): PokaMatrixDouble {
+  return { _type: "MatrixDouble", value: value };
 }
 
-function pokaMakeVectorString(value: VectorString): PokaVectorString {
-  return { _type: "VectorString", value: value };
+function pokaMakeMatrixString(value: MatrixString): PokaMatrixString {
+  return { _type: "MatrixString", value: value };
 }
 
 function pokaMakeErrorNoImplFor(
@@ -204,19 +206,19 @@ function consumeList(state: InterpreterState): void {
 
   const valuesError: PokaValue[] = [];
   const valuesScalarDouble: number[] = [];
-  const valuesVectorDouble: VectorDouble[] = [];
+  const valuesMatrixDouble: MatrixDouble[] = [];
   const valuesScalarString: string[] = [];
-  const valuesVectorString: VectorString[] = [];
+  const valuesMatrixString: MatrixString[] = [];
 
   for (const value of values) {
     if (value._type === "ScalarDouble") {
       valuesScalarDouble.push(value.value);
-    } else if (value._type === "VectorDouble") {
-      valuesVectorDouble.push(value.value);
+    } else if (value._type === "MatrixDouble") {
+      valuesMatrixDouble.push(value.value);
     } else if (value._type === "ScalarString") {
       valuesScalarString.push(value.value);
-    } else if (value._type === "VectorString") {
-      valuesVectorString.push(value.value);
+    } else if (value._type === "MatrixString") {
+      valuesMatrixString.push(value.value);
     } else if (value._type === "Error") {
       valuesError.push(value);
     } else {
@@ -226,18 +228,18 @@ function consumeList(state: InterpreterState): void {
 
   if (valuesScalarDouble.length === values.length - valuesError.length) {
     state.stack.push(
-      pokaMakeVectorDouble(
-        vectorDoubleMake(1, 1, valuesScalarDouble.length, valuesScalarDouble),
+      pokaMakeMatrixDouble(
+        new MatrixDouble(1, valuesScalarDouble.length, valuesScalarDouble),
       ),
     );
-  } else if (valuesVectorDouble.length === values.length - valuesError.length) {
+  } else if (valuesMatrixDouble.length === values.length - valuesError.length) {
     state.stack.push(
-      pokaMakeVectorDouble(vectorDoubleCatCols(valuesVectorDouble)),
+      pokaMakeMatrixDouble(MatrixDouble.catRows(valuesMatrixDouble)),
     );
   } else if (valuesScalarString.length === values.length - valuesError.length) {
     state.stack.push(
-      pokaMakeVectorString(
-        vectorStringMake(1, 1, valuesScalarString.length, valuesScalarString),
+      pokaMakeMatrixString(
+        new MatrixString(1, valuesScalarString.length, valuesScalarString),
       ),
     );
   } else {

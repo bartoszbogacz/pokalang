@@ -5,8 +5,8 @@ function wordAbs(stack: PokaValue[]): void {
   }
   if (a._type === "ScalarDouble") {
     stack.push(pokaMakeScalarDouble(Math.abs(a.value)));
-  } else if (a._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleAbs(a.value)));
+  } else if (a._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.abs()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a], "abs"));
   }
@@ -25,12 +25,10 @@ function wordAdd(stack: PokaValue[]): void {
 
   if (a._type === "ScalarDouble" && b._type === "ScalarDouble") {
     stack.push(pokaMakeScalarDouble(a.value + b.value));
-  } else if (a._type === "VectorDouble" && b._type === "ScalarDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleAddScalar(a.value, b.value)));
-  } else if (a._type === "ScalarDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleAddScalar(b.value, a.value)));
-  } else if (a._type === "VectorDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleAddVector(b.value, a.value)));
+  } else if (a._type === "MatrixDouble" && b._type === "ScalarDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.addScalar(b.value)));
+  } else if (a._type === "MatrixDouble" && b._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.addMatrix(b.value)));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a, b], "add"));
   }
@@ -62,11 +60,11 @@ function wordEquals(stack: PokaValue[]): void {
   if (a._type !== b._type) {
     stack.push(pokaMakeScalarBoolean(false));
   }
-  
+
   if (a._type === "ScalarDouble" && b._type === "ScalarDouble") {
     stack.push(pokaMakeScalarBoolean(a.value === b.value));
-  } else if (a._type === "VectorDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeScalarBoolean(vectorDoubleEquals(a.value, b.value)));
+  } else if (a._type === "MatrixDouble" && b._type === "MatrixDouble") {
+    stack.push(pokaMakeScalarBoolean(a.value.equals(b.value)));
   } else if (a._type === "ScalarString" && b._type === "ScalarString") {
     stack.push(pokaMakeScalarBoolean(a.value === b.value));
   } else {
@@ -85,10 +83,10 @@ function wordCol(stack: PokaValue[]): void {
     throw "col requires two arguments";
   }
 
-  if (a._type === "ScalarDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleNthCol(b.value, a.value)));
-  } else if (a._type === "ScalarDouble" && b._type === "VectorString") {
-    // stack.push(pokaMakeVectorDouble(vectorDoubleNthColumn(b.value, a.value)));
+  if (a._type === "ScalarDouble" && b._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(b.value.nthCol(a.value)));
+  } else if (a._type === "ScalarDouble" && b._type === "MatrixString") {
+    // stack.push(pokaMakeMatrixDouble(vectorDoubleNthColumn(b.value, a.value)));
     throw "NotImplemented";
   } else {
     stack.push(pokaMakeErrorNoImplFor([a, b], "col"));
@@ -110,8 +108,8 @@ function wordSumCols(stack: PokaValue[]): void {
     throw "sumCols requires one argument";
   }
 
-  if (a._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleSumCols(a.value)));
+  if (a._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.sumCols()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a], "sumCols"));
   }
@@ -123,8 +121,8 @@ function wordSortCols(stack: PokaValue[]): void {
     throw "sortCols requires one argument";
   }
 
-  if (a._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleSortCols(a.value)));
+  if (a._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.sortCols()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a], "sortCols"));
   }
@@ -143,22 +141,15 @@ function wordSplit(stack: PokaValue[]): void {
 
   if (separator._type === "ScalarString" && value._type === "ScalarString") {
     stack.push(
-      pokaMakeVectorString(
-        vectorStringSplitScalar(
-          vectorStringMake(1, 1, 1, [value.value]),
-          separator.value,
-        ),
+      pokaMakeMatrixString(
+        new MatrixString(1, 1, [value.value]).splitScalar(separator.value),
       ),
     );
   } else if (
     separator._type === "ScalarString" &&
-    value._type === "VectorString"
+    value._type === "MatrixString"
   ) {
-    stack.push(
-      pokaMakeVectorString(
-        vectorStringSplitScalar(value.value, separator.value),
-      ),
-    );
+    stack.push(pokaMakeMatrixString(value.value.splitScalar(separator.value)));
   } else {
     stack.push(pokaMakeErrorNoImplFor([separator, value], "split"));
   }
@@ -169,9 +160,9 @@ function wordSpreadCols(stack: PokaValue[]): void {
   if (a === undefined) {
     throw "`spreadCols` requires one argument";
   }
-  if (a._type === "VectorDouble") {
-    for (let i = 0; i < a.value.countCols; i++) {
-      stack.push(pokaMakeVectorDouble(vectorDoubleNthCol(a.value, i)));
+  if (a._type === "MatrixDouble") {
+    for (let i = 0; i < a.value.nCols(); i++) {
+      stack.push(pokaMakeMatrixDouble(a.value.nthCol(i)));
     }
   }
 }
@@ -189,12 +180,10 @@ function wordSub(stack: PokaValue[]): void {
 
   if (a._type === "ScalarDouble" && b._type === "ScalarDouble") {
     stack.push(pokaMakeScalarDouble(a.value + b.value));
-  } else if (a._type === "VectorDouble" && b._type === "ScalarDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleSubScalar(a.value, b.value)));
-  } else if (a._type === "ScalarDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleSubScalar(b.value, a.value)));
-  } else if (a._type === "VectorDouble" && b._type === "VectorDouble") {
-    stack.push(pokaMakeVectorDouble(vectorDoubleSubVector(b.value, a.value)));
+  } else if (a._type === "MatrixDouble" && b._type === "ScalarDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.subScalar(b.value)));
+  } else if (a._type === "MatrixDouble" && b._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(a.value.subMatrix(b.value)));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a, b], "sub"));
   }
@@ -207,8 +196,8 @@ function wordSum(stack: PokaValue[]): void {
     throw "`sum` requires one argument";
   }
 
-  if (a._type === "VectorDouble") {
-    stack.push(pokaMakeScalarDouble(vectorDoubleSum(a.value)));
+  if (a._type === "MatrixDouble") {
+    stack.push(pokaMakeScalarDouble(a.value.sum()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a], "sum"));
   }
@@ -221,8 +210,8 @@ function wordProd(stack: PokaValue[]): void {
     throw "`prod` requires one argument";
   }
 
-  if (a._type === "VectorDouble") {
-    stack.push(pokaMakeScalarDouble(vectorDoubleProd(a.value)));
+  if (a._type === "MatrixDouble") {
+    stack.push(pokaMakeScalarDouble(a.value.prod()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a], "prod"));
   }
@@ -237,10 +226,25 @@ function wordToDouble(stack: PokaValue[]): void {
 
   if (value._type === "ScalarString") {
     stack.push(pokaMakeScalarDouble(parseFloat(value.value)));
-  } else if (value._type === "VectorString") {
-    stack.push(pokaMakeVectorDouble(vectorStringToDouble(value.value)));
+  } else if (value._type === "MatrixString") {
+    stack.push(pokaMakeMatrixDouble(value.value.toDouble()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([value], "toDouble"));
+  }
+}
+
+function wordTranspose(stack: PokaValue[]): void {
+  const value = stack.pop();
+  if (value === undefined) {
+    throw "`transpose` requires one argument";
+  }
+
+  if (value._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(value.value.transpose()));
+  } else if (value._type === "MatrixString") {
+    throw "NotYetImplmented";
+  } else {
+    stack.push(pokaMakeErrorNoImplFor([value], "transpose"));
   }
 }
 
@@ -259,4 +263,5 @@ const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
   spreadCols: wordSpreadCols,
   prod: wordProd,
   toDouble: wordToDouble,
+  transpose: wordTranspose,
 };
