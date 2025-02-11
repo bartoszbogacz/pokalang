@@ -1,15 +1,46 @@
 "use strict";
 class MatrixString {
-    constructor(countRows, countCols, values) {
+    constructor(countCols, countRows, values) {
         if (countRows * countCols !== values.length) {
-            throw new Error("Dimension mismatch: countRows * countCols = " +
+            throw new Error("Dimension mismatch: countCols * countRows = " +
                 countRows * countCols +
                 " but values.length = " +
                 values.length);
         }
-        this.countRows = countRows;
         this.countCols = countCols;
+        this.countRows = countRows;
         this.values = values;
+    }
+    static catRows(matrices) {
+        const first = matrices[0];
+        if (first === undefined) {
+            throw new Error("Cannot concatenate an empty list of matrices.");
+        }
+        const colCount = first.countCols;
+        for (let i = 1; i < matrices.length; i++) {
+            if (matrices[i].countCols !== colCount) {
+                throw new Error("Cannot concatenate matrices with different column length.");
+            }
+        }
+        let totalRows = 0;
+        for (const mat of matrices) {
+            totalRows += mat.countRows;
+        }
+        const combinedValues = [];
+        for (const mat of matrices) {
+            combinedValues.push(...mat.values);
+        }
+        return new MatrixString(totalRows, colCount, combinedValues);
+    }
+    equals(other) {
+        if (this.values.length !== other.values.length) {
+            return false;
+        }
+        const equalValues = [];
+        for (let i = 0; i < this.values.length; i++) {
+            equalValues.push(this.values[i] === other.values[i]);
+        }
+        return equalValues.reduce((a, b) => (a === b));
     }
     show() {
         const rows = [];
@@ -40,6 +71,9 @@ class MatrixString {
             }
         }
         if (this.countCols === 1) {
+            throw "splitScalar: Splitting a column vector is NotImplemenzed";
+        }
+        if (this.countRows === 1) {
             const newValues = [];
             for (const chunk of splitted) {
                 for (let i = 0; i < maxLen; i++) {
@@ -51,10 +85,7 @@ class MatrixString {
                     }
                 }
             }
-            return new MatrixString(this.countRows, maxLen, newValues);
-        }
-        if (this.countRows === 1) {
-            throw "NotImplemented";
+            return new MatrixString(this.countCols, maxLen, newValues);
         }
         throw new Error("No free dimension to expand split result into");
     }

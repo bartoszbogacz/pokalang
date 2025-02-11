@@ -28,13 +28,19 @@ interface PokaMatrixString {
   value: MatrixString;
 }
 
+interface PokaList {
+  _type: "List";
+  value: PokaValue[];
+}
+
 type PokaValue =
   | PokaError
   | PokaScalarBoolean
   | PokaScalarDouble
   | PokaMatrixDouble
   | PokaScalarString
-  | PokaMatrixString;
+  | PokaMatrixString
+  | PokaList;
 
 interface InterpreterState {
   line: string;
@@ -42,7 +48,7 @@ interface InterpreterState {
   stack: PokaValue[];
 }
 
-function showValue(value: PokaValue): string {
+function pokaShow(value: PokaValue): string {
   if (value._type === "Error") {
     return "Error: " + value.value;
   } else if (value._type === "ScalarBoolean") {
@@ -55,6 +61,8 @@ function showValue(value: PokaValue): string {
     return '"' + value.value + '"';
   } else if (value._type === "MatrixString") {
     return value.value.show();
+  } else if (value._type === "List") {
+    return "[" + value.value.map(pokaShow).join(", ") + "]"
   } else {
     throw "Unreachable";
   }
@@ -63,7 +71,7 @@ function showValue(value: PokaValue): string {
 function showInterpreterState(state: InterpreterState): string {
   const result: string[] = [];
   for (const value of state.stack.slice().reverse()) {
-    result.push(showValue(value));
+    result.push(pokaShow(value));
   }
   return result.join("\n");
 }
@@ -88,6 +96,68 @@ function pokaMakeMatrixString(value: MatrixString): PokaMatrixString {
   return { _type: "MatrixString", value: value };
 }
 
+function pokaMakeList(values: PokaValue[]): PokaList {
+  return { _type: "List", value: values };
+}
+
+function pokaToRowVector(value: PokaList): PokaValue {
+  const scalarsDouble: number[] = [];
+  const scalarsString: string[] = [];
+
+  for (const val of value.value) {
+    if (val._type === "ScalarDouble") {
+      scalarsDouble.push(val.value);
+    } else if (val._type === "ScalarString") {
+      scalarsString.push(val.value);
+    } else {
+      throw "pokaToRowVector: Error";
+    }
+  }
+
+  if (scalarsDouble.length === value.value.length) {
+    return pokaMakeMatrixDouble(new MatrixDouble(scalarsDouble.length, 1, scalarsDouble));
+  } else if (scalarsString.length === value.value.length) {
+    return pokaMakeMatrixString(new MatrixString(scalarsString.length, 1, scalarsString));
+  } else {
+    throw "pokaToRowVector: Error";
+  }
+}
+
+function pokaToMatrix(values: PokaList): PokaValue {
+  const valuesDoubleScalar: number[] = [];
+  const valuesStringScalar: string[] = [];
+  const valuesDoubleMatrix: MatrixDouble[] = [];
+  const valuesStringMatrix: MatrixString[] = [];
+
+  for (const value of values.value) {
+    const coerced: PokaValue = value._type === "List" ? pokaToMatrix(value) : value;
+
+    if (coerced._type === "ScalarDouble") {
+      valuesDoubleScalar.push(coerced.value);
+    } else if (coerced._type === "ScalarString") {
+      valuesStringScalar.push(coerced.value);
+    } else if (coerced._type === "MatrixDouble") {
+      valuesDoubleMatrix.push(coerced.value);
+    } else if (coerced._type === "MatrixString") {
+      valuesStringMatrix.push(coerced.value);
+    } else {
+      throw "pokaToMatrix: Unsupported type: " + pokaShow(value);
+    }
+  }
+
+  if (valuesDoubleScalar.length === values.value.length) {
+    return pokaMakeMatrixDouble(new MatrixDouble(valuesDoubleScalar.length, 1, valuesDoubleScalar));
+  } else if (valuesStringScalar.length === values.value.length) {
+    return pokaMakeMatrixString(new MatrixString(valuesStringScalar.length, 1, valuesStringScalar));
+  } else if (valuesDoubleMatrix.length === values.value.length) {
+    return pokaMakeMatrixDouble(MatrixDouble.catRows(valuesDoubleMatrix));
+  } else if (valuesStringMatrix.length === values.value.length) {
+    return pokaMakeMatrixString(MatrixString.catRows(valuesStringMatrix));
+  } else {
+    throw "pokaToMatrix: Heterogeneous List: " + pokaShow(values);
+  }
+}
+
 function pokaMakeErrorNoImplFor(
   values: PokaValue[],
   wordName: string,
@@ -101,7 +171,7 @@ function pokaMakeErrorNoImplFor(
       values
         .slice()
         .reverse()
-        .map((v) => showValue(v) + "::" + v._type)
+        .map((v) => pokaShow(v) + "::" + v._type)
         .join(" "),
   };
 }
@@ -204,56 +274,12 @@ function consumeList(state: InterpreterState): void {
 
   state.stack = origStack;
 
-  const valuesError: PokaValue[] = [];
-  const valuesScalarDouble: number[] = [];
-  const valuesMatrixDouble: MatrixDouble[] = [];
-  const valuesScalarString: string[] = [];
-  const valuesMatrixString: MatrixString[] = [];
-
-  for (const value of values) {
-    if (value._type === "ScalarDouble") {
-      valuesScalarDouble.push(value.value);
-    } else if (value._type === "MatrixDouble") {
-      valuesMatrixDouble.push(value.value);
-    } else if (value._type === "ScalarString") {
-      valuesScalarString.push(value.value);
-    } else if (value._type === "MatrixString") {
-      valuesMatrixString.push(value.value);
-    } else if (value._type === "Error") {
-      valuesError.push(value);
-    } else {
-      throw "Unreachable";
-    }
-  }
-
-  if (valuesScalarDouble.length === values.length - valuesError.length) {
-    state.stack.push(
-      pokaMakeMatrixDouble(
-        new MatrixDouble(1, valuesScalarDouble.length, valuesScalarDouble),
-      ),
-    );
-  } else if (valuesMatrixDouble.length === values.length - valuesError.length) {
-    state.stack.push(
-      pokaMakeMatrixDouble(MatrixDouble.catRows(valuesMatrixDouble)),
-    );
-  } else if (valuesScalarString.length === values.length - valuesError.length) {
-    state.stack.push(
-      pokaMakeMatrixString(
-        new MatrixString(1, valuesScalarString.length, valuesScalarString),
-      ),
-    );
-  } else {
-    state.stack.push({ _type: "Error", value: "Inhomogeneous vector" });
-  }
-
-  for (const err of valuesError) {
-    state.stack.push(err);
-  }
+  state.stack.push(pokaMakeList(values));
 }
 
 function peekIdentifier(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
-  return c >= "a" && c <= "z";
+  return c >= "a" && c <= "z" || c >= "A" && c <= "Z";
 }
 
 function consumeIdentifer(state: InterpreterState): void {

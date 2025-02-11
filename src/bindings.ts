@@ -61,12 +61,17 @@ function wordEquals(stack: PokaValue[]): void {
     stack.push(pokaMakeScalarBoolean(false));
   }
 
-  if (a._type === "ScalarDouble" && b._type === "ScalarDouble") {
-    stack.push(pokaMakeScalarBoolean(a.value === b.value));
-  } else if (a._type === "MatrixDouble" && b._type === "MatrixDouble") {
-    stack.push(pokaMakeScalarBoolean(a.value.equals(b.value)));
-  } else if (a._type === "ScalarString" && b._type === "ScalarString") {
-    stack.push(pokaMakeScalarBoolean(a.value === b.value));
+  const coercedA = a._type === "List" ? pokaToMatrix(a) : a;
+  const coercedB = b._type === "List" ? pokaToMatrix(b) : b;
+
+  if (coercedA._type === "ScalarDouble" && coercedB._type === "ScalarDouble") {
+    stack.push(pokaMakeScalarBoolean(coercedA.value === coercedB.value));
+  } else if (coercedA._type === "MatrixDouble" && coercedB._type === "MatrixDouble") {
+    stack.push(pokaMakeScalarBoolean(coercedA.value.equals(coercedB.value)));
+  } else if (coercedA._type === "ScalarString" && coercedB._type === "ScalarString") {
+    stack.push(pokaMakeScalarBoolean(coercedA.value === coercedB.value));
+  } else if (coercedA._type === "MatrixString" && coercedB._type === "MatrixString") {
+    stack.push(pokaMakeScalarBoolean(coercedA.value.equals(coercedB.value)));
   } else {
     throw "NotImplemented";
   }
@@ -121,8 +126,10 @@ function wordSortCols(stack: PokaValue[]): void {
     throw "sortCols requires one argument";
   }
 
-  if (a._type === "MatrixDouble") {
-    stack.push(pokaMakeMatrixDouble(a.value.sortCols()));
+  const coercedA = a._type === "List" ? pokaToMatrix(a) : a;
+
+  if (coercedA._type === "MatrixDouble") {
+    stack.push(pokaMakeMatrixDouble(coercedA.value.sortCols()));
   } else {
     stack.push(pokaMakeErrorNoImplFor([a], "sortCols"));
   }
@@ -155,15 +162,16 @@ function wordSplit(stack: PokaValue[]): void {
   }
 }
 
-function wordSpreadCols(stack: PokaValue[]): void {
+function wordSpread(stack: PokaValue[]): void {
   const a = stack.pop();
   if (a === undefined) {
-    throw "`spreadCols` requires one argument";
+    throw "`spread` requires one argument";
   }
-  if (a._type === "MatrixDouble") {
-    for (let i = 0; i < a.value.nCols(); i++) {
-      stack.push(pokaMakeMatrixDouble(a.value.nthCol(i)));
-    }
+  if (a._type !== "List") {
+    throw "spread requires a List";
+  }
+  for (const value of a.value) {
+    stack.push(value);
   }
 }
 
@@ -260,7 +268,7 @@ const POKA_WORDS: { [key: string]: (stack: PokaValue[]) => void } = {
   sumCols: wordSumCols,
   sortCols: wordSortCols,
   split: wordSplit,
-  spreadCols: wordSpreadCols,
+  spread: wordSpread,
   prod: wordProd,
   toDouble: wordToDouble,
   transpose: wordTranspose,

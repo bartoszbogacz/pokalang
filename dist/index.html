@@ -36,13 +36,14 @@
     </style>
   </head>
   <body>
+    <input id="input_id" type="text" placeholder="?" oninput="onInput(event)" />
+    <div id="output_preview" class="output_class"></div>
+    <div id="output_history" class="output_class"></div>
+    <pre id="poka_test_results"></pre>
     <script src="MatrixDouble.js"></script>
     <script src="MatrixString.js"></script>
     <script src="index.js"></script>
     <script src="bindings.js"></script>
     <script src="pokaTests.js"></script>
-    <input id="input_id" type="text" placeholder="?" oninput="onInput(event)" />
-    <div id="output_preview" class="output_class"></div>
-    <div id="output_history" class="output_class"></div>
   </body>
 </html>

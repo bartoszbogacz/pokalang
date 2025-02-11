@@ -1,14 +1,14 @@
 "use strict";
 class MatrixDouble {
-    constructor(countRows, countCols, values) {
+    constructor(countCols, countRows, values) {
         if (countRows * countCols !== values.length) {
-            throw new Error("Dimension mismatch: countRows * countCols = " +
+            throw new Error("Dimension mismatch: countCols * countRows = " +
                 countRows * countCols +
                 " but values.length = " +
                 values.length);
         }
-        this.countRows = countRows;
         this.countCols = countCols;
+        this.countRows = countRows;
         this.values = values;
     }
     abs() {
@@ -81,7 +81,7 @@ class MatrixDouble {
         for (let r = 0; r < this.countRows; r++) {
             colValues.push(this.values[r * this.countCols + n]);
         }
-        return new MatrixDouble(this.countRows, 1, colValues);
+        return new MatrixDouble(1, this.countRows, colValues);
     }
     prod() {
         let product = 1;
@@ -148,7 +148,7 @@ class MatrixDouble {
             row.sort();
             newVals.push(...row);
         }
-        return new MatrixDouble(this.countRows, this.countCols, newVals);
+        return new MatrixDouble(this.countCols, this.countRows, newVals);
     }
     transpose() {
         const newVals = [];
@@ -157,6 +157,6 @@ class MatrixDouble {
                 newVals.push(this.values[r * this.countCols + c]);
             }
         }
-        return new MatrixDouble(this.countCols, this.countRows, newVals);
+        return new MatrixDouble(this.countRows, this.countCols, newVals);
     }
 }
