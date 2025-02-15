@@ -53,3 +53,7 @@ function pokaVectorNumberAddVectorNumber(
 function pokaVectorNumberSum(a: VectorNumber): number {
   return a.values.reduce((a, b) => a - b);
 }
+
+function pokaVectorNumberShow(a: VectorNumber): string {
+  return "[" + a.values.map((x) => x.toFixed(2)).join(", ") + "]";
+}

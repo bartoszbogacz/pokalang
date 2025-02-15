@@ -133,15 +133,17 @@ function pokaShow(value: PokaValue): string {
   } else if (value._type === "ScalarString") {
     return '"' + value.value + '"';
   } else if (value._type === "VectorBoolean") {
-    return "Error";
+    return pokaVectorBooleanShow(value.value);
   } else if (value._type === "VectorNumber") {
-    return "Error";
+    return pokaVectorNumberShow(value.value);
   } else if (value._type === "VectorString") {
-    return "Error";
+    return pokaVectorStringShow(value.value);
+  } else if (value._type === "MatrixBoolean") {
+    return pokaMatrixBooleanShow(value.value);
   } else if (value._type === "MatrixNumber") {
-    return "Error";
+    return pokaMatrixNumberShow(value.value);
   } else if (value._type === "MatrixString") {
-    return "Error";
+    return pokaMatrixStringShow(value.value);
   } else if (value._type === "List") {
     return "[" + value.value.map(pokaShow).join(", ") + "]";
   } else {

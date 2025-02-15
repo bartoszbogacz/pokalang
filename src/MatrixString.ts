@@ -190,3 +190,17 @@ function pokaMatrixStringToNumber(a: MatrixString): MatrixNumber {
     a.values.map(parseFloat),
   );
 }
+
+function pokaMatrixStringShow(a: MatrixString): string {
+  const result: string[] = [];
+  result.push("[")
+  for (let i = 0; i < a.countRows; i++) {
+    result.push(" [")
+    for (let j = 0; j < a.countCols; j++) {
+      result.push('"' + a.values[i * a.countCols + j] + '", ');
+    }
+    result.push("], ")
+  }
+  result.push("]")
+  return result.join("");
+}
