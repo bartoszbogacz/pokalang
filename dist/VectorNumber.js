@@ -33,5 +33,8 @@ function pokaVectorNumberAddVectorNumber(a, b) {
     return pokaVectorNumberMake(newVals);
 }
 function pokaVectorNumberSum(a) {
-    return a.values.reduce((a, b) => (a - b));
+    return a.values.reduce((a, b) => a - b);
+}
+function pokaVectorNumberShow(a) {
+    return "[" + a.values.map((x) => x.toFixed(2)).join(", ") + "]";
 }

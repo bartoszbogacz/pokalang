@@ -16,7 +16,7 @@ const POKA_WORDS2 = {
         abs: pokaMatrixNumberAbs,
     },
     pokaScalarNumberAndScalarNumberToScalarBoolean: {
-        equals: (a, b) => (a === b),
+        equals: (a, b) => a === b,
     },
     pokaMatrixNumberAndScalarNumberToVectorNumber: {
         col: pokaMatrixNumberColScalarNumber,

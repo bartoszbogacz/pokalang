@@ -1,8 +1,3 @@
-interface PokaError {
-  _type: "Error";
-  value: string;
-}
-
 interface PokaScalarBoolean {
   _type: "ScalarBoolean";
   value: boolean;
@@ -54,7 +49,6 @@ interface PokaList {
 }
 
 type PokaValue =
-  | PokaError
   | PokaScalarBoolean
   | PokaScalarNumber
   | PokaScalarString
@@ -70,6 +64,7 @@ interface InterpreterState {
   line: string;
   pos: number;
   stack: PokaValue[];
+  error: string;
 }
 
 interface PokaNativeFun {
@@ -124,9 +119,7 @@ interface PokaNativeFun {
 }
 
 function pokaShow(value: PokaValue): string {
-  if (value._type === "Error") {
-    return "Error: " + value.value;
-  } else if (value._type === "ScalarBoolean") {
+  if (value._type === "ScalarBoolean") {
     return value.value ? "True" : "False";
   } else if (value._type === "ScalarNumber") {
     return value.value.toString();
@@ -156,7 +149,7 @@ function showInterpreterState(state: InterpreterState): string {
   for (const value of state.stack.slice().reverse()) {
     result.push(pokaShow(value));
   }
-  return result.join("\n");
+  return state.error + "\n" + result.join("\n");
 }
 
 function pokaMakeScalarBoolean(value: boolean): PokaScalarBoolean {
@@ -262,29 +255,6 @@ function pokaTryToMatrix(value: PokaValue): PokaValue {
   }
 }
 
-function pokaMakeErrorNoImplFor(
-  values: PokaValue[],
-  wordName: string,
-): PokaError {
-  return {
-    _type: "Error",
-    value:
-      "`" +
-      wordName +
-      "` not implemented for: " +
-      values
-        .slice()
-        .reverse()
-        .map((v) => pokaShow(v) + "::" + v._type)
-        .join(" "),
-  };
-}
-
-function consumeError(state: InterpreterState, message: string): void {
-  state.stack.push({ _type: "Error", value: message });
-  state.pos = state.line.length;
-}
-
 function peekNumber(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
   return c === "-" || (c >= "0" && c <= "9");
@@ -317,10 +287,7 @@ function consumeNumber(state: InterpreterState): void {
   const token = state.line.slice(start, state.pos);
   const value = parseFloat(token);
   if (isNaN(value)) {
-    state.stack.push({
-      _type: "Error",
-      value: "`" + token + "` is not a number.",
-    });
+    throw "`" + token + "` is not a number.";
   } else {
     state.stack.push({ _type: "ScalarNumber", value: value });
   }
@@ -338,8 +305,7 @@ function consumeString(state: InterpreterState): void {
   const start = state.pos;
   while (state.line.charAt(state.pos) !== '"') {
     if (state.pos >= state.line.length) {
-      state.stack.push({ _type: "Error", value: "Unterminated string" });
-      return;
+      throw "Unterminated string";
     }
     state.pos++;
   }
@@ -369,7 +335,7 @@ function consumeList(state: InterpreterState): void {
     }
     const value = state.stack.pop();
     if (value === undefined) {
-      values.push({ _type: "Error", value: "Stack empty in fork expression" });
+      throw "Stack empty in fork expression";
     } else {
       values.push(value);
     }
@@ -421,8 +387,7 @@ function consumeLiteral(state: InterpreterState, literal: string): void {
   for (let i = 0; i < literal.length; i++) {
     const c = state.line.charAt(state.pos++);
     if (c !== literal.charAt(i)) {
-      consumeError(state, "Expected: " + literal);
-      return;
+      throw "Expected: " + literal;
     }
   }
   console.log("Literal: " + literal);
@@ -450,7 +415,7 @@ function consumeExpression(state: InterpreterState): void {
   } else if (peekList(state)) {
     consumeList(state);
   } else {
-    consumeError(state, "Expected expression");
+    throw "Expected expression";
   }
   consumeWhitespace(state);
 }
@@ -460,11 +425,19 @@ function run(line: string): InterpreterState {
     line: line,
     pos: 0,
     stack: [],
+    error: "",
   };
 
-  while (!peekEOL(state)) {
-    consumeExpression(state);
+  let error: string = "";
+  try {
+    while (!peekEOL(state)) {
+      consumeExpression(state);
+    }
+  } catch (exc) {
+    error = "" + exc;
   }
+
+  state.error = error;
 
   return state;
 }

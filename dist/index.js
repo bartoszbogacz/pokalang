@@ -1,9 +1,6 @@
 "use strict";
 function pokaShow(value) {
-    if (value._type === "Error") {
-        return "Error: " + value.value;
-    }
-    else if (value._type === "ScalarBoolean") {
+    if (value._type === "ScalarBoolean") {
         return value.value ? "True" : "False";
     }
     else if (value._type === "ScalarNumber") {
@@ -13,19 +10,22 @@ function pokaShow(value) {
         return '"' + value.value + '"';
     }
     else if (value._type === "VectorBoolean") {
-        return "Error";
+        return pokaVectorBooleanShow(value.value);
     }
     else if (value._type === "VectorNumber") {
-        return "Error";
+        return pokaVectorNumberShow(value.value);
     }
     else if (value._type === "VectorString") {
-        return "Error";
+        return pokaVectorStringShow(value.value);
+    }
+    else if (value._type === "MatrixBoolean") {
+        return pokaMatrixBooleanShow(value.value);
     }
     else if (value._type === "MatrixNumber") {
-        return "Error";
+        return pokaMatrixNumberShow(value.value);
     }
     else if (value._type === "MatrixString") {
-        return "Error";
+        return pokaMatrixStringShow(value.value);
     }
     else if (value._type === "List") {
         return "[" + value.value.map(pokaShow).join(", ") + "]";
@@ -39,7 +39,7 @@ function showInterpreterState(state) {
     for (const value of state.stack.slice().reverse()) {
         result.push(pokaShow(value));
     }
-    return result.join("\n");
+    return state.error + "\n" + result.join("\n");
 }
 function pokaMakeScalarBoolean(value) {
     return { _type: "ScalarBoolean", value: value };
@@ -132,23 +132,6 @@ function pokaTryToMatrix(value) {
         return value;
     }
 }
-function pokaMakeErrorNoImplFor(values, wordName) {
-    return {
-        _type: "Error",
-        value: "`" +
-            wordName +
-            "` not implemented for: " +
-            values
-                .slice()
-                .reverse()
-                .map((v) => pokaShow(v) + "::" + v._type)
-                .join(" "),
-    };
-}
-function consumeError(state, message) {
-    state.stack.push({ _type: "Error", value: message });
-    state.pos = state.line.length;
-}
 function peekNumber(state) {
     const c = state.line.charAt(state.pos);
     return c === "-" || (c >= "0" && c <= "9");
@@ -182,10 +165,7 @@ function consumeNumber(state) {
     const token = state.line.slice(start, state.pos);
     const value = parseFloat(token);
     if (isNaN(value)) {
-        state.stack.push({
-            _type: "Error",
-            value: "`" + token + "` is not a number.",
-        });
+        throw "`" + token + "` is not a number.";
     }
     else {
         state.stack.push({ _type: "ScalarNumber", value: value });
@@ -202,8 +182,7 @@ function consumeString(state) {
     const start = state.pos;
     while (state.line.charAt(state.pos) !== '"') {
         if (state.pos >= state.line.length) {
-            state.stack.push({ _type: "Error", value: "Unterminated string" });
-            return;
+            throw "Unterminated string";
         }
         state.pos++;
     }
@@ -230,7 +209,7 @@ function consumeList(state) {
         }
         const value = state.stack.pop();
         if (value === undefined) {
-            values.push({ _type: "Error", value: "Stack empty in fork expression" });
+            throw "Stack empty in fork expression";
         }
         else {
             values.push(value);
@@ -276,8 +255,7 @@ function consumeLiteral(state, literal) {
     for (let i = 0; i < literal.length; i++) {
         const c = state.line.charAt(state.pos++);
         if (c !== literal.charAt(i)) {
-            consumeError(state, "Expected: " + literal);
-            return;
+            throw "Expected: " + literal;
         }
     }
     console.log("Literal: " + literal);
@@ -306,7 +284,7 @@ function consumeExpression(state) {
         consumeList(state);
     }
     else {
-        consumeError(state, "Expected expression");
+        throw "Expected expression";
     }
     consumeWhitespace(state);
 }
@@ -315,10 +293,18 @@ function run(line) {
         line: line,
         pos: 0,
         stack: [],
+        error: "",
     };
-    while (!peekEOL(state)) {
-        consumeExpression(state);
+    let error = "";
+    try {
+        while (!peekEOL(state)) {
+            consumeExpression(state);
+        }
     }
+    catch (exc) {
+        error = "" + exc;
+    }
+    state.error = error;
     return state;
 }
 function onInput(ev) {

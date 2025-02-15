@@ -15,3 +15,6 @@ function pokaVectorStringEqualsVectorString(a, b) {
     }
     return { _type: "VectorBoolean", values: r };
 }
+function pokaVectorStringShow(a) {
+    return "[" + a.values.map((x) => '"' + x + '"').join(", ") + "]";
+}

@@ -160,3 +160,16 @@ function pokaMatrixStringEqualsMatrixString(a, b) {
 function pokaMatrixStringToNumber(a) {
     return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(parseFloat));
 }
+function pokaMatrixStringShow(a) {
+    const result = [];
+    result.push("[");
+    for (let i = 0; i < a.countRows; i++) {
+        result.push(" [");
+        for (let j = 0; j < a.countCols; j++) {
+            result.push('"' + a.values[i * a.countCols + j] + '", ');
+        }
+        result.push("], ");
+    }
+    result.push("]");
+    return result.join("");
+}

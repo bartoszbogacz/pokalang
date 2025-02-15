@@ -302,5 +302,18 @@ function pokaMatrixNumberAddMatrixNumber(a, b) {
     return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }
 function pokaMatrixNumberSum(a) {
-    return a.values.reduce((a, b) => (a + b));
+    return a.values.reduce((a, b) => a + b);
+}
+function pokaMatrixNumberShow(a) {
+    const result = [];
+    result.push("[");
+    for (let i = 0; i < a.countRows; i++) {
+        result.push(" [");
+        for (let j = 0; j < a.countCols; j++) {
+            result.push(a.values[i * a.countCols + j].toFixed(2) + ", ");
+        }
+        result.push("], ");
+    }
+    result.push("]");
+    return result.join("");
 }

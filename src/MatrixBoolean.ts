@@ -27,14 +27,14 @@ function pokaMatrixBooleanAll(a: MatrixBoolean): boolean {
 
 function pokaMatrixBooleanShow(a: MatrixBoolean): string {
   const result: string[] = [];
-  result.push("[")
+  result.push("[");
   for (let i = 0; i < a.countRows; i++) {
-    result.push(" [")
+    result.push(" [");
     for (let j = 0; j < a.countCols; j++) {
       result.push((a.values[i * a.countCols + j] ? "X" : ".") + ", ");
     }
-    result.push("], ")
+    result.push("], ");
   }
-  result.push("]")
+  result.push("]");
   return result.join("");
 }
