@@ -88,9 +88,21 @@ interface PokaNativeFun {
   pokaMatrixNumberToMatrixNumber: {
     [key: string]: (a: MatrixNumber) => MatrixNumber;
   };
+  pokaMatrixNumberToScalarNumber: {
+    [key: string]: (a: MatrixNumber) => number;
+  }
   pokaScalarStringAndScalarStringToVectorString: {
     [key: string]: (a: string, b: string) => VectorString;
   };
+  pokaVectorNumberToScalarNumber: {
+    [key: string]: (a: VectorNumber) => number;
+  };
+  pokaVectorNumberToVectorNumber: {
+    [key: string]: (a: VectorNumber) => VectorNumber;
+  };
+  pokaScalarNumberAndScalarNumberToScalarBoolean: {
+    [key: string]: (a: number, b: number) => boolean;
+  }
   pokaVectorStringAndScalarStringToMatrixString: {
     [key: string]: (a: VectorString, b: string) => MatrixString;
   };

@@ -288,3 +288,19 @@ function pokaMatrixNumberSubMatrixNumber(a, b) {
     }
     return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }
+function pokaMatrixNumberAbs(a) {
+    return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(Math.abs));
+}
+function pokaMatrixNumberAddMatrixNumber(a, b) {
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+        throw new Error("Shapes do not match for subMatrix.");
+    }
+    const newVals = [];
+    for (let i = 0; i < a.values.length; i++) {
+        newVals.push(a.values[i] + b.values[i]);
+    }
+    return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
+}
+function pokaMatrixNumberSum(a) {
+    return a.values.reduce((a, b) => (a + b));
+}
