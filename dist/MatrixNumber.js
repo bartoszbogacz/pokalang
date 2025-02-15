@@ -195,7 +195,12 @@ function pokaMatrixNumberMake(countRows, countCols, values) {
     if (countRows * countCols !== values.length) {
         throw "Shape mismatch";
     }
-    return { _type: "MatrixNumber", countRows: countRows, countCols: countCols, values: values };
+    return {
+        _type: "MatrixNumber",
+        countRows: countRows,
+        countCols: countCols,
+        values: values,
+    };
 }
 function pokaMatrixNumberColScalarNumber(matA, n) {
     if (n < 0) {
@@ -225,7 +230,12 @@ function pokaVectorNumberCat(values) {
     for (const mat of values) {
         combinedValues.push(...mat.values);
     }
-    return { _type: "MatrixNumber", countRows: values.length, countCols: firstLen, values: combinedValues };
+    return {
+        _type: "MatrixNumber",
+        countRows: values.length,
+        countCols: firstLen,
+        values: combinedValues,
+    };
 }
 function pokaMatrixNumberEqualsMatrixNumber(a, b) {
     if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
@@ -235,7 +245,12 @@ function pokaMatrixNumberEqualsMatrixNumber(a, b) {
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
-    return { _type: "MatrixBoolean", countRows: a.countRows, countCols: a.countCols, values: r };
+    return {
+        _type: "MatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: r,
+    };
 }
 function pokaMatrixNumberTranspose(a) {
     const newVals = [];

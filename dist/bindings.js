@@ -1,20 +1,44 @@
 "use strict";
 const POKA_WORDS2 = {
-    pokaVectorBooleanToScalarBoolean: { "all": pokaVectorBooleanAll },
-    pokaMatrixBooleanToScalarBoolean: { "all": pokaMatrixBooleanAll },
-    pokaMatrixStringToMatrixNumber: { "toNumber": pokaMatrixStringToNumber },
-    pokaMatrixNumberToMatrixNumber: { "sortRows": pokaMatrixNumberSortRows, "transpose": pokaMatrixNumberTranspose, "sortCols": pokaMatrixNumberSortCols },
-    pokaMatrixNumberAndScalarNumberToVectorNumber: { "col": pokaMatrixNumberColScalarNumber },
-    pokaScalarStringAndScalarStringToVectorString: { "split": pokaScalarStringSplitScalarString },
-    pokaVectorStringAndScalarStringToMatrixString: { "split": pokaVectorStringSplitScalarString },
-    pokaMatrixNumberAndMatrixNumberToMatrixBoolean: { "equals": pokaMatrixNumberEqualsMatrixNumber },
-    pokaVectorStringAndVectorStringToVectorBoolean: { "equals": pokaVectorStringEqualsVectorString },
-    pokaMatrixStringAndMatrixStringToMatrixBoolean: { "equals": pokaMatrixStringEqualsMatrixString },
+    pokaVectorBooleanToScalarBoolean: { all: pokaVectorBooleanAll },
+    pokaMatrixBooleanToScalarBoolean: { all: pokaMatrixBooleanAll },
+    pokaMatrixStringToMatrixNumber: { toNumber: pokaMatrixStringToNumber },
+    pokaMatrixNumberToMatrixNumber: {
+        sortRows: pokaMatrixNumberSortRows,
+        transpose: pokaMatrixNumberTranspose,
+        sortCols: pokaMatrixNumberSortCols,
+    },
+    pokaMatrixNumberAndScalarNumberToVectorNumber: {
+        col: pokaMatrixNumberColScalarNumber,
+    },
+    pokaScalarStringAndScalarStringToVectorString: {
+        split: pokaScalarStringSplitScalarString,
+    },
+    pokaVectorStringAndScalarStringToMatrixString: {
+        split: pokaVectorStringSplitScalarString,
+    },
+    pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
+        equals: pokaMatrixNumberEqualsMatrixNumber,
+    },
+    pokaVectorStringAndVectorStringToVectorBoolean: {
+        equals: pokaVectorStringEqualsVectorString,
+    },
+    pokaMatrixStringAndMatrixStringToMatrixBoolean: {
+        equals: pokaMatrixStringEqualsMatrixString,
+    },
 };
 function pokaDispatch(stack, word) {
     const arg1 = stack.pop();
     if (arg1 === undefined) {
         throw "Stack underflow";
+    }
+    if (word === "spread") {
+        if (arg1._type === "List") {
+            for (const v of arg1.value) {
+                stack.push(v);
+            }
+            return;
+        }
     }
     const vector1 = pokaTryToVector(arg1);
     if (vector1._type === "VectorBoolean") {

@@ -87,7 +87,12 @@ function pokaMatrixStringMake(countRows, countCols, values) {
     if (countRows * countCols !== values.length) {
         throw "Shape mismatch";
     }
-    return { _type: "MatrixString", countRows: countRows, countCols: countCols, values: values };
+    return {
+        _type: "MatrixString",
+        countRows: countRows,
+        countCols: countCols,
+        values: values,
+    };
 }
 function pokaVectorStringSplitScalarString(vecA, separator) {
     const splitted = vecA.values.map((val) => val.split(separator));
@@ -108,7 +113,12 @@ function pokaVectorStringSplitScalarString(vecA, separator) {
             }
         }
     }
-    return { _type: "MatrixString", countRows: vecA.values.length, countCols: maxLen, values: newValues };
+    return {
+        _type: "MatrixString",
+        countRows: vecA.values.length,
+        countCols: maxLen,
+        values: newValues,
+    };
 }
 function pokaVectorStringCat(values) {
     const first = values[0];
@@ -125,7 +135,12 @@ function pokaVectorStringCat(values) {
     for (const mat of values) {
         combinedValues.push(...mat.values);
     }
-    return { _type: "MatrixString", countRows: values.length, countCols: firstLen, values: combinedValues };
+    return {
+        _type: "MatrixString",
+        countRows: values.length,
+        countCols: firstLen,
+        values: combinedValues,
+    };
 }
 function pokaMatrixStringEqualsMatrixString(a, b) {
     if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
@@ -135,7 +150,12 @@ function pokaMatrixStringEqualsMatrixString(a, b) {
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
-    return { _type: "MatrixBoolean", countRows: a.countRows, countCols: a.countCols, values: r };
+    return {
+        _type: "MatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: r,
+    };
 }
 function pokaMatrixStringToNumber(a) {
     return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(parseFloat));

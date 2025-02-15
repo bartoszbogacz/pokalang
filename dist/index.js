@@ -89,10 +89,16 @@ function pokaTryToVector(value) {
         }
     }
     if (valuesScalarNumber.length === value.value.length) {
-        return pokaMakeVectorNumber({ _type: "VectorNumber", values: valuesScalarNumber });
+        return pokaMakeVectorNumber({
+            _type: "VectorNumber",
+            values: valuesScalarNumber,
+        });
     }
     else if (valuesScalarString.length === value.value.length) {
-        return pokaMakeVectorString({ _type: "VectorString", values: valuesScalarString });
+        return pokaMakeVectorString({
+            _type: "VectorString",
+            values: valuesScalarString,
+        });
     }
     else {
         return value;
@@ -236,7 +242,7 @@ function consumeList(state) {
 }
 function peekIdentifier(state) {
     const c = state.line.charAt(state.pos);
-    return c >= "a" && c <= "z" || c >= "A" && c <= "Z";
+    return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
 }
 function consumeIdentifer(state) {
     const start = state.pos;

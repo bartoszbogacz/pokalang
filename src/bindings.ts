@@ -33,6 +33,15 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
     throw "Stack underflow";
   }
 
+  if (word === "spread") {
+    if (arg1._type === "List") {
+      for (const v of arg1.value) {
+        stack.push(v);
+      }
+      return;
+    }
+  }
+
   const vector1 = pokaTryToVector(arg1);
 
   if (vector1._type === "VectorBoolean") {
