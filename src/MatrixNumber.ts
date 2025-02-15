@@ -338,5 +338,5 @@ function pokaMatrixNumberAddMatrixNumber(
 }
 
 function pokaMatrixNumberSum(a: MatrixNumber): number {
-  return a.values.reduce((a, b) => (a + b));
+  return a.values.reduce((a, b) => a + b);
 }

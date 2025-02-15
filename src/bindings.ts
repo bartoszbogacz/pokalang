@@ -15,7 +15,7 @@ const POKA_WORDS2: PokaNativeFun = {
     abs: pokaMatrixNumberAbs,
   },
   pokaScalarNumberAndScalarNumberToScalarBoolean: {
-    equals: (a: number, b: number) => (a === b),
+    equals: (a: number, b: number) => a === b,
   },
   pokaMatrixNumberAndScalarNumberToVectorNumber: {
     col: pokaMatrixNumberColScalarNumber,
@@ -138,7 +138,8 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
   }
 
   if (arg2._type === "ScalarNumber" && arg1._type === "ScalarNumber") {
-    const fun = POKA_WORDS2.pokaScalarNumberAndScalarNumberToScalarBoolean[word];
+    const fun =
+      POKA_WORDS2.pokaScalarNumberAndScalarNumberToScalarBoolean[word];
     if (fun !== undefined) {
       const res = fun(arg2.value, arg1.value);
       stack.push(pokaMakeScalarBoolean(res));

@@ -90,7 +90,7 @@ interface PokaNativeFun {
   };
   pokaMatrixNumberToScalarNumber: {
     [key: string]: (a: MatrixNumber) => number;
-  }
+  };
   pokaScalarStringAndScalarStringToVectorString: {
     [key: string]: (a: string, b: string) => VectorString;
   };
@@ -102,7 +102,7 @@ interface PokaNativeFun {
   };
   pokaScalarNumberAndScalarNumberToScalarBoolean: {
     [key: string]: (a: number, b: number) => boolean;
-  }
+  };
   pokaVectorStringAndScalarStringToMatrixString: {
     [key: string]: (a: VectorString, b: string) => MatrixString;
   };
