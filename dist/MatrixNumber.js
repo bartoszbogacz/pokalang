@@ -1,3 +1,5 @@
+"use strict";
+/*
 class MatrixDouble {
   private readonly countCols: number;
   private readonly countRows: number;
@@ -187,4 +189,77 @@ class MatrixDouble {
     }
     return new MatrixDouble(this.countRows, this.countCols, newVals);
   }
+}
+*/
+function pokaMatrixNumberMake(countRows, countCols, values) {
+    if (countRows * countCols !== values.length) {
+        throw "Shape mismatch";
+    }
+    return { _type: "MatrixNumber", countRows: countRows, countCols: countCols, values: values };
+}
+function pokaMatrixNumberColScalarNumber(matA, n) {
+    if (n < 0) {
+        n = matA.countCols + n;
+    }
+    if (n < 0 || n >= matA.countCols) {
+        throw new Error("Column index out of range: " + n);
+    }
+    const colValues = [];
+    for (let r = 0; r < matA.countRows; r++) {
+        colValues.push(matA.values[r * matA.countCols + n]);
+    }
+    return pokaVectorNumberMake(colValues);
+}
+function pokaVectorNumberCat(values) {
+    const first = values[0];
+    if (first === undefined) {
+        throw new Error("Cannot concatenate an empty list of vectors.");
+    }
+    const firstLen = first.values.length;
+    for (let i = 1; i < values.length; i++) {
+        if (values[i].values.length !== firstLen) {
+            throw new Error("Cannot concatenate vectors with different lengths.");
+        }
+    }
+    const combinedValues = [];
+    for (const mat of values) {
+        combinedValues.push(...mat.values);
+    }
+    return { _type: "MatrixNumber", countRows: values.length, countCols: firstLen, values: combinedValues };
+}
+function pokaMatrixNumberEqualsMatrixNumber(a, b) {
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+        throw "Shape mismatch";
+    }
+    const r = [];
+    for (let i = 0; i < a.values.length; i++) {
+        r.push(a.values[i] === b.values[i]);
+    }
+    return { _type: "MatrixBoolean", countRows: a.countRows, countCols: a.countCols, values: r };
+}
+function pokaMatrixNumberTranspose(a) {
+    const newVals = [];
+    for (let c = 0; c < a.countCols; c++) {
+        for (let r = 0; r < a.countRows; r++) {
+            newVals.push(a.values[r * a.countCols + c]);
+        }
+    }
+    return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
+}
+function pokaMatrixNumberSortRows(a) {
+    const newVals = [];
+    for (let r = 0; r < a.countRows; r++) {
+        const start = r * a.countCols;
+        const end = start + a.countCols;
+        const row = a.values.slice(start, end);
+        row.sort();
+        newVals.push(...row);
+    }
+    return pokaMatrixNumberMake(a.countCols, a.countRows, newVals);
+}
+function pokaMatrixNumberSortCols(a) {
+    a = pokaMatrixNumberTranspose(a);
+    a = pokaMatrixNumberSortRows(a);
+    a = pokaMatrixNumberTranspose(a);
+    return a;
 }

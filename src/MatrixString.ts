@@ -1,4 +1,5 @@
-class MatrixString {
+/* 
+class _MatrixString {
   private readonly countCols: number;
   private readonly countRows: number;
   private readonly values: string[];
@@ -17,7 +18,7 @@ class MatrixString {
     this.values = values;
   }
 
-  public static catRows(matrices: MatrixString[]): MatrixString {
+  public static catRows(matrices: _MatrixString[]): _MatrixString {
     const first = matrices[0];
     if (first === undefined) {
       throw new Error("Cannot concatenate an empty list of matrices.");
@@ -25,7 +26,7 @@ class MatrixString {
     const colCount = first.countCols;
 
     for (let i = 1; i < matrices.length; i++) {
-      if ((matrices[i] as MatrixString).countCols !== colCount) {
+      if ((matrices[i] as _MatrixString).countCols !== colCount) {
         throw new Error(
           "Cannot concatenate matrices with different column length.",
         );
@@ -42,10 +43,10 @@ class MatrixString {
       combinedValues.push(...mat.values);
     }
 
-    return new MatrixString(totalRows, colCount, combinedValues);
+    return new _MatrixString(totalRows, colCount, combinedValues);
   }
 
-  public equals(other: MatrixString): boolean {
+  public equals(other: _MatrixString): boolean {
     if (this.values.length !== other.values.length) {
       return false;
     }
@@ -71,45 +72,6 @@ class MatrixString {
     return "[" + rows.join(", ") + "]";
   }
 
-  public splitScalar(separator: string): MatrixString {
-    if (this.countRows === 1 && this.countCols === 1) {
-      const value = this.values[0] as string;
-      const newValues: string[] = [];
-      for (const newVal of value.split(separator)) {
-        newValues.push(newVal);
-      }
-      return new MatrixString(newValues.length, 1, newValues);
-    }
-
-    const splitted: string[][] = this.values.map((val) => val.split(separator));
-
-    let maxLen = 0;
-    for (const arr of splitted) {
-      if (arr.length > maxLen) {
-        maxLen = arr.length;
-      }
-    }
-
-    if (this.countCols === 1) {
-      throw "splitScalar: Splitting a column vector is NotImplemenzed"
-    }
-
-    if (this.countRows === 1) {
-      const newValues: string[] = [];
-      for (const chunk of splitted) {
-        for (let i = 0; i < maxLen; i++) {
-          if (i < chunk.length) {
-            newValues.push(chunk[i] as string);
-          } else {
-            newValues.push("");
-          }
-        }
-      }
-      return new MatrixString(this.countCols, maxLen, newValues);
-    }
-
-    throw new Error("No free dimension to expand split result into");
-  }
 
   public toDouble(): MatrixDouble {
     return new MatrixDouble(
@@ -118,4 +80,113 @@ class MatrixString {
       this.values.map(parseFloat),
     );
   }
+}
+*/
+
+interface MatrixString {
+  _type: "MatrixString";
+  values: string[];
+  countRows: number;
+  countCols: number;
+}
+
+function pokaMatrixStringMake(
+  countRows: number,
+  countCols: number,
+  values: string[],
+): MatrixString {
+  if (countRows * countCols !== values.length) {
+    throw "Shape mismatch";
+  }
+  return {
+    _type: "MatrixString",
+    countRows: countRows,
+    countCols: countCols,
+    values: values,
+  };
+}
+
+function pokaVectorStringSplitScalarString(
+  vecA: VectorString,
+  separator: string,
+): MatrixString {
+  const splitted: string[][] = vecA.values.map((val) => val.split(separator));
+
+  let maxLen = 0;
+  for (const arr of splitted) {
+    if (arr.length > maxLen) {
+      maxLen = arr.length;
+    }
+  }
+
+  const newValues: string[] = [];
+  for (const chunk of splitted) {
+    for (let i = 0; i < maxLen; i++) {
+      if (i < chunk.length) {
+        newValues.push(chunk[i] as string);
+      } else {
+        newValues.push("");
+      }
+    }
+  }
+
+  return {
+    _type: "MatrixString",
+    countRows: vecA.values.length,
+    countCols: maxLen,
+    values: newValues,
+  };
+}
+
+function pokaVectorStringCat(values: VectorString[]): MatrixString {
+  const first = values[0];
+  if (first === undefined) {
+    throw new Error("Cannot concatenate an empty list of vectors.");
+  }
+  const firstLen = first.values.length;
+
+  for (let i = 1; i < values.length; i++) {
+    if ((values[i] as VectorString).values.length !== firstLen) {
+      throw new Error("Cannot concatenate vectors with different lengths.");
+    }
+  }
+
+  const combinedValues: string[] = [];
+  for (const mat of values) {
+    combinedValues.push(...mat.values);
+  }
+
+  return {
+    _type: "MatrixString",
+    countRows: values.length,
+    countCols: firstLen,
+    values: combinedValues,
+  };
+}
+
+function pokaMatrixStringEqualsMatrixString(
+  a: MatrixString,
+  b: MatrixString,
+): MatrixBoolean {
+  if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+    throw "Shape mismatch";
+  }
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push(a.values[i] === b.values[i]);
+  }
+  return {
+    _type: "MatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: r,
+  };
+}
+
+function pokaMatrixStringToNumber(a: MatrixString): MatrixNumber {
+  return pokaMatrixNumberMake(
+    a.countRows,
+    a.countCols,
+    a.values.map(parseFloat),
+  );
 }

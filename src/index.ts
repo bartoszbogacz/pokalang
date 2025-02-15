@@ -8,19 +8,39 @@ interface PokaScalarBoolean {
   value: boolean;
 }
 
-interface PokaScalarDouble {
-  _type: "ScalarDouble";
+interface PokaScalarNumber {
+  _type: "ScalarNumber";
   value: number;
-}
-
-interface PokaMatrixDouble {
-  _type: "MatrixDouble";
-  value: MatrixDouble;
 }
 
 interface PokaScalarString {
   _type: "ScalarString";
   value: string;
+}
+
+interface PokaVectorBoolean {
+  _type: "VectorBoolean";
+  value: VectorBoolean;
+}
+
+interface PokaVectorNumber {
+  _type: "VectorNumber";
+  value: VectorNumber;
+}
+
+interface PokaVectorString {
+  _type: "VectorString";
+  value: VectorString;
+}
+
+interface PokaMatrixBoolean {
+  _type: "MatrixBoolean";
+  value: MatrixBoolean;
+}
+
+interface PokaMatrixNumber {
+  _type: "MatrixNumber";
+  value: MatrixNumber;
 }
 
 interface PokaMatrixString {
@@ -36,9 +56,13 @@ interface PokaList {
 type PokaValue =
   | PokaError
   | PokaScalarBoolean
-  | PokaScalarDouble
-  | PokaMatrixDouble
+  | PokaScalarNumber
   | PokaScalarString
+  | PokaVectorBoolean
+  | PokaVectorNumber
+  | PokaVectorString
+  | PokaMatrixBoolean
+  | PokaMatrixNumber
   | PokaMatrixString
   | PokaList;
 
@@ -48,21 +72,60 @@ interface InterpreterState {
   stack: PokaValue[];
 }
 
+interface PokaNativeFun {
+  pokaVectorBooleanToScalarBoolean: {
+    [key: string]: (a: VectorBoolean) => boolean;
+  };
+  pokaMatrixBooleanToScalarBoolean: {
+    [key: string]: (a: MatrixBoolean) => boolean;
+  };
+  pokaMatrixStringToMatrixNumber: {
+    [key: string]: (a: MatrixString) => MatrixNumber;
+  };
+  pokaMatrixNumberAndScalarNumberToVectorNumber: {
+    [key: string]: (a: MatrixNumber, b: number) => VectorNumber;
+  };
+  pokaMatrixNumberToMatrixNumber: {
+    [key: string]: (a: MatrixNumber) => MatrixNumber;
+  };
+  pokaScalarStringAndScalarStringToVectorString: {
+    [key: string]: (a: string, b: string) => VectorString;
+  };
+  pokaVectorStringAndScalarStringToMatrixString: {
+    [key: string]: (a: VectorString, b: string) => MatrixString;
+  };
+  pokaVectorStringAndVectorStringToVectorBoolean: {
+    [key: string]: (a: VectorString, b: VectorString) => VectorBoolean;
+  };
+  pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
+    [key: string]: (a: MatrixNumber, b: MatrixNumber) => MatrixBoolean;
+  };
+  pokaMatrixStringAndMatrixStringToMatrixBoolean: {
+    [key: string]: (a: MatrixString, b: MatrixString) => MatrixBoolean;
+  };
+}
+
 function pokaShow(value: PokaValue): string {
   if (value._type === "Error") {
     return "Error: " + value.value;
   } else if (value._type === "ScalarBoolean") {
     return value.value ? "True" : "False";
-  } else if (value._type === "ScalarDouble") {
+  } else if (value._type === "ScalarNumber") {
     return value.value.toString();
-  } else if (value._type === "MatrixDouble") {
-    return value.value.show();
   } else if (value._type === "ScalarString") {
     return '"' + value.value + '"';
+  } else if (value._type === "VectorBoolean") {
+    return "Error";
+  } else if (value._type === "VectorNumber") {
+    return "Error";
+  } else if (value._type === "VectorString") {
+    return "Error";
+  } else if (value._type === "MatrixNumber") {
+    return "Error";
   } else if (value._type === "MatrixString") {
-    return value.value.show();
+    return "Error";
   } else if (value._type === "List") {
-    return "[" + value.value.map(pokaShow).join(", ") + "]"
+    return "[" + value.value.map(pokaShow).join(", ") + "]";
   } else {
     throw "Unreachable";
   }
@@ -80,16 +143,32 @@ function pokaMakeScalarBoolean(value: boolean): PokaScalarBoolean {
   return { _type: "ScalarBoolean", value: value };
 }
 
-function pokaMakeScalarDouble(value: number): PokaScalarDouble {
-  return { _type: "ScalarDouble", value: value };
+function pokaMakeScalarNumber(value: number): PokaScalarNumber {
+  return { _type: "ScalarNumber", value: value };
 }
 
-function pokaScalarStringMake(value: string): PokaScalarString {
+function pokaMakeScalarString(value: string): PokaScalarString {
   return { _type: "ScalarString", value: value };
 }
 
-function pokaMakeMatrixDouble(value: MatrixDouble): PokaMatrixDouble {
-  return { _type: "MatrixDouble", value: value };
+function pokaMakeVectorBoolean(value: VectorBoolean): PokaVectorBoolean {
+  return { _type: "VectorBoolean", value: value };
+}
+
+function pokaMakeVectorNumber(value: VectorNumber): PokaVectorNumber {
+  return { _type: "VectorNumber", value: value };
+}
+
+function pokaMakeVectorString(value: VectorString): PokaVectorString {
+  return { _type: "VectorString", value: value };
+}
+
+function pokaMakeMatrixBoolean(value: MatrixBoolean): PokaMatrixBoolean {
+  return { _type: "MatrixBoolean", value: value };
+}
+
+function pokaMakeMatrixNumber(value: MatrixNumber): PokaMatrixNumber {
+  return { _type: "MatrixNumber", value: value };
 }
 
 function pokaMakeMatrixString(value: MatrixString): PokaMatrixString {
@@ -100,61 +179,66 @@ function pokaMakeList(values: PokaValue[]): PokaList {
   return { _type: "List", value: values };
 }
 
-function pokaToRowVector(value: PokaList): PokaValue {
-  const scalarsDouble: number[] = [];
-  const scalarsString: string[] = [];
+function pokaTryToVector(value: PokaValue): PokaValue {
+  if (value._type !== "List") {
+    return value;
+  }
+
+  const valuesScalarNumber: number[] = [];
+  const valuesScalarString: string[] = [];
 
   for (const val of value.value) {
-    if (val._type === "ScalarDouble") {
-      scalarsDouble.push(val.value);
+    if (val._type === "ScalarNumber") {
+      valuesScalarNumber.push(val.value);
     } else if (val._type === "ScalarString") {
-      scalarsString.push(val.value);
+      valuesScalarString.push(val.value);
     } else {
-      throw "pokaToRowVector: Error";
+      return value;
     }
   }
 
-  if (scalarsDouble.length === value.value.length) {
-    return pokaMakeMatrixDouble(new MatrixDouble(scalarsDouble.length, 1, scalarsDouble));
-  } else if (scalarsString.length === value.value.length) {
-    return pokaMakeMatrixString(new MatrixString(scalarsString.length, 1, scalarsString));
+  if (valuesScalarNumber.length === value.value.length) {
+    return pokaMakeVectorNumber({
+      _type: "VectorNumber",
+      values: valuesScalarNumber,
+    });
+  } else if (valuesScalarString.length === value.value.length) {
+    return pokaMakeVectorString({
+      _type: "VectorString",
+      values: valuesScalarString,
+    });
   } else {
-    throw "pokaToRowVector: Error";
+    return value;
   }
 }
 
-function pokaToMatrix(values: PokaList): PokaValue {
-  const valuesDoubleScalar: number[] = [];
-  const valuesStringScalar: string[] = [];
-  const valuesDoubleMatrix: MatrixDouble[] = [];
-  const valuesStringMatrix: MatrixString[] = [];
+function pokaTryToMatrix(value: PokaValue): PokaValue {
+  if (value._type !== "List") {
+    return value;
+  }
 
-  for (const value of values.value) {
-    const coerced: PokaValue = value._type === "List" ? pokaToMatrix(value) : value;
+  const valuesVectorNumber: VectorNumber[] = [];
+  const valuesVectorString: VectorString[] = [];
 
-    if (coerced._type === "ScalarDouble") {
-      valuesDoubleScalar.push(coerced.value);
-    } else if (coerced._type === "ScalarString") {
-      valuesStringScalar.push(coerced.value);
-    } else if (coerced._type === "MatrixDouble") {
-      valuesDoubleMatrix.push(coerced.value);
-    } else if (coerced._type === "MatrixString") {
-      valuesStringMatrix.push(coerced.value);
+  for (const val of value.value) {
+    const coerced: PokaValue =
+      val._type === "List" ? pokaTryToVector(val) : val;
+
+    if (coerced._type === "VectorNumber") {
+      valuesVectorNumber.push(coerced.value);
+    } else if (coerced._type === "VectorString") {
+      valuesVectorString.push(coerced.value);
     } else {
-      throw "pokaToMatrix: Unsupported type: " + pokaShow(value);
+      return value;
     }
   }
 
-  if (valuesDoubleScalar.length === values.value.length) {
-    return pokaMakeMatrixDouble(new MatrixDouble(valuesDoubleScalar.length, 1, valuesDoubleScalar));
-  } else if (valuesStringScalar.length === values.value.length) {
-    return pokaMakeMatrixString(new MatrixString(valuesStringScalar.length, 1, valuesStringScalar));
-  } else if (valuesDoubleMatrix.length === values.value.length) {
-    return pokaMakeMatrixDouble(MatrixDouble.catRows(valuesDoubleMatrix));
-  } else if (valuesStringMatrix.length === values.value.length) {
-    return pokaMakeMatrixString(MatrixString.catRows(valuesStringMatrix));
+  if (valuesVectorNumber.length === value.value.length) {
+    return pokaMakeMatrixNumber(pokaVectorNumberCat(valuesVectorNumber));
+  } else if (valuesVectorString.length === value.value.length) {
+    return pokaMakeMatrixString(pokaVectorStringCat(valuesVectorString));
   } else {
-    throw "pokaToMatrix: Heterogeneous List: " + pokaShow(values);
+    return value;
   }
 }
 
@@ -218,7 +302,7 @@ function consumeNumber(state: InterpreterState): void {
       value: "`" + token + "` is not a number.",
     });
   } else {
-    state.stack.push({ _type: "ScalarDouble", value: value });
+    state.stack.push({ _type: "ScalarNumber", value: value });
   }
 }
 
@@ -279,7 +363,7 @@ function consumeList(state: InterpreterState): void {
 
 function peekIdentifier(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
-  return c >= "a" && c <= "z" || c >= "A" && c <= "Z";
+  return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
 }
 
 function consumeIdentifer(state: InterpreterState): void {
@@ -300,23 +384,7 @@ function consumeIdentifer(state: InterpreterState): void {
     throw "Expected identifier";
   }
   const token = state.line.slice(start, state.pos);
-  console.log("Identifier:", '"' + token + '"');
-  const wordFun = POKA_WORDS[token];
-  if (wordFun === undefined) {
-    state.stack.push({
-      _type: "Error",
-      value: "`" + token + "` identifier unknown",
-    });
-  } else {
-    try {
-      wordFun(state.stack);
-    } catch (exc) {
-      state.stack.push({
-        _type: "Error",
-        value: "" + exc,
-      });
-    }
-  }
+  pokaDispatch(state.stack, token);
 }
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {

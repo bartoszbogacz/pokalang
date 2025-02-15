@@ -6,17 +6,26 @@ function pokaShow(value) {
     else if (value._type === "ScalarBoolean") {
         return value.value ? "True" : "False";
     }
-    else if (value._type === "ScalarDouble") {
+    else if (value._type === "ScalarNumber") {
         return value.value.toString();
-    }
-    else if (value._type === "MatrixDouble") {
-        return value.value.show();
     }
     else if (value._type === "ScalarString") {
         return '"' + value.value + '"';
     }
+    else if (value._type === "VectorBoolean") {
+        return "Error";
+    }
+    else if (value._type === "VectorNumber") {
+        return "Error";
+    }
+    else if (value._type === "VectorString") {
+        return "Error";
+    }
+    else if (value._type === "MatrixNumber") {
+        return "Error";
+    }
     else if (value._type === "MatrixString") {
-        return value.value.show();
+        return "Error";
     }
     else if (value._type === "List") {
         return "[" + value.value.map(pokaShow).join(", ") + "]";
@@ -35,14 +44,26 @@ function showInterpreterState(state) {
 function pokaMakeScalarBoolean(value) {
     return { _type: "ScalarBoolean", value: value };
 }
-function pokaMakeScalarDouble(value) {
-    return { _type: "ScalarDouble", value: value };
+function pokaMakeScalarNumber(value) {
+    return { _type: "ScalarNumber", value: value };
 }
-function pokaScalarStringMake(value) {
+function pokaMakeScalarString(value) {
     return { _type: "ScalarString", value: value };
 }
-function pokaMakeMatrixDouble(value) {
-    return { _type: "MatrixDouble", value: value };
+function pokaMakeVectorBoolean(value) {
+    return { _type: "VectorBoolean", value: value };
+}
+function pokaMakeVectorNumber(value) {
+    return { _type: "VectorNumber", value: value };
+}
+function pokaMakeVectorString(value) {
+    return { _type: "VectorString", value: value };
+}
+function pokaMakeMatrixBoolean(value) {
+    return { _type: "MatrixBoolean", value: value };
+}
+function pokaMakeMatrixNumber(value) {
+    return { _type: "MatrixNumber", value: value };
 }
 function pokaMakeMatrixString(value) {
     return { _type: "MatrixString", value: value };
@@ -50,67 +71,59 @@ function pokaMakeMatrixString(value) {
 function pokaMakeList(values) {
     return { _type: "List", value: values };
 }
-function pokaToRowVector(value) {
-    const scalarsDouble = [];
-    const scalarsString = [];
+function pokaTryToVector(value) {
+    if (value._type !== "List") {
+        return value;
+    }
+    const valuesScalarNumber = [];
+    const valuesScalarString = [];
     for (const val of value.value) {
-        if (val._type === "ScalarDouble") {
-            scalarsDouble.push(val.value);
+        if (val._type === "ScalarNumber") {
+            valuesScalarNumber.push(val.value);
         }
         else if (val._type === "ScalarString") {
-            scalarsString.push(val.value);
+            valuesScalarString.push(val.value);
         }
         else {
-            throw "pokaToRowVector: Error";
+            return value;
         }
     }
-    if (scalarsDouble.length === value.value.length) {
-        return pokaMakeMatrixDouble(new MatrixDouble(scalarsDouble.length, 1, scalarsDouble));
+    if (valuesScalarNumber.length === value.value.length) {
+        return pokaMakeVectorNumber({ _type: "VectorNumber", values: valuesScalarNumber });
     }
-    else if (scalarsString.length === value.value.length) {
-        return pokaMakeMatrixString(new MatrixString(scalarsString.length, 1, scalarsString));
+    else if (valuesScalarString.length === value.value.length) {
+        return pokaMakeVectorString({ _type: "VectorString", values: valuesScalarString });
     }
     else {
-        throw "pokaToRowVector: Error";
+        return value;
     }
 }
-function pokaToMatrix(values) {
-    const valuesDoubleScalar = [];
-    const valuesStringScalar = [];
-    const valuesDoubleMatrix = [];
-    const valuesStringMatrix = [];
-    for (const value of values.value) {
-        const coerced = value._type === "List" ? pokaToMatrix(value) : value;
-        if (coerced._type === "ScalarDouble") {
-            valuesDoubleScalar.push(coerced.value);
+function pokaTryToMatrix(value) {
+    if (value._type !== "List") {
+        return value;
+    }
+    const valuesVectorNumber = [];
+    const valuesVectorString = [];
+    for (const val of value.value) {
+        const coerced = val._type === "List" ? pokaTryToVector(val) : val;
+        if (coerced._type === "VectorNumber") {
+            valuesVectorNumber.push(coerced.value);
         }
-        else if (coerced._type === "ScalarString") {
-            valuesStringScalar.push(coerced.value);
-        }
-        else if (coerced._type === "MatrixDouble") {
-            valuesDoubleMatrix.push(coerced.value);
-        }
-        else if (coerced._type === "MatrixString") {
-            valuesStringMatrix.push(coerced.value);
+        else if (coerced._type === "VectorString") {
+            valuesVectorString.push(coerced.value);
         }
         else {
-            throw "pokaToMatrix: Unsupported type: " + pokaShow(value);
+            return value;
         }
     }
-    if (valuesDoubleScalar.length === values.value.length) {
-        return pokaMakeMatrixDouble(new MatrixDouble(valuesDoubleScalar.length, 1, valuesDoubleScalar));
+    if (valuesVectorNumber.length === value.value.length) {
+        return pokaMakeMatrixNumber(pokaVectorNumberCat(valuesVectorNumber));
     }
-    else if (valuesStringScalar.length === values.value.length) {
-        return pokaMakeMatrixString(new MatrixString(valuesStringScalar.length, 1, valuesStringScalar));
-    }
-    else if (valuesDoubleMatrix.length === values.value.length) {
-        return pokaMakeMatrixDouble(MatrixDouble.catRows(valuesDoubleMatrix));
-    }
-    else if (valuesStringMatrix.length === values.value.length) {
-        return pokaMakeMatrixString(MatrixString.catRows(valuesStringMatrix));
+    else if (valuesVectorString.length === value.value.length) {
+        return pokaMakeMatrixString(pokaVectorStringCat(valuesVectorString));
     }
     else {
-        throw "pokaToMatrix: Heterogeneous List: " + pokaShow(values);
+        return value;
     }
 }
 function pokaMakeErrorNoImplFor(values, wordName) {
@@ -169,7 +182,7 @@ function consumeNumber(state) {
         });
     }
     else {
-        state.stack.push({ _type: "ScalarDouble", value: value });
+        state.stack.push({ _type: "ScalarNumber", value: value });
     }
 }
 function peekString(state) {
@@ -242,25 +255,7 @@ function consumeIdentifer(state) {
         throw "Expected identifier";
     }
     const token = state.line.slice(start, state.pos);
-    console.log("Identifier:", '"' + token + '"');
-    const wordFun = POKA_WORDS[token];
-    if (wordFun === undefined) {
-        state.stack.push({
-            _type: "Error",
-            value: "`" + token + "` identifier unknown",
-        });
-    }
-    else {
-        try {
-            wordFun(state.stack);
-        }
-        catch (exc) {
-            state.stack.push({
-                _type: "Error",
-                value: "" + exc,
-            });
-        }
-    }
+    pokaDispatch(state.stack, token);
 }
 function peekLiteral(state, literal) {
     for (let i = 0; i < literal.length; i++) {
