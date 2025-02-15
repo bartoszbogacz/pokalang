@@ -278,3 +278,13 @@ function pokaMatrixNumberSortCols(a) {
     a = pokaMatrixNumberTranspose(a);
     return a;
 }
+function pokaMatrixNumberSubMatrixNumber(a, b) {
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+        throw new Error("Shapes do not match for subMatrix.");
+    }
+    const newVals = [];
+    for (let i = 0; i < a.values.length; i++) {
+        newVals.push(a.values[i] - b.values[i]);
+    }
+    return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
+}

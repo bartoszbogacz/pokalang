@@ -14,11 +14,17 @@ const POKA_WORDS2 = {
     pokaScalarStringAndScalarStringToVectorString: {
         split: pokaScalarStringSplitScalarString,
     },
+    pokaVectorNumberAndVectorNumberToVectorNumber: {
+        sub: pokaVectorNumberSubVectorNumber,
+    },
     pokaVectorStringAndScalarStringToMatrixString: {
         split: pokaVectorStringSplitScalarString,
     },
     pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
         equals: pokaMatrixNumberEqualsMatrixNumber,
+    },
+    pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
+        sub: pokaMatrixNumberSubMatrixNumber,
     },
     pokaVectorStringAndVectorStringToVectorBoolean: {
         equals: pokaVectorStringEqualsVectorString,
@@ -95,6 +101,14 @@ function pokaDispatch(stack, word) {
             return;
         }
     }
+    if (vector2._type === "VectorNumber" && vector1._type === "VectorNumber") {
+        const fun = POKA_WORDS2.pokaVectorNumberAndVectorNumberToVectorNumber[word];
+        if (fun !== undefined) {
+            const res = fun(vector2.value, vector1.value);
+            stack.push(pokaMakeVectorNumber(res));
+            return;
+        }
+    }
     if (vector2._type === "VectorString" && vector1._type === "VectorString") {
         const fun = POKA_WORDS2.pokaVectorStringAndVectorStringToVectorBoolean[word];
         if (fun !== undefined) {
@@ -113,11 +127,21 @@ function pokaDispatch(stack, word) {
         }
     }
     if (matrix2._type === "MatrixNumber" && matrix1._type === "MatrixNumber") {
-        const fun = POKA_WORDS2.pokaMatrixNumberAndMatrixNumberToMatrixBoolean[word];
-        if (fun !== undefined) {
-            const res = fun(matrix2.value, matrix1.value);
-            stack.push(pokaMakeMatrixBoolean(res));
-            return;
+        {
+            const fun = POKA_WORDS2.pokaMatrixNumberAndMatrixNumberToMatrixBoolean[word];
+            if (fun !== undefined) {
+                const res = fun(matrix2.value, matrix1.value);
+                stack.push(pokaMakeMatrixBoolean(res));
+                return;
+            }
+        }
+        {
+            const fun = POKA_WORDS2.pokaMatrixNumberAndMatrixNumberToMatrixNumber[word];
+            if (fun !== undefined) {
+                const res = fun(matrix2.value, matrix1.value);
+                stack.push(pokaMakeMatrixNumber(res));
+                return;
+            }
         }
     }
     if (matrix2._type === "MatrixString" && matrix1._type === "MatrixString") {

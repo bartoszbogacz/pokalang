@@ -304,3 +304,17 @@ function pokaMatrixNumberSortCols(a: MatrixNumber): MatrixNumber {
   a = pokaMatrixNumberTranspose(a);
   return a;
 }
+
+function pokaMatrixNumberSubMatrixNumber(
+  a: MatrixNumber,
+  b: MatrixNumber,
+): MatrixNumber {
+  if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+    throw new Error("Shapes do not match for subMatrix.");
+  }
+  const newVals: number[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    newVals.push((a.values[i] as number) - (b.values[i] as number));
+  }
+  return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
+}
