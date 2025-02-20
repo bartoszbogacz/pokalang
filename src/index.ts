@@ -69,7 +69,10 @@ interface InterpreterState {
 
 interface PokaNativeFun {
   pokaVectorBooleanToScalarBoolean: {
-    [key: string]: (a: VectorBoolean) => boolean;
+    [key: string]: {
+      fun: (a: VectorBoolean) => boolean;
+      doc: string[];
+    };
   };
   pokaMatrixBooleanToScalarBoolean: {
     [key: string]: (a: MatrixBoolean) => boolean;
@@ -95,11 +98,17 @@ interface PokaNativeFun {
   pokaVectorNumberToVectorNumber: {
     [key: string]: (a: VectorNumber) => VectorNumber;
   };
+  pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
+    [key: string]: (a: boolean, b: boolean) => boolean;
+  };
   pokaScalarNumberAndScalarNumberToScalarBoolean: {
     [key: string]: (a: number, b: number) => boolean;
   };
   pokaVectorStringAndScalarStringToMatrixString: {
     [key: string]: (a: VectorString, b: string) => MatrixString;
+  };
+  pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
+    [key: string]: (a: VectorBoolean, b: VectorBoolean) => VectorBoolean;
   };
   pokaVectorNumberAndVectorNumberToVectorNumber: {
     [key: string]: (a: VectorNumber, b: VectorNumber) => VectorNumber;
@@ -197,11 +206,14 @@ function pokaTryToVector(value: PokaValue): PokaValue {
     return value;
   }
 
+  const valuesScalarBoolean: boolean[] = [];
   const valuesScalarNumber: number[] = [];
   const valuesScalarString: string[] = [];
 
   for (const val of value.value) {
-    if (val._type === "ScalarNumber") {
+    if (val._type === "ScalarBoolean") {
+      valuesScalarBoolean.push(val.value);
+    } else if (val._type === "ScalarNumber") {
       valuesScalarNumber.push(val.value);
     } else if (val._type === "ScalarString") {
       valuesScalarString.push(val.value);
@@ -210,7 +222,12 @@ function pokaTryToVector(value: PokaValue): PokaValue {
     }
   }
 
-  if (valuesScalarNumber.length === value.value.length) {
+  if (valuesScalarBoolean.length === value.value.length) {
+    return pokaMakeVectorBoolean({
+      _type: "VectorBoolean",
+      values: valuesScalarBoolean,
+    });
+  } else if (valuesScalarNumber.length === value.value.length) {
     return pokaMakeVectorNumber({
       _type: "VectorNumber",
       values: valuesScalarNumber,

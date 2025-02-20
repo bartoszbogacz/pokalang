@@ -27,7 +27,32 @@ function pokaTestsRun() {
         catch (exc) {
             result.push("FAIL | " + expr);
             result.push("EXC  | " + exc);
-            return result.join("\n");
+        }
+    }
+    return result.join("\n");
+}
+function pokaDocTestsRun() {
+    const result = [];
+    for (const [_, decl] of Object.entries(POKA_WORDS2.pokaVectorBooleanToScalarBoolean)) {
+        for (const line of decl.doc) {
+            try {
+                const state = run(line);
+                const top = state.stack.pop();
+                if (top === undefined) {
+                    throw "Stack exhausted";
+                }
+                if (top._type !== "ScalarBoolean") {
+                    throw "Test has non-boolean result: " + pokaShow(top);
+                }
+                if (top.value !== true) {
+                    throw "Test failed";
+                }
+                result.push("OK   | " + line);
+            }
+            catch (exc) {
+                result.push("FAIL | " + line);
+                result.push(" EXC | " + exc);
+            }
         }
     }
     return result.join("\n");
@@ -37,6 +62,6 @@ function pokaTestsShow() {
     if (elem === null) {
         throw "Test output div not found";
     }
-    elem.innerText = pokaTestsRun();
+    elem.innerText = pokaTestsRun() + "\n" + pokaDocTestsRun();
 }
 pokaTestsShow();

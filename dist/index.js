@@ -75,10 +75,14 @@ function pokaTryToVector(value) {
     if (value._type !== "List") {
         return value;
     }
+    const valuesScalarBoolean = [];
     const valuesScalarNumber = [];
     const valuesScalarString = [];
     for (const val of value.value) {
-        if (val._type === "ScalarNumber") {
+        if (val._type === "ScalarBoolean") {
+            valuesScalarBoolean.push(val.value);
+        }
+        else if (val._type === "ScalarNumber") {
             valuesScalarNumber.push(val.value);
         }
         else if (val._type === "ScalarString") {
@@ -88,7 +92,13 @@ function pokaTryToVector(value) {
             return value;
         }
     }
-    if (valuesScalarNumber.length === value.value.length) {
+    if (valuesScalarBoolean.length === value.value.length) {
+        return pokaMakeVectorBoolean({
+            _type: "VectorBoolean",
+            values: valuesScalarBoolean,
+        });
+    }
+    else if (valuesScalarNumber.length === value.value.length) {
         return pokaMakeVectorNumber({
             _type: "VectorNumber",
             values: valuesScalarNumber,

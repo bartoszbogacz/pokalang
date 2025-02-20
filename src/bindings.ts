@@ -1,5 +1,14 @@
 const POKA_WORDS2: PokaNativeFun = {
-  pokaVectorBooleanToScalarBoolean: { all: pokaVectorBooleanAll },
+  pokaVectorBooleanToScalarBoolean: {
+    all: {
+      fun: pokaVectorBooleanAll,
+      doc: [
+        "[True True] all True equals",
+        "[False False] all False equals",
+        "[True False] all False equals",
+      ],
+    },
+  },
   pokaVectorNumberToVectorNumber: {
     abs: pokaVectorNumberAbs,
   },
@@ -14,6 +23,9 @@ const POKA_WORDS2: PokaNativeFun = {
     sortCols: pokaMatrixNumberSortCols,
     abs: pokaMatrixNumberAbs,
   },
+  pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
+    equals: (a: boolean, b: boolean) => a === b,
+  },
   pokaScalarNumberAndScalarNumberToScalarBoolean: {
     equals: (a: number, b: number) => a === b,
   },
@@ -25,6 +37,9 @@ const POKA_WORDS2: PokaNativeFun = {
   },
   pokaVectorNumberToScalarNumber: {
     sum: pokaVectorNumberSum,
+  },
+  pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
+    equals: pokaVectorBooleanEqualsVectorBoolean,
   },
   pokaVectorNumberAndVectorNumberToVectorNumber: {
     sub: pokaVectorNumberSubVectorNumber,
@@ -49,6 +64,16 @@ const POKA_WORDS2: PokaNativeFun = {
 };
 
 function pokaDispatch(stack: PokaValue[], word: string): void {
+  if (word === "True") {
+    stack.push(pokaMakeScalarBoolean(true));
+    return;
+  }
+
+  if (word === "False") {
+    stack.push(pokaMakeScalarBoolean(false));
+    return;
+  }
+
   const arg1 = stack.pop();
   if (arg1 === undefined) {
     throw "Stack underflow";
@@ -66,9 +91,9 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
   const vector1 = pokaTryToVector(arg1);
 
   if (vector1._type === "VectorBoolean") {
-    const fun = POKA_WORDS2.pokaVectorBooleanToScalarBoolean[word];
-    if (fun != undefined) {
-      const res = fun(vector1.value);
+    const decl = POKA_WORDS2.pokaVectorBooleanToScalarBoolean[word];
+    if (decl != undefined) {
+      const res = decl.fun(vector1.value);
       stack.push(pokaMakeScalarBoolean(res));
       return;
     }
@@ -137,6 +162,15 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
     throw "Stack underflow";
   }
 
+  if (arg2._type === "ScalarBoolean" && arg1._type === "ScalarBoolean") {
+    const fun = POKA_WORDS2.pokaScalarBooleanAndScalarBooleanToScalarBoolean[word];
+    if (fun !== undefined) {
+      const res = fun(arg2.value, arg1.value);
+      stack.push(pokaMakeScalarBoolean(res));
+      return;
+    }
+  }
+
   if (arg2._type === "ScalarNumber" && arg1._type === "ScalarNumber") {
     const fun =
       POKA_WORDS2.pokaScalarNumberAndScalarNumberToScalarBoolean[word];
@@ -162,6 +196,14 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
     if (fun !== undefined) {
       const res = fun(vector2.value, vector1.value);
       stack.push(pokaMakeMatrixString(res));
+      return;
+    }
+  }
+  if (vector2._type === "VectorBoolean" && vector1._type === "VectorBoolean") {
+    const fun = POKA_WORDS2.pokaVectorBooleanAndVectorBooleanToVectorBoolean[word];
+    if (fun !== undefined) {
+      const res = fun(vector2.value, vector1.value);
+      stack.push(pokaMakeVectorBoolean(res));
       return;
     }
   }
