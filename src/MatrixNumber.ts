@@ -278,12 +278,12 @@ function pokaMatrixNumberEqualsMatrixNumber(
 
 function pokaMatrixNumberTranspose(a: MatrixNumber): MatrixNumber {
   const newVals: number[] = [];
-  for (let c = 0; c < a.countCols; c++) {
-    for (let r = 0; r < a.countRows; r++) {
-      newVals.push(a.values[r * a.countCols + c] as number);
+  for (let j = 0; j < a.countCols; j++) {
+    for (let i = 0; i < a.countRows; i++) {
+      newVals.push(a.values[i * a.countCols + j] as number);
     }
   }
-  return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
+  return pokaMatrixNumberMake(a.countCols, a.countRows, newVals);
 }
 
 function pokaMatrixNumberSortRows(a: MatrixNumber): MatrixNumber {
@@ -295,7 +295,7 @@ function pokaMatrixNumberSortRows(a: MatrixNumber): MatrixNumber {
     row.sort();
     newVals.push(...row);
   }
-  return pokaMatrixNumberMake(a.countCols, a.countRows, newVals);
+  return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }
 
 function pokaMatrixNumberSortCols(a: MatrixNumber): MatrixNumber {
