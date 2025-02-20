@@ -1,15 +1,6 @@
 "use strict";
 const POKA_WORDS2 = {
-    pokaVectorBooleanToScalarBoolean: {
-        all: {
-            fun: pokaVectorBooleanAll,
-            doc: [
-                "[True True] all True equals",
-                "[False False] all False equals",
-                "[True False] all False equals",
-            ],
-        },
-    },
+    pokaVectorBooleanToScalarBoolean: {},
     pokaVectorNumberToVectorNumber: {
         abs: pokaVectorNumberAbs,
     },
@@ -63,6 +54,16 @@ const POKA_WORDS2 = {
         equals: pokaMatrixStringEqualsMatrixString,
     },
 };
+const POKA_WORDS3 = {
+    all: {
+        doc: [
+            "[True True] all True equals",
+            "[False False] all False equals",
+            "[True False] all False equals",
+        ],
+        vb_sb: pokaVectorBooleanAll,
+    }
+};
 function pokaDispatch(stack, word) {
     if (word === "True") {
         stack.push(pokaMakeScalarBoolean(true));
@@ -72,6 +73,7 @@ function pokaDispatch(stack, word) {
         stack.push(pokaMakeScalarBoolean(false));
         return;
     }
+    const decl = POKA_WORDS3[word];
     const arg1 = stack.pop();
     if (arg1 === undefined) {
         throw "Stack underflow";
@@ -85,6 +87,12 @@ function pokaDispatch(stack, word) {
         }
     }
     const vector1 = pokaTryToVector(arg1);
+    if (decl !== undefined) {
+        if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
+            stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
+            return;
+        }
+    }
     if (vector1._type === "VectorBoolean") {
         const decl = POKA_WORDS2.pokaVectorBooleanToScalarBoolean[word];
         if (decl != undefined) {

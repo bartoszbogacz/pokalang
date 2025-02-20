@@ -33,7 +33,7 @@ function pokaTestsRun() {
 }
 function pokaDocTestsRun() {
     const result = [];
-    for (const [_, decl] of Object.entries(POKA_WORDS2.pokaVectorBooleanToScalarBoolean)) {
+    for (const [_, decl] of Object.entries(POKA_WORDS3)) {
         for (const line of decl.doc) {
             try {
                 const state = run(line);

@@ -127,6 +127,31 @@ interface PokaNativeFun {
   };
 }
 
+interface PokaNativeFun2 {
+  doc: string[];
+  //
+  mb_sb?: (a: MatrixBoolean) => boolean;
+  mn_mn?: (a: MatrixNumber) => MatrixNumber;
+  mn_sn?: (a: MatrixNumber) => number;
+  ms_mn?: (a: MatrixString) => MatrixNumber;
+  vb_sb?: (a: VectorBoolean) => boolean;
+  vn_sn?: (a: VectorNumber) => number;
+  vn_vn?: (a: VectorNumber) => VectorNumber;
+  //
+  mn_mn_mb?: (a: MatrixNumber, b: MatrixNumber) => MatrixBoolean;
+  mn_mn_mn?: (a: MatrixNumber, b: MatrixNumber) => MatrixNumber;
+  mn_sn_vn?: (a: MatrixNumber, b: number) => VectorNumber;
+  ms_ms_mb?: (a: MatrixString, b: MatrixString) => MatrixBoolean;
+  sb_sb_sb?: (a: boolean, b: boolean) => boolean;
+  sn_sn_sb?: (a: number, b: number) => boolean;
+  ss_ss_vs?: (a: string, b: string) => VectorString;
+  vb_vb_vb?: (a: VectorBoolean, b: VectorBoolean) => VectorBoolean;
+  vn_vn_vn?: (a: VectorNumber, b: VectorNumber) => VectorNumber;
+  vs_ss_ms?: (a: VectorString, b: string) => MatrixString;
+  vs_vs_vb?: (a: VectorString, b: VectorString) => VectorBoolean;
+}
+
+
 function pokaShow(value: PokaValue): string {
   if (value._type === "ScalarBoolean") {
     return value.value ? "True" : "False";
