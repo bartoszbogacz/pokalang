@@ -406,7 +406,7 @@ function consumeIdentifer(state: InterpreterState): void {
     throw "Expected identifier";
   }
   const token = state.line.slice(start, state.pos);
-  pokaDispatch(state.stack, token);
+  pokaDispatchDeprecated(state.stack, token);
 }
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {

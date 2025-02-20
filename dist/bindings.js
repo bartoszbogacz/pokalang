@@ -15,10 +15,10 @@ const POKA_WORDS2 = {
         abs: pokaMatrixNumberAbs,
     },
     pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
-        equals: (a, b) => a === b,
+    // equals: (a: boolean, b: boolean) => a === b,
     },
     pokaScalarNumberAndScalarNumberToScalarBoolean: {
-        equals: (a, b) => a === b,
+    // equals: (a: number, b: number) => a === b,
     },
     pokaMatrixNumberAndScalarNumberToVectorNumber: {
         col: pokaMatrixNumberColScalarNumber,
@@ -30,7 +30,7 @@ const POKA_WORDS2 = {
         sum: pokaVectorNumberSum,
     },
     pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
-        equals: pokaVectorBooleanEqualsVectorBoolean,
+    // equals: pokaVectorBooleanEqualsVectorBoolean,
     },
     pokaVectorNumberAndVectorNumberToVectorNumber: {
         sub: pokaVectorNumberSubVectorNumber,
@@ -40,30 +40,39 @@ const POKA_WORDS2 = {
         split: pokaVectorStringSplitScalarString,
     },
     pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
-        equals: pokaMatrixNumberEqualsMatrixNumber,
+    // equals: pokaMatrixNumberEqualsMatrixNumber,
     },
     pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
         sub: pokaMatrixNumberSubMatrixNumber,
         add: pokaMatrixNumberAddMatrixNumber,
     },
     pokaVectorStringAndVectorStringToVectorBoolean: {
-        equals: pokaVectorStringEqualsVectorString,
+    // equals: pokaVectorStringEqualsVectorString,
     },
     pokaMatrixStringAndMatrixStringToMatrixBoolean: {
-        equals: pokaMatrixStringEqualsMatrixString,
+    // equals: pokaMatrixStringEqualsMatrixString,
     },
 };
-const POKA_WORDS3 = {
-    all: {
+const POKA_WORDS3 = {};
+POKA_WORDS3["all"] = {
+    doc: [
+        "[True, True] all True equals",
+        "[False, False] all False equals",
+        "[True, False] all False equals",
+    ],
+    vb_sb: pokaVectorBooleanAll,
+},
+    POKA_WORDS3["equals"] = {
         doc: [
-            "[True True] all True equals",
-            "[False False] all False equals",
-            "[True False] all False equals",
+            "True True equals",
+            "False False equals",
+            "1 1 equals",
+            '"a" "a" equals',
+            "[True, False] [True, False] equals all",
+            "[False, True] [True, False] equals all False equals",
         ],
-        vb_sb: pokaVectorBooleanAll,
-    }
-};
-function pokaDispatch(stack, word) {
+    };
+function pokaDispatch2(stack, word) {
     if (word === "True") {
         stack.push(pokaMakeScalarBoolean(true));
         return;
@@ -73,6 +82,38 @@ function pokaDispatch(stack, word) {
         return;
     }
     const decl = POKA_WORDS3[word];
+    if (decl === undefined) {
+        throw "No such function";
+    }
+    const arg1 = stack.pop();
+    if (arg1 === undefined) {
+        throw "No implementation with no arguments";
+    }
+    const vector1 = pokaTryToVector(arg1);
+    if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
+        stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
+        return;
+    }
+    throw "No implementation";
+}
+function pokaDispatchDeprecated(stack, word) {
+    const orig = stack.slice();
+    try {
+        pokaDispatch2(stack, word);
+        return;
+    }
+    catch (exc) {
+        //
+    }
+    stack.splice(0, stack.length, ...orig);
+    if (word === "True") {
+        stack.push(pokaMakeScalarBoolean(true));
+        return;
+    }
+    if (word === "False") {
+        stack.push(pokaMakeScalarBoolean(false));
+        return;
+    }
     const arg1 = stack.pop();
     if (arg1 === undefined) {
         throw "Stack underflow";
@@ -86,12 +127,6 @@ function pokaDispatch(stack, word) {
         }
     }
     const vector1 = pokaTryToVector(arg1);
-    if (decl !== undefined) {
-        if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
-            stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
-            return;
-        }
-    }
     if (vector1._type === "VectorNumber") {
         {
             const fun = POKA_WORDS2.pokaVectorNumberToScalarNumber[word];

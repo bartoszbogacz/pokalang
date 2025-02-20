@@ -14,10 +14,10 @@ const POKA_WORDS2: DeprecatedPokaNativeFun = {
     abs: pokaMatrixNumberAbs,
   },
   pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
-    equals: (a: boolean, b: boolean) => a === b,
+    // equals: (a: boolean, b: boolean) => a === b,
   },
   pokaScalarNumberAndScalarNumberToScalarBoolean: {
-    equals: (a: number, b: number) => a === b,
+    // equals: (a: number, b: number) => a === b,
   },
   pokaMatrixNumberAndScalarNumberToVectorNumber: {
     col: pokaMatrixNumberColScalarNumber,
@@ -29,7 +29,7 @@ const POKA_WORDS2: DeprecatedPokaNativeFun = {
     sum: pokaVectorNumberSum,
   },
   pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
-    equals: pokaVectorBooleanEqualsVectorBoolean,
+    // equals: pokaVectorBooleanEqualsVectorBoolean,
   },
   pokaVectorNumberAndVectorNumberToVectorNumber: {
     sub: pokaVectorNumberSubVectorNumber,
@@ -39,32 +39,43 @@ const POKA_WORDS2: DeprecatedPokaNativeFun = {
     split: pokaVectorStringSplitScalarString,
   },
   pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
-    equals: pokaMatrixNumberEqualsMatrixNumber,
+    // equals: pokaMatrixNumberEqualsMatrixNumber,
   },
   pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
     sub: pokaMatrixNumberSubMatrixNumber,
     add: pokaMatrixNumberAddMatrixNumber,
   },
   pokaVectorStringAndVectorStringToVectorBoolean: {
-    equals: pokaVectorStringEqualsVectorString,
+    // equals: pokaVectorStringEqualsVectorString,
   },
   pokaMatrixStringAndMatrixStringToMatrixBoolean: {
-    equals: pokaMatrixStringEqualsMatrixString,
+    // equals: pokaMatrixStringEqualsMatrixString,
   },
 };
 
-const POKA_WORDS3: {[key: string]: PokaNativeFun2} = {
-  all: {
-    doc: [
-      "[True True] all True equals",
-      "[False False] all False equals",
-      "[True False] all False equals",
-    ],
-    vb_sb: pokaVectorBooleanAll,
-  }
-}
+const POKA_WORDS3: {[key: string]: PokaNativeFun2} = {};
 
-function pokaDispatch(stack: PokaValue[], word: string): void {
+POKA_WORDS3["all"] = {
+  doc: [
+    "[True, True] all True equals",
+    "[False, False] all False equals",
+    "[True, False] all False equals",
+  ],
+  vb_sb: pokaVectorBooleanAll,
+},
+
+POKA_WORDS3["equals"] = {
+  doc: [
+    "True True equals",
+    "False False equals",
+    "1 1 equals",
+    '"a" "a" equals',
+    "[True, False] [True, False] equals all",
+    "[False, True] [True, False] equals all False equals",
+  ],
+};
+
+function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
     return;
@@ -76,6 +87,45 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
   }
 
   const decl = POKA_WORDS3[word];
+
+  if (decl === undefined) {
+    throw "No such function";
+  }
+
+  const arg1 = stack.pop();
+  if (arg1 === undefined) {
+    throw "No implementation with no arguments";
+  }
+
+  const vector1 = pokaTryToVector(arg1);
+
+  if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
+    stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+function pokaDispatchDeprecated(stack: PokaValue[], word: string): void {
+  const orig = stack.slice()
+  try {
+    pokaDispatch2(stack, word);
+    return;
+  } catch (exc) {
+    //
+  }
+  stack.splice(0, stack.length, ...orig);
+
+  if (word === "True") {
+    stack.push(pokaMakeScalarBoolean(true));
+    return;
+  }
+
+  if (word === "False") {
+    stack.push(pokaMakeScalarBoolean(false));
+    return;
+  }
 
   const arg1 = stack.pop();
   if (arg1 === undefined) {
@@ -92,13 +142,6 @@ function pokaDispatch(stack: PokaValue[], word: string): void {
   }
 
   const vector1 = pokaTryToVector(arg1);
-
-  if (decl !== undefined) {
-    if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
-      stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
-      return;
-    }
-  }
 
   if (vector1._type === "VectorNumber") {
     {

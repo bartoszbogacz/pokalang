@@ -250,7 +250,7 @@ function consumeIdentifer(state) {
         throw "Expected identifier";
     }
     const token = state.line.slice(start, state.pos);
-    pokaDispatch(state.stack, token);
+    pokaDispatchDeprecated(state.stack, token);
 }
 function peekLiteral(state, literal) {
     for (let i = 0; i < literal.length; i++) {
