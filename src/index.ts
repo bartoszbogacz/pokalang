@@ -67,13 +67,7 @@ interface InterpreterState {
   error: string;
 }
 
-interface PokaNativeFun {
-  pokaVectorBooleanToScalarBoolean: {
-    [key: string]: {
-      fun: (a: VectorBoolean) => boolean;
-      doc: string[];
-    };
-  };
+interface DeprecatedPokaNativeFun {
   pokaMatrixBooleanToScalarBoolean: {
     [key: string]: (a: MatrixBoolean) => boolean;
   };

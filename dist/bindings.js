@@ -1,6 +1,5 @@
 "use strict";
 const POKA_WORDS2 = {
-    pokaVectorBooleanToScalarBoolean: {},
     pokaVectorNumberToVectorNumber: {
         abs: pokaVectorNumberAbs,
     },
@@ -90,14 +89,6 @@ function pokaDispatch(stack, word) {
     if (decl !== undefined) {
         if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
             stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
-            return;
-        }
-    }
-    if (vector1._type === "VectorBoolean") {
-        const decl = POKA_WORDS2.pokaVectorBooleanToScalarBoolean[word];
-        if (decl != undefined) {
-            const res = decl.fun(vector1.value);
-            stack.push(pokaMakeScalarBoolean(res));
             return;
         }
     }
