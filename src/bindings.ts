@@ -1,16 +1,12 @@
 const POKA_WORDS2: DeprecatedPokaNativeFun = {
   pokaVectorNumberToVectorNumber: {
-    abs: pokaVectorNumberAbs,
   },
   pokaMatrixBooleanToScalarBoolean: { },
   pokaMatrixStringToMatrixNumber: { toNumber: pokaMatrixStringToNumber },
   pokaMatrixNumberToScalarNumber: {
   },
   pokaMatrixNumberToMatrixNumber: {
-    sortRows: pokaMatrixNumberSortRows,
     transpose: pokaMatrixNumberTranspose,
-    sortCols: pokaMatrixNumberSortCols,
-    abs: pokaMatrixNumberAbs,
   },
   pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
   },
@@ -116,6 +112,20 @@ POKA_WORDS3["abs"] = {
   mn_mn: pokaMatrixNumberAbs,
 }
 
+POKA_WORDS3["sortRows"] = {
+  doc: [
+    "[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all",
+  ],
+  mn_mn: pokaMatrixNumberSortRows,
+}
+
+POKA_WORDS3["sortCols"] = {
+  doc: [
+    "[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all",
+  ],
+  mn_mn: pokaMatrixNumberSortCols,
+}
+
 function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
@@ -172,8 +182,8 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     return;
   }
 
-  if (decl.mn_mn !== undefined && vector1._type === "MatrixNumber") {
-    stack.push(pokaMakeMatrixNumber(decl.mn_mn(vector1.value)));
+  if (decl.mn_mn !== undefined && matrix1._type === "MatrixNumber") {
+    stack.push(pokaMakeMatrixNumber(decl.mn_mn(matrix1.value)));
     return;
   }
 
