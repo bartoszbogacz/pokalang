@@ -33,25 +33,25 @@ POKA_WORDS3["all"] = {
     ],
     vb_sb: pokaVectorBooleanAll,
     mb_sb: pokaMatrixBooleanAll,
-},
-    POKA_WORDS3["equals"] = {
-        doc: [
-            "True True equals",
-            "False False equals",
-            "1 1 equals",
-            '"a" "a" equals',
-            "[True, False] [True, False] equals all",
-            "[False, True] [True, False] equals all False equals",
-        ],
-        sb_sb_sb: (a, b) => a === b,
-        sn_sn_sb: (a, b) => a === b,
-        ss_ss_sb: (a, b) => a === b,
-        vb_vb_vb: pokaVectorBooleanEqualsVectorBoolean,
-        vn_vn_vb: pokaVectorNumberEqualsVectorNumber,
-        vs_vs_vb: pokaVectorStringEqualsVectorString,
-        mn_mn_mb: pokaMatrixNumberEqualsMatrixNumber,
-        ms_ms_mb: pokaMatrixStringEqualsMatrixString,
-    };
+};
+POKA_WORDS3["equals"] = {
+    doc: [
+        "True True equals",
+        "False False equals",
+        "1 1 equals",
+        '"a" "a" equals',
+        "[True, False] [True, False] equals all",
+        "[False, True] [True, False] equals all False equals",
+    ],
+    sb_sb_sb: (a, b) => a === b,
+    sn_sn_sb: (a, b) => a === b,
+    ss_ss_sb: (a, b) => a === b,
+    vb_vb_vb: pokaVectorBooleanEqualsVectorBoolean,
+    vn_vn_vb: pokaVectorNumberEqualsVectorNumber,
+    vs_vs_vb: pokaVectorStringEqualsVectorString,
+    mn_mn_mb: pokaMatrixNumberEqualsMatrixNumber,
+    ms_ms_mb: pokaMatrixStringEqualsMatrixString,
+};
 POKA_WORDS3["add"] = {
     doc: [
         "1 1 add 2 equals",
@@ -73,10 +73,7 @@ POKA_WORDS3["sub"] = {
     mn_mn_mn: pokaMatrixNumberSubMatrixNumber,
 };
 POKA_WORDS3["sum"] = {
-    doc: [
-        "[1, 1] sum 2 equals",
-        "[[1, 1], [2, 2]] sum 6 equals",
-    ],
+    doc: ["[1, 1] sum 2 equals", "[[1, 1], [2, 2]] sum 6 equals"],
     vn_sn: pokaVectorNumberSum,
     mn_sn: pokaMatrixNumberSum,
 };
@@ -91,27 +88,19 @@ POKA_WORDS3["abs"] = {
     mn_mn: pokaMatrixNumberAbs,
 };
 POKA_WORDS3["sortRows"] = {
-    doc: [
-        "[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all",
-    ],
+    doc: ["[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all"],
     mn_mn: pokaMatrixNumberSortRows,
 };
 POKA_WORDS3["sortCols"] = {
-    doc: [
-        "[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all",
-    ],
+    doc: ["[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all"],
     mn_mn: pokaMatrixNumberSortCols,
 };
 POKA_WORDS3["transpose"] = {
-    doc: [
-        "[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all",
-    ],
+    doc: ["[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all"],
     mn_mn: pokaMatrixNumberTranspose,
 };
 POKA_WORDS3["col"] = {
-    doc: [
-        "[[1, 2], [3, 4]] 1 col [2, 4] equals all",
-    ],
+    doc: ["[[1, 2], [3, 4]] 1 col [2, 4] equals all"],
     mn_sn_vn: pokaMatrixNumberColScalarNumber,
 };
 POKA_WORDS3["toNumber"] = {
@@ -210,61 +199,89 @@ function pokaDispatch2(stack, word) {
     if (arg2 === undefined) {
         throw "No implementation with one argument";
     }
-    if (decl.sb_sb_sb !== undefined && arg1._type === "ScalarBoolean" && arg2._type === "ScalarBoolean") {
+    if (decl.sb_sb_sb !== undefined &&
+        arg1._type === "ScalarBoolean" &&
+        arg2._type === "ScalarBoolean") {
         stack.push(pokaMakeScalarBoolean(decl.sb_sb_sb(arg2.value, arg1.value)));
         return;
     }
-    if (decl.sn_sn_sb !== undefined && arg1._type === "ScalarNumber" && arg2._type === "ScalarNumber") {
+    if (decl.sn_sn_sb !== undefined &&
+        arg1._type === "ScalarNumber" &&
+        arg2._type === "ScalarNumber") {
         stack.push(pokaMakeScalarBoolean(decl.sn_sn_sb(arg2.value, arg1.value)));
         return;
     }
-    if (decl.sn_sn_sn !== undefined && arg1._type === "ScalarNumber" && arg2._type === "ScalarNumber") {
+    if (decl.sn_sn_sn !== undefined &&
+        arg1._type === "ScalarNumber" &&
+        arg2._type === "ScalarNumber") {
         stack.push(pokaMakeScalarNumber(decl.sn_sn_sn(arg2.value, arg1.value)));
         return;
     }
-    if (decl.ss_ss_sb !== undefined && arg1._type === "ScalarString" && arg2._type === "ScalarString") {
+    if (decl.ss_ss_sb !== undefined &&
+        arg1._type === "ScalarString" &&
+        arg2._type === "ScalarString") {
         stack.push(pokaMakeScalarBoolean(decl.ss_ss_sb(arg2.value, arg1.value)));
         return;
     }
-    if (decl.ss_ss_vs !== undefined && arg1._type === "ScalarString" && arg2._type === "ScalarString") {
+    if (decl.ss_ss_vs !== undefined &&
+        arg1._type === "ScalarString" &&
+        arg2._type === "ScalarString") {
         stack.push(pokaMakeVectorString(decl.ss_ss_vs(arg2.value, arg1.value)));
         return;
     }
     const vector2 = pokaTryToVector(arg2);
-    if (decl.vb_vb_vb !== undefined && vector1._type === "VectorBoolean" && vector2._type === "VectorBoolean") {
+    if (decl.vb_vb_vb !== undefined &&
+        vector1._type === "VectorBoolean" &&
+        vector2._type === "VectorBoolean") {
         stack.push(pokaMakeVectorBoolean(decl.vb_vb_vb(vector2.value, vector1.value)));
         return;
     }
-    if (decl.vn_vn_vn !== undefined && vector1._type === "VectorNumber" && vector2._type === "VectorNumber") {
+    if (decl.vn_vn_vn !== undefined &&
+        vector1._type === "VectorNumber" &&
+        vector2._type === "VectorNumber") {
         stack.push(pokaMakeVectorNumber(decl.vn_vn_vn(vector2.value, vector1.value)));
         return;
     }
-    if (decl.vn_vn_vb !== undefined && vector1._type === "VectorNumber" && vector2._type === "VectorNumber") {
+    if (decl.vn_vn_vb !== undefined &&
+        vector1._type === "VectorNumber" &&
+        vector2._type === "VectorNumber") {
         stack.push(pokaMakeVectorBoolean(decl.vn_vn_vb(vector2.value, vector1.value)));
         return;
     }
-    if (decl.vs_vs_vb !== undefined && vector1._type === "VectorString" && vector2._type === "VectorString") {
+    if (decl.vs_vs_vb !== undefined &&
+        vector1._type === "VectorString" &&
+        vector2._type === "VectorString") {
         stack.push(pokaMakeVectorBoolean(decl.vs_vs_vb(vector2.value, vector1.value)));
         return;
     }
-    if (decl.vs_ss_ms !== undefined && arg1._type === "ScalarString" && vector2._type === "VectorString") {
+    if (decl.vs_ss_ms !== undefined &&
+        arg1._type === "ScalarString" &&
+        vector2._type === "VectorString") {
         stack.push(pokaMakeMatrixString(decl.vs_ss_ms(vector2.value, arg1.value)));
         return;
     }
     const matrix2 = pokaTryToMatrix(arg2);
-    if (decl.mn_mn_mb !== undefined && matrix1._type === "MatrixNumber" && matrix2._type === "MatrixNumber") {
+    if (decl.mn_mn_mb !== undefined &&
+        matrix1._type === "MatrixNumber" &&
+        matrix2._type === "MatrixNumber") {
         stack.push(pokaMakeMatrixBoolean(decl.mn_mn_mb(matrix2.value, matrix1.value)));
         return;
     }
-    if (decl.mn_mn_mn !== undefined && matrix1._type === "MatrixNumber" && matrix2._type === "MatrixNumber") {
+    if (decl.mn_mn_mn !== undefined &&
+        matrix1._type === "MatrixNumber" &&
+        matrix2._type === "MatrixNumber") {
         stack.push(pokaMakeMatrixNumber(decl.mn_mn_mn(matrix2.value, matrix1.value)));
         return;
     }
-    if (decl.mn_sn_vn !== undefined && arg1._type === "ScalarNumber" && matrix2._type === "MatrixNumber") {
+    if (decl.mn_sn_vn !== undefined &&
+        arg1._type === "ScalarNumber" &&
+        matrix2._type === "MatrixNumber") {
         stack.push(pokaMakeVectorNumber(decl.mn_sn_vn(matrix2.value, arg1.value)));
         return;
     }
-    if (decl.ms_ms_mb !== undefined && matrix1._type === "MatrixString" && matrix2._type === "MatrixString") {
+    if (decl.ms_ms_mb !== undefined &&
+        matrix1._type === "MatrixString" &&
+        matrix2._type === "MatrixString") {
         stack.push(pokaMakeMatrixBoolean(decl.ms_ms_mb(matrix2.value, matrix1.value)));
         return;
     }
