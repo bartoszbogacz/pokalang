@@ -105,6 +105,17 @@ POKA_WORDS3["sum"] = {
   mn_sn: pokaMatrixNumberSum,
 }
 
+POKA_WORDS3["abs"] = {
+  doc: [
+    "-1 abs 1 equals",
+    "[-1, -1] abs [1, 1] equals all",
+    "[[-1, -1], [-1, -1]] abs [[1, 1], [1, 1]] equals all",
+  ],
+  sn_sn: Math.abs,
+  vn_vn: pokaVectorNumberAbs,
+  mn_mn: pokaMatrixNumberAbs,
+}
+
 function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
@@ -127,6 +138,11 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     throw "No implementation with no arguments";
   }
 
+  if (decl.sn_sn !== undefined && arg1._type === "ScalarNumber") {
+    stack.push(pokaMakeScalarNumber(decl.sn_sn(arg1.value)));
+    return;
+  }
+
   const vector1 = pokaTryToVector(arg1);
 
   if (decl.vb_sb !== undefined && vector1._type === "VectorBoolean") {
@@ -139,6 +155,11 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     return;
   }
 
+  if (decl.vn_vn !== undefined && vector1._type === "VectorNumber") {
+    stack.push(pokaMakeVectorNumber(decl.vn_vn(vector1.value)));
+    return;
+  }
+
   const matrix1 = pokaTryToMatrix(arg1);
 
   if (decl.mb_sb !== undefined && matrix1._type === "MatrixBoolean") {
@@ -148,6 +169,11 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
 
   if (decl.mn_sn !== undefined && matrix1._type === "MatrixNumber") {
     stack.push(pokaMakeScalarNumber(decl.mn_sn(matrix1.value)));
+    return;
+  }
+
+  if (decl.mn_mn !== undefined && vector1._type === "MatrixNumber") {
+    stack.push(pokaMakeMatrixNumber(decl.mn_mn(vector1.value)));
     return;
   }
 

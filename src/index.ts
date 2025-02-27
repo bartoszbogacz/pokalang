@@ -124,6 +124,7 @@ interface DeprecatedPokaNativeFun {
 interface PokaNativeFun2 {
   doc: string[];
   //
+  sn_sn?: (a: number) => number;
   mb_sb?: (a: MatrixBoolean) => boolean;
   mn_mn?: (a: MatrixNumber) => MatrixNumber;
   mn_sn?: (a: MatrixNumber) => number;
