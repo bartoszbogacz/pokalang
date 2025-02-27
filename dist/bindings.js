@@ -69,11 +69,15 @@ POKA_WORDS3["sortRows"] = {
     mn_mn: pokaMatrixNumberSortRows,
 };
 POKA_WORDS3["sortCols"] = {
-    doc: ["[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all"],
+    doc: ["[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all", "[[1, 2], [2, 1]] sortCols [[1, 1], [2, 2]] equals all",
+    ],
     mn_mn: pokaMatrixNumberSortCols,
 };
 POKA_WORDS3["transpose"] = {
-    doc: ["[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all"],
+    doc: [
+        "[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all",
+        "[[1, 2, 3], [4, 5, 6]] transpose [[1, 4], [2, 5], [3, 6]] equals all",
+    ],
     mn_mn: pokaMatrixNumberTranspose,
 };
 POKA_WORDS3["col"] = {
@@ -93,6 +97,7 @@ POKA_WORDS3["toNumber"] = {
 POKA_WORDS3["split"] = {
     doc: [
         '"1 2" " " split ["1", "2"] equals all',
+        '"1 2 3" " " split ["1", "2", "3"] equals all',
         '["1 2", "3 4"] " " split [["1", "2"], ["3", "4"]] equals all',
     ],
     ss_ss_vs: pokaScalarStringSplitScalarString,
