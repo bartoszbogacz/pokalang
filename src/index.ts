@@ -151,7 +151,6 @@ interface PokaNativeFun2 {
   vs_vs_vb?: (a: VectorString, b: VectorString) => VectorBoolean;
 }
 
-
 function pokaShow(value: PokaValue): string {
   if (value._type === "ScalarBoolean") {
     return value.value ? "True" : "False";

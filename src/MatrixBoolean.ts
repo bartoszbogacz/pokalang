@@ -64,4 +64,3 @@ function pokaVectorBooleanCat(values: VectorBoolean[]): MatrixBoolean {
     values: combinedValues,
   };
 }
-
