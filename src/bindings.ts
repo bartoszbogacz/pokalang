@@ -54,8 +54,11 @@ POKA_WORDS3["all"] = {
     "[True, True] all True equals",
     "[False, False] all False equals",
     "[True, False] all False equals",
+    "[[True, True] [True, True]] all True equals",
+    "[[True, False] [False, True]] all False equals",
   ],
   vb_sb: pokaVectorBooleanAll,
+  mb_sb: pokaMatrixBooleanAll,
 },
 
 POKA_WORDS3["equals"] = {
@@ -71,10 +74,22 @@ POKA_WORDS3["equals"] = {
   sn_sn_sb: (a, b) => a === b,
   ss_ss_sb: (a, b) => a === b,
   vb_vb_vb: pokaVectorBooleanEqualsVectorBoolean,
+  vn_vn_vb: pokaVectorNumberEqualsVectorNumber,
   vs_vs_vb: pokaVectorStringEqualsVectorString,
   mn_mn_mb: pokaMatrixNumberEqualsMatrixNumber,
   ms_ms_mb: pokaMatrixStringEqualsMatrixString,
 };
+
+POKA_WORDS3["add"] = {
+  doc: [
+    "1 1 add 2 equals",
+    "[1, 1] [1, 1] add [2, 2] equals all",
+    "[[1, 1], [1, 1]] [[1, 1], [1, 1]] add [[2, 2], [2, 2]] equals all",
+  ],
+  sn_sn_sn: (a, b) => a + b,
+  vn_vn_vn: pokaVectorNumberAddVectorNumber,
+  mn_mn_mn: pokaMatrixNumberAddMatrixNumber,
+}
 
 function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
@@ -107,6 +122,11 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
 
   const matrix1 = pokaTryToMatrix(arg1);
 
+  if (decl.mb_sb !== undefined && matrix1._type === "MatrixBoolean") {
+    stack.push(pokaMakeScalarBoolean(decl.mb_sb(matrix1.value)));
+    return;
+  }
+
   const arg2 = stack.pop();
   if (arg2 === undefined) {
     throw "No implementation with one argument";
@@ -122,6 +142,11 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     return;
   }
 
+  if (decl.sn_sn_sn !== undefined && arg1._type === "ScalarNumber" && arg2._type === "ScalarNumber") {
+    stack.push(pokaMakeScalarNumber(decl.sn_sn_sn(arg1.value, arg2.value)));
+    return;
+  }
+
   if (decl.ss_ss_sb !== undefined && arg1._type === "ScalarString" && arg2._type === "ScalarString") {
     stack.push(pokaMakeScalarBoolean(decl.ss_ss_sb(arg1.value, arg2.value)));
     return;
@@ -134,8 +159,19 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     return;
   }
 
+  if (decl.vn_vn_vn !== undefined && vector1._type === "VectorNumber" && vector2._type === "VectorNumber") {
+    stack.push(pokaMakeVectorNumber(decl.vn_vn_vn(vector1.value, vector2.value)));
+    return;
+  }
+
+  if (decl.vn_vn_vb !== undefined && vector1._type === "VectorNumber" && vector2._type === "VectorNumber") {
+    stack.push(pokaMakeVectorBoolean(decl.vn_vn_vb(vector1.value, vector2.value)));
+    return;
+  }
+
   if (decl.vs_vs_vb !== undefined && vector1._type === "VectorString" && vector2._type === "VectorString") {
     stack.push(pokaMakeVectorBoolean(decl.vs_vs_vb(vector1.value, vector2.value)));
+    return;
   }
 
   const matrix2 = pokaTryToMatrix(arg2);
@@ -145,8 +181,14 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     return;
   }
 
+  if (decl.mn_mn_mn !== undefined && matrix1._type === "MatrixNumber" && matrix2._type === "MatrixNumber") {
+    stack.push(pokaMakeMatrixNumber(decl.mn_mn_mn(matrix1.value, matrix2.value)));
+    return;
+  }
+
   if (decl.ms_ms_mb !== undefined && matrix1._type === "MatrixString" && matrix2._type === "MatrixString") {
     stack.push(pokaMakeMatrixBoolean(decl.ms_ms_mb(matrix1.value, matrix2.value)));
+    return;
   }
 
   throw "No implementation";

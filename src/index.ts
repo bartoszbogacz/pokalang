@@ -138,9 +138,11 @@ interface PokaNativeFun2 {
   ms_ms_mb?: (a: MatrixString, b: MatrixString) => MatrixBoolean;
   sb_sb_sb?: (a: boolean, b: boolean) => boolean;
   sn_sn_sb?: (a: number, b: number) => boolean;
+  sn_sn_sn?: (a: number, b: number) => number;
   ss_ss_sb?: (a: string, b: string) => boolean;
   ss_ss_vs?: (a: string, b: string) => VectorString;
   vb_vb_vb?: (a: VectorBoolean, b: VectorBoolean) => VectorBoolean;
+  vn_vn_vb?: (a: VectorNumber, b: VectorNumber) => VectorBoolean;
   vn_vn_vn?: (a: VectorNumber, b: VectorNumber) => VectorNumber;
   vs_ss_ms?: (a: VectorString, b: string) => MatrixString;
   vs_vs_vb?: (a: VectorString, b: VectorString) => VectorBoolean;
@@ -267,6 +269,7 @@ function pokaTryToMatrix(value: PokaValue): PokaValue {
     return value;
   }
 
+  const valuesVectorBoolean: VectorBoolean[] = [];
   const valuesVectorNumber: VectorNumber[] = [];
   const valuesVectorString: VectorString[] = [];
 
@@ -274,7 +277,9 @@ function pokaTryToMatrix(value: PokaValue): PokaValue {
     const coerced: PokaValue =
       val._type === "List" ? pokaTryToVector(val) : val;
 
-    if (coerced._type === "VectorNumber") {
+    if (coerced._type === "VectorBoolean") {
+      valuesVectorBoolean.push(coerced.value);
+    } else if (coerced._type === "VectorNumber") {
       valuesVectorNumber.push(coerced.value);
     } else if (coerced._type === "VectorString") {
       valuesVectorString.push(coerced.value);
@@ -283,7 +288,9 @@ function pokaTryToMatrix(value: PokaValue): PokaValue {
     }
   }
 
-  if (valuesVectorNumber.length === value.value.length) {
+  if (valuesVectorBoolean.length === value.value.length) {
+    return pokaMakeMatrixBoolean(pokaVectorBooleanCat(valuesVectorBoolean));
+  } else if (valuesVectorNumber.length === value.value.length) {
     return pokaMakeMatrixNumber(pokaVectorNumberCat(valuesVectorNumber));
   } else if (valuesVectorString.length === value.value.length) {
     return pokaMakeMatrixString(pokaVectorStringCat(valuesVectorString));

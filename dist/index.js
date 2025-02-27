@@ -118,11 +118,15 @@ function pokaTryToMatrix(value) {
     if (value._type !== "List") {
         return value;
     }
+    const valuesVectorBoolean = [];
     const valuesVectorNumber = [];
     const valuesVectorString = [];
     for (const val of value.value) {
         const coerced = val._type === "List" ? pokaTryToVector(val) : val;
-        if (coerced._type === "VectorNumber") {
+        if (coerced._type === "VectorBoolean") {
+            valuesVectorBoolean.push(coerced.value);
+        }
+        else if (coerced._type === "VectorNumber") {
             valuesVectorNumber.push(coerced.value);
         }
         else if (coerced._type === "VectorString") {
@@ -132,7 +136,10 @@ function pokaTryToMatrix(value) {
             return value;
         }
     }
-    if (valuesVectorNumber.length === value.value.length) {
+    if (valuesVectorBoolean.length === value.value.length) {
+        return pokaMakeMatrixBoolean(pokaVectorBooleanCat(valuesVectorBoolean));
+    }
+    else if (valuesVectorNumber.length === value.value.length) {
         return pokaMakeMatrixNumber(pokaVectorNumberCat(valuesVectorNumber));
     }
     else if (valuesVectorString.length === value.value.length) {

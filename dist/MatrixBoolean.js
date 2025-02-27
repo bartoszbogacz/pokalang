@@ -26,3 +26,25 @@ function pokaMatrixBooleanShow(a) {
     result.push("]");
     return result.join("");
 }
+function pokaVectorBooleanCat(values) {
+    const first = values[0];
+    if (first === undefined) {
+        throw new Error("Cannot concatenate an empty list of vectors.");
+    }
+    const firstLen = first.values.length;
+    for (let i = 1; i < values.length; i++) {
+        if (values[i].values.length !== firstLen) {
+            throw new Error("Cannot concatenate vectors with different lengths.");
+        }
+    }
+    const combinedValues = [];
+    for (const mat of values) {
+        combinedValues.push(...mat.values);
+    }
+    return {
+        _type: "MatrixBoolean",
+        countRows: values.length,
+        countCols: firstLen,
+        values: combinedValues,
+    };
+}
