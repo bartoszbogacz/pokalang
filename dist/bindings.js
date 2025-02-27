@@ -3,7 +3,7 @@ const POKA_WORDS2 = {
     pokaVectorNumberToVectorNumber: {
         abs: pokaVectorNumberAbs,
     },
-    pokaMatrixBooleanToScalarBoolean: { all: pokaMatrixBooleanAll },
+    pokaMatrixBooleanToScalarBoolean: {},
     pokaMatrixStringToMatrixNumber: { toNumber: pokaMatrixStringToNumber },
     pokaMatrixNumberToScalarNumber: {
         sum: pokaMatrixNumberSum,
@@ -28,7 +28,6 @@ const POKA_WORDS2 = {
     pokaVectorBooleanAndVectorBooleanToVectorBoolean: {},
     pokaVectorNumberAndVectorNumberToVectorNumber: {
         sub: pokaVectorNumberSubVectorNumber,
-        add: pokaVectorNumberAddVectorNumber,
     },
     pokaVectorStringAndScalarStringToMatrixString: {
         split: pokaVectorStringSplitScalarString,
@@ -36,7 +35,6 @@ const POKA_WORDS2 = {
     pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {},
     pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
         sub: pokaMatrixNumberSubMatrixNumber,
-        add: pokaMatrixNumberAddMatrixNumber,
     },
     pokaVectorStringAndVectorStringToVectorBoolean: {},
     pokaMatrixStringAndMatrixStringToMatrixBoolean: {},
@@ -80,6 +78,16 @@ POKA_WORDS3["add"] = {
     sn_sn_sn: (a, b) => a + b,
     vn_vn_vn: pokaVectorNumberAddVectorNumber,
     mn_mn_mn: pokaMatrixNumberAddMatrixNumber,
+};
+POKA_WORDS3["sub"] = {
+    doc: [
+        "3 1 sub 2 equals",
+        "[3, 3] [1, 1] sub [2, 2] equals all",
+        "[[3, 3], [3, 3]] [[1, 1], [1, 1]] sub [[2, 2], [2, 2]] equals all",
+    ],
+    sn_sn_sn: (a, b) => b - a,
+    vn_vn_vn: pokaVectorNumberSubVectorNumber,
+    mn_mn_mn: pokaMatrixNumberSubMatrixNumber,
 };
 function pokaDispatch2(stack, word) {
     if (word === "True") {

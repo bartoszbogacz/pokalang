@@ -5,7 +5,7 @@ function pokaVectorStringMake(values) {
 function pokaScalarStringSplitScalarString(value, separator) {
     return { _type: "VectorString", values: value.split(separator) };
 }
-function pokaVectorStringEqualsVectorString(a, b) {
+function pokaVectorStringEqualsVectorString(b, a) {
     if (a.values.length !== b.values.length) {
         throw "Shape mismatch";
     }

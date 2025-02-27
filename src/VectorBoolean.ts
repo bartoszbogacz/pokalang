@@ -12,8 +12,8 @@ function pokaVectorBooleanShow(a: VectorBoolean): string {
 }
 
 function pokaVectorBooleanEqualsVectorBoolean(
-  a: VectorBoolean,
   b: VectorBoolean,
+  a: VectorBoolean,
 ): VectorBoolean {
   const r: boolean[] = [];
   for (let i = 0; i < a.values.length; i++) {

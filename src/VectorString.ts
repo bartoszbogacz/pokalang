@@ -15,8 +15,8 @@ function pokaScalarStringSplitScalarString(
 }
 
 function pokaVectorStringEqualsVectorString(
-  a: VectorString,
   b: VectorString,
+  a: VectorString,
 ): VectorBoolean {
   if (a.values.length !== b.values.length) {
     throw "Shape mismatch";
