@@ -138,6 +138,7 @@ interface PokaNativeFun2 {
   ms_ms_mb?: (a: MatrixString, b: MatrixString) => MatrixBoolean;
   sb_sb_sb?: (a: boolean, b: boolean) => boolean;
   sn_sn_sb?: (a: number, b: number) => boolean;
+  ss_ss_sb?: (a: string, b: string) => boolean;
   ss_ss_vs?: (a: string, b: string) => VectorString;
   vb_vb_vb?: (a: VectorBoolean, b: VectorBoolean) => VectorBoolean;
   vn_vn_vn?: (a: VectorNumber, b: VectorNumber) => VectorNumber;
