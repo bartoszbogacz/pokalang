@@ -126,6 +126,13 @@ POKA_WORDS3["sortCols"] = {
   mn_mn: pokaMatrixNumberSortCols,
 }
 
+POKA_WORDS3["transpose"] = {
+  doc: [
+    "[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all",
+  ],
+  mn_mn: pokaMatrixNumberTranspose,
+}
+
 function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
