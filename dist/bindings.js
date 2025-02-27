@@ -1,27 +1,4 @@
 "use strict";
-const POKA_WORDS2 = {
-    pokaVectorNumberToVectorNumber: {},
-    pokaMatrixBooleanToScalarBoolean: {},
-    pokaMatrixStringToMatrixNumber: {},
-    pokaMatrixNumberToScalarNumber: {},
-    pokaMatrixNumberToMatrixNumber: {},
-    pokaScalarBooleanAndScalarBooleanToScalarBoolean: {},
-    pokaScalarNumberAndScalarNumberToScalarBoolean: {},
-    pokaMatrixNumberAndScalarNumberToVectorNumber: {},
-    pokaScalarStringAndScalarStringToVectorString: {
-        split: pokaScalarStringSplitScalarString,
-    },
-    pokaVectorNumberToScalarNumber: {},
-    pokaVectorBooleanAndVectorBooleanToVectorBoolean: {},
-    pokaVectorNumberAndVectorNumberToVectorNumber: {},
-    pokaVectorStringAndScalarStringToMatrixString: {
-        split: pokaVectorStringSplitScalarString,
-    },
-    pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {},
-    pokaMatrixNumberAndMatrixNumberToMatrixNumber: {},
-    pokaVectorStringAndVectorStringToVectorBoolean: {},
-    pokaMatrixStringAndMatrixStringToMatrixBoolean: {},
-};
 const POKA_WORDS3 = {};
 POKA_WORDS3["all"] = {
     doc: [

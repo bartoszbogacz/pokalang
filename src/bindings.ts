@@ -1,27 +1,3 @@
-const POKA_WORDS2: DeprecatedPokaNativeFun = {
-  pokaVectorNumberToVectorNumber: {},
-  pokaMatrixBooleanToScalarBoolean: {},
-  pokaMatrixStringToMatrixNumber: {},
-  pokaMatrixNumberToScalarNumber: {},
-  pokaMatrixNumberToMatrixNumber: {},
-  pokaScalarBooleanAndScalarBooleanToScalarBoolean: {},
-  pokaScalarNumberAndScalarNumberToScalarBoolean: {},
-  pokaMatrixNumberAndScalarNumberToVectorNumber: {},
-  pokaScalarStringAndScalarStringToVectorString: {
-    split: pokaScalarStringSplitScalarString,
-  },
-  pokaVectorNumberToScalarNumber: {},
-  pokaVectorBooleanAndVectorBooleanToVectorBoolean: {},
-  pokaVectorNumberAndVectorNumberToVectorNumber: {},
-  pokaVectorStringAndScalarStringToMatrixString: {
-    split: pokaVectorStringSplitScalarString,
-  },
-  pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {},
-  pokaMatrixNumberAndMatrixNumberToMatrixNumber: {},
-  pokaVectorStringAndVectorStringToVectorBoolean: {},
-  pokaMatrixStringAndMatrixStringToMatrixBoolean: {},
-};
-
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
 POKA_WORDS3["all"] = {
