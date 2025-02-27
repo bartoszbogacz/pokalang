@@ -69,7 +69,9 @@ POKA_WORDS3["sortRows"] = {
     mn_mn: pokaMatrixNumberSortRows,
 };
 POKA_WORDS3["sortCols"] = {
-    doc: ["[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all", "[[1, 2], [2, 1]] sortCols [[1, 1], [2, 2]] equals all",
+    doc: [
+        "[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all",
+        "[[1, 2], [2, 1]] sortCols [[1, 1], [2, 2]] equals all",
     ],
     mn_mn: pokaMatrixNumberSortCols,
 };
