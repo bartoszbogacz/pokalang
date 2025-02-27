@@ -2,7 +2,7 @@
 const POKA_WORDS2 = {
     pokaVectorNumberToVectorNumber: {},
     pokaMatrixBooleanToScalarBoolean: {},
-    pokaMatrixStringToMatrixNumber: { toNumber: pokaMatrixStringToNumber },
+    pokaMatrixStringToMatrixNumber: {},
     pokaMatrixNumberToScalarNumber: {},
     pokaMatrixNumberToMatrixNumber: {},
     pokaScalarBooleanAndScalarBooleanToScalarBoolean: {},
@@ -124,6 +124,14 @@ POKA_WORDS3["toNumber"] = {
     vs_vn: pokaVectorStringToNumber,
     ms_mn: pokaMatrixStringToNumber,
 };
+POKA_WORDS3["split"] = {
+    doc: [
+        '"1 2" " " split ["1", "2"] equals all',
+        '["1 2", "3 4"] " " split [["1", "2"], ["3", "4"]] equals all',
+    ],
+    ss_ss_vs: pokaScalarStringSplitScalarString,
+    vs_ss_ms: pokaVectorStringSplitScalarString,
+};
 function pokaDispatch2(stack, word) {
     if (word === "True") {
         stack.push(pokaMakeScalarBoolean(true));
@@ -132,6 +140,21 @@ function pokaDispatch2(stack, word) {
     if (word === "False") {
         stack.push(pokaMakeScalarBoolean(false));
         return;
+    }
+    if (word === "spread") {
+        const arg1 = stack.pop();
+        if (arg1 === undefined) {
+            throw "No implementation with no arguments";
+        }
+        if (arg1._type === "List") {
+            for (const elem of arg1.value) {
+                stack.push(elem);
+            }
+            return;
+        }
+        else {
+            throw "spread only implemented for List";
+        }
     }
     const decl = POKA_WORDS3[word];
     if (decl === undefined) {
@@ -203,6 +226,10 @@ function pokaDispatch2(stack, word) {
         stack.push(pokaMakeScalarBoolean(decl.ss_ss_sb(arg2.value, arg1.value)));
         return;
     }
+    if (decl.ss_ss_vs !== undefined && arg1._type === "ScalarString" && arg2._type === "ScalarString") {
+        stack.push(pokaMakeVectorString(decl.ss_ss_vs(arg2.value, arg1.value)));
+        return;
+    }
     const vector2 = pokaTryToVector(arg2);
     if (decl.vb_vb_vb !== undefined && vector1._type === "VectorBoolean" && vector2._type === "VectorBoolean") {
         stack.push(pokaMakeVectorBoolean(decl.vb_vb_vb(vector2.value, vector1.value)));
@@ -218,6 +245,10 @@ function pokaDispatch2(stack, word) {
     }
     if (decl.vs_vs_vb !== undefined && vector1._type === "VectorString" && vector2._type === "VectorString") {
         stack.push(pokaMakeVectorBoolean(decl.vs_vs_vb(vector2.value, vector1.value)));
+        return;
+    }
+    if (decl.vs_ss_ms !== undefined && arg1._type === "ScalarString" && vector2._type === "VectorString") {
+        stack.push(pokaMakeMatrixString(decl.vs_ss_ms(vector2.value, arg1.value)));
         return;
     }
     const matrix2 = pokaTryToMatrix(arg2);
