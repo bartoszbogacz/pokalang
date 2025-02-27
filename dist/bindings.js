@@ -5,9 +5,7 @@ const POKA_WORDS2 = {
     },
     pokaMatrixBooleanToScalarBoolean: {},
     pokaMatrixStringToMatrixNumber: { toNumber: pokaMatrixStringToNumber },
-    pokaMatrixNumberToScalarNumber: {
-        sum: pokaMatrixNumberSum,
-    },
+    pokaMatrixNumberToScalarNumber: {},
     pokaMatrixNumberToMatrixNumber: {
         sortRows: pokaMatrixNumberSortRows,
         transpose: pokaMatrixNumberTranspose,
@@ -22,20 +20,14 @@ const POKA_WORDS2 = {
     pokaScalarStringAndScalarStringToVectorString: {
         split: pokaScalarStringSplitScalarString,
     },
-    pokaVectorNumberToScalarNumber: {
-        sum: pokaVectorNumberSum,
-    },
+    pokaVectorNumberToScalarNumber: {},
     pokaVectorBooleanAndVectorBooleanToVectorBoolean: {},
-    pokaVectorNumberAndVectorNumberToVectorNumber: {
-        sub: pokaVectorNumberSubVectorNumber,
-    },
+    pokaVectorNumberAndVectorNumberToVectorNumber: {},
     pokaVectorStringAndScalarStringToMatrixString: {
         split: pokaVectorStringSplitScalarString,
     },
     pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {},
-    pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
-        sub: pokaMatrixNumberSubMatrixNumber,
-    },
+    pokaMatrixNumberAndMatrixNumberToMatrixNumber: {},
     pokaVectorStringAndVectorStringToVectorBoolean: {},
     pokaMatrixStringAndMatrixStringToMatrixBoolean: {},
 };
@@ -89,6 +81,14 @@ POKA_WORDS3["sub"] = {
     vn_vn_vn: pokaVectorNumberSubVectorNumber,
     mn_mn_mn: pokaMatrixNumberSubMatrixNumber,
 };
+POKA_WORDS3["sum"] = {
+    doc: [
+        "[1, 1] sum 2 equals",
+        "[[1, 1], [2, 2]] sum 6 equals",
+    ],
+    vn_sn: pokaVectorNumberSum,
+    mn_sn: pokaMatrixNumberSum,
+};
 function pokaDispatch2(stack, word) {
     if (word === "True") {
         stack.push(pokaMakeScalarBoolean(true));
@@ -111,9 +111,17 @@ function pokaDispatch2(stack, word) {
         stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1.value)));
         return;
     }
+    if (decl.vn_sn !== undefined && vector1._type === "VectorNumber") {
+        stack.push(pokaMakeScalarNumber(decl.vn_sn(vector1.value)));
+        return;
+    }
     const matrix1 = pokaTryToMatrix(arg1);
     if (decl.mb_sb !== undefined && matrix1._type === "MatrixBoolean") {
         stack.push(pokaMakeScalarBoolean(decl.mb_sb(matrix1.value)));
+        return;
+    }
+    if (decl.mn_sn !== undefined && matrix1._type === "MatrixNumber") {
+        stack.push(pokaMakeScalarNumber(decl.mn_sn(matrix1.value)));
         return;
     }
     const arg2 = stack.pop();

@@ -5,7 +5,6 @@ const POKA_WORDS2: DeprecatedPokaNativeFun = {
   pokaMatrixBooleanToScalarBoolean: { },
   pokaMatrixStringToMatrixNumber: { toNumber: pokaMatrixStringToNumber },
   pokaMatrixNumberToScalarNumber: {
-    sum: pokaMatrixNumberSum,
   },
   pokaMatrixNumberToMatrixNumber: {
     sortRows: pokaMatrixNumberSortRows,
@@ -24,12 +23,10 @@ const POKA_WORDS2: DeprecatedPokaNativeFun = {
     split: pokaScalarStringSplitScalarString,
   },
   pokaVectorNumberToScalarNumber: {
-    sum: pokaVectorNumberSum,
   },
   pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
   },
   pokaVectorNumberAndVectorNumberToVectorNumber: {
-    sub: pokaVectorNumberSubVectorNumber,
   },
   pokaVectorStringAndScalarStringToMatrixString: {
     split: pokaVectorStringSplitScalarString,
@@ -37,7 +34,6 @@ const POKA_WORDS2: DeprecatedPokaNativeFun = {
   pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
   },
   pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
-    sub: pokaMatrixNumberSubMatrixNumber,
   },
   pokaVectorStringAndVectorStringToVectorBoolean: {
   },
@@ -100,6 +96,15 @@ POKA_WORDS3["sub"] = {
   mn_mn_mn: pokaMatrixNumberSubMatrixNumber,
 }
 
+POKA_WORDS3["sum"] = {
+  doc: [
+    "[1, 1] sum 2 equals",
+    "[[1, 1], [2, 2]] sum 6 equals",
+  ],
+  vn_sn: pokaVectorNumberSum,
+  mn_sn: pokaMatrixNumberSum,
+}
+
 function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
@@ -129,10 +134,20 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
     return;
   }
 
+  if (decl.vn_sn !== undefined && vector1._type === "VectorNumber") {
+    stack.push(pokaMakeScalarNumber(decl.vn_sn(vector1.value)));
+    return;
+  }
+
   const matrix1 = pokaTryToMatrix(arg1);
 
   if (decl.mb_sb !== undefined && matrix1._type === "MatrixBoolean") {
     stack.push(pokaMakeScalarBoolean(decl.mb_sb(matrix1.value)));
+    return;
+  }
+
+  if (decl.mn_sn !== undefined && matrix1._type === "MatrixNumber") {
+    stack.push(pokaMakeScalarNumber(decl.mn_sn(matrix1.value)));
     return;
   }
 
