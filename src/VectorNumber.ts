@@ -8,8 +8,8 @@ function pokaVectorNumberMake(values: number[]): VectorNumber {
 }
 
 function pokaVectorNumberEqualsVectorNumber(
-  b: VectorNumber,
   a: VectorNumber,
+  b: VectorNumber,
 ): VectorBoolean {
   const r: boolean[] = [];
   for (let i = 0; i < a.values.length; i++) {
@@ -19,8 +19,8 @@ function pokaVectorNumberEqualsVectorNumber(
 }
 
 function pokaVectorNumberSubVectorNumber(
-  b: VectorNumber,
   a: VectorNumber,
+  b: VectorNumber,
 ): VectorNumber {
   if (a.values.length !== b.values.length) {
     throw new Error("Shapes do not match.");
@@ -37,8 +37,8 @@ function pokaVectorNumberAbs(a: VectorNumber): VectorNumber {
 }
 
 function pokaVectorNumberAddVectorNumber(
-  b: VectorNumber,
   a: VectorNumber,
+  b: VectorNumber,
 ): VectorNumber {
   if (a.values.length !== b.values.length) {
     throw new Error("Shapes do not match.");

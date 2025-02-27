@@ -237,7 +237,7 @@ function pokaVectorNumberCat(values) {
         values: combinedValues,
     };
 }
-function pokaMatrixNumberEqualsMatrixNumber(b, a) {
+function pokaMatrixNumberEqualsMatrixNumber(a, b) {
     if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
         throw "Shape mismatch";
     }
@@ -278,7 +278,7 @@ function pokaMatrixNumberSortCols(a) {
     a = pokaMatrixNumberTranspose(a);
     return a;
 }
-function pokaMatrixNumberSubMatrixNumber(b, a) {
+function pokaMatrixNumberSubMatrixNumber(a, b) {
     if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
         throw new Error("Shapes do not match for subMatrix.");
     }
@@ -291,7 +291,7 @@ function pokaMatrixNumberSubMatrixNumber(b, a) {
 function pokaMatrixNumberAbs(a) {
     return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(Math.abs));
 }
-function pokaMatrixNumberAddMatrixNumber(b, a) {
+function pokaMatrixNumberAddMatrixNumber(a, b) {
     if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
         throw new Error("Shapes do not match for subMatrix.");
     }

@@ -2,14 +2,14 @@
 function pokaVectorNumberMake(values) {
     return { _type: "VectorNumber", values: values };
 }
-function pokaVectorNumberEqualsVectorNumber(b, a) {
+function pokaVectorNumberEqualsVectorNumber(a, b) {
     const r = [];
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
     return { _type: "VectorBoolean", values: r };
 }
-function pokaVectorNumberSubVectorNumber(b, a) {
+function pokaVectorNumberSubVectorNumber(a, b) {
     if (a.values.length !== b.values.length) {
         throw new Error("Shapes do not match.");
     }
@@ -22,7 +22,7 @@ function pokaVectorNumberSubVectorNumber(b, a) {
 function pokaVectorNumberAbs(a) {
     return pokaVectorNumberMake(a.values.map(Math.abs));
 }
-function pokaVectorNumberAddVectorNumber(b, a) {
+function pokaVectorNumberAddVectorNumber(a, b) {
     if (a.values.length !== b.values.length) {
         throw new Error("Shapes do not match.");
     }

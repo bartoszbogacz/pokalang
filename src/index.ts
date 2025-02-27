@@ -124,14 +124,16 @@ interface DeprecatedPokaNativeFun {
 interface PokaNativeFun2 {
   doc: string[];
   //
-  sn_sn?: (a: number) => number;
   mb_sb?: (a: MatrixBoolean) => boolean;
   mn_mn?: (a: MatrixNumber) => MatrixNumber;
   mn_sn?: (a: MatrixNumber) => number;
   ms_mn?: (a: MatrixString) => MatrixNumber;
+  sn_sn?: (a: number) => number;
+  ss_sn?: (a: string) => number;
   vb_sb?: (a: VectorBoolean) => boolean;
   vn_sn?: (a: VectorNumber) => number;
   vn_vn?: (a: VectorNumber) => VectorNumber;
+  vs_vn?: (a: VectorString) => VectorNumber;
   //
   mn_mn_mb?: (a: MatrixNumber, b: MatrixNumber) => MatrixBoolean;
   mn_mn_mn?: (a: MatrixNumber, b: MatrixNumber) => MatrixNumber;
@@ -415,7 +417,7 @@ function consumeIdentifer(state: InterpreterState): void {
     throw "Expected identifier";
   }
   const token = state.line.slice(start, state.pos);
-  pokaDispatchDeprecated(state.stack, token);
+  pokaDispatch2(state.stack, token);
 }
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {

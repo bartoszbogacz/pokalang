@@ -5,7 +5,7 @@ function pokaVectorBooleanAll(a) {
 function pokaVectorBooleanShow(a) {
     return "[" + a.values.map((x) => (x ? "X" : ".")).join(",") + "]";
 }
-function pokaVectorBooleanEqualsVectorBoolean(b, a) {
+function pokaVectorBooleanEqualsVectorBoolean(a, b) {
     const r = [];
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);

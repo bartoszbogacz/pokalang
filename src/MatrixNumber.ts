@@ -258,8 +258,8 @@ function pokaVectorNumberCat(values: VectorNumber[]): MatrixNumber {
 }
 
 function pokaMatrixNumberEqualsMatrixNumber(
-  b: MatrixNumber,
   a: MatrixNumber,
+  b: MatrixNumber,
 ): MatrixBoolean {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw "Shape mismatch";
@@ -306,8 +306,8 @@ function pokaMatrixNumberSortCols(a: MatrixNumber): MatrixNumber {
 }
 
 function pokaMatrixNumberSubMatrixNumber(
-  b: MatrixNumber,
   a: MatrixNumber,
+  b: MatrixNumber,
 ): MatrixNumber {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw new Error("Shapes do not match for subMatrix.");
@@ -324,8 +324,8 @@ function pokaMatrixNumberAbs(a: MatrixNumber): MatrixNumber {
 }
 
 function pokaMatrixNumberAddMatrixNumber(
-  b: MatrixNumber,
   a: MatrixNumber,
+  b: MatrixNumber,
 ): MatrixNumber {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw new Error("Shapes do not match for subMatrix.");

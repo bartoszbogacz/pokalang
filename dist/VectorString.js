@@ -5,7 +5,7 @@ function pokaVectorStringMake(values) {
 function pokaScalarStringSplitScalarString(value, separator) {
     return { _type: "VectorString", values: value.split(separator) };
 }
-function pokaVectorStringEqualsVectorString(b, a) {
+function pokaVectorStringEqualsVectorString(a, b) {
     if (a.values.length !== b.values.length) {
         throw "Shape mismatch";
     }
@@ -17,4 +17,7 @@ function pokaVectorStringEqualsVectorString(b, a) {
 }
 function pokaVectorStringShow(a) {
     return "[" + a.values.map((x) => '"' + x + '"').join(", ") + "]";
+}
+function pokaVectorStringToNumber(a) {
+    return pokaVectorNumberMake(a.values.map(parseFloat));
 }

@@ -15,8 +15,8 @@ function pokaScalarStringSplitScalarString(
 }
 
 function pokaVectorStringEqualsVectorString(
-  b: VectorString,
   a: VectorString,
+  b: VectorString,
 ): VectorBoolean {
   if (a.values.length !== b.values.length) {
     throw "Shape mismatch";
@@ -30,4 +30,8 @@ function pokaVectorStringEqualsVectorString(
 
 function pokaVectorStringShow(a: VectorString): string {
   return "[" + a.values.map((x) => '"' + x + '"').join(", ") + "]";
+}
+
+function pokaVectorStringToNumber(a: VectorString): VectorNumber {
+  return pokaVectorNumberMake(a.values.map(parseFloat));
 }
