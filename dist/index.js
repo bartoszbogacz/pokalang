@@ -324,6 +324,25 @@ function run(line) {
     state.error = error;
     return state;
 }
+function runWithInput(line, input) {
+    const state = {
+        line: line,
+        pos: 0,
+        stack: [pokaMakeScalarString(input)],
+        error: "",
+    };
+    let error = "";
+    try {
+        while (!peekEOL(state)) {
+            consumeExpression(state);
+        }
+    }
+    catch (exc) {
+        error = "" + exc;
+    }
+    state.error = error;
+    return state;
+}
 function onInput(ev) {
     const target = ev.target;
     if (!(target instanceof HTMLInputElement)) {

@@ -1,9 +1,10 @@
 const AOC2025: {
-  [key: string]: { input: string; answer: number };
+  [key: string]: { input: string; answer: number; program: string[]; };
 } = {
   day1a: {
     input: ["3   4", "4   3", "2   5", "1   3", "3   9", "3   3"].join("\n"),
     answer: 11,
+    program: ['"\n" split "   " split toNumber sortCols [0 col, 1 col] spread sub abs sum'],
   },
   day2a: {
     input: [
@@ -15,5 +16,6 @@ const AOC2025: {
       "1 3 6 7 9",
     ].join("\n"),
     answer: 2,
+    program: [""],
   },
 };

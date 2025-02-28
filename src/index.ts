@@ -488,6 +488,28 @@ function run(line: string): InterpreterState {
   return state;
 }
 
+function runWithInput(line: string, input: string): InterpreterState {
+  const state: InterpreterState = {
+    line: line,
+    pos: 0,
+    stack: [pokaMakeScalarString(input)],
+    error: "",
+  };
+
+  let error: string = "";
+  try {
+    while (!peekEOL(state)) {
+      consumeExpression(state);
+    }
+  } catch (exc) {
+    error = "" + exc;
+  }
+
+  state.error = error;
+
+  return state;
+}
+
 function onInput(ev: InputEvent) {
   const target = ev.target;
   if (!(target instanceof HTMLInputElement)) {

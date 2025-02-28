@@ -1,9 +1,7 @@
 "use strict";
 const POKA_TESTS = [
-    '"1 2 3" " " split ["1", "2", "3"] equals all',
     '"1 2 3,4 5 6" "," split " " split [["1", "2", "3"], ["4", "5", "6"]] equals all',
     '"1 2 3,4 5 6" "," split " " split toNumber [0 col, -1 col] [[1, 4], [3, 6]] equals all',
-    "[[1, 2], [2, 1]] sortCols [[1, 1], [2, 2]] equals all",
     '"1 4,2 3,3 2" "," split " " split toNumber sortCols [0 col, 1 col] spread sub abs sum 3 equals',
 ];
 function pokaTestsRun() {
@@ -56,11 +54,37 @@ function pokaDocTestsRun() {
     }
     return result.join("\n");
 }
+function pokaTestsAocRun() {
+    const result = [];
+    for (const [_, day] of Object.entries(AOC2025)) {
+        for (const line of day.program) {
+            try {
+                const state = runWithInput(line, day.input);
+                const top = state.stack.pop();
+                if (top === undefined) {
+                    throw "Stack exhausted";
+                }
+                if (top._type !== "ScalarNumber") {
+                    throw "Test has non ScalarNumber result: " + pokaShow(top);
+                }
+                if (top.value !== day.answer) {
+                    throw "Test failed";
+                }
+                result.push("OK   | " + line);
+            }
+            catch (exc) {
+                result.push("FAIL | " + line);
+                result.push(" EXC | " + exc);
+            }
+        }
+    }
+    return result.join("\n");
+}
 function pokaTestsShow() {
     const elem = document.getElementById("poka_test_results");
     if (elem === null) {
         throw "Test output div not found";
     }
-    elem.innerText = pokaTestsRun() + "\n" + pokaDocTestsRun();
+    elem.innerText = pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTestsRun();
 }
 pokaTestsShow();
