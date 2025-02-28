@@ -117,6 +117,13 @@ POKA_WORDS3["split"] = {
   vs_ss_ms: pokaVectorStringSplitScalarString,
 };
 
+POKA_WORDS3["rotr"] = {
+  doc: [
+    "[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all",
+  ],
+  mn_sn_mn: pokaMatrixNumberRotR,
+}
+
 function pokaDispatch2(stack: PokaValue[], word: string): void {
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
@@ -125,6 +132,20 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
 
   if (word === "False") {
     stack.push(pokaMakeScalarBoolean(false));
+    return;
+  }
+
+  if (word === "id") {
+    return;
+  }
+
+  if (word === "dup") {
+    const a = stack.pop();
+    if (a === undefined) {
+      throw "dup: Stack underflow";
+    }
+    stack.push(a);
+    stack.push(a);
     return;
   }
 
@@ -334,6 +355,17 @@ function pokaDispatch2(stack: PokaValue[], word: string): void {
   ) {
     stack.push(
       pokaMakeMatrixNumber(decl.mn_mn_mn(matrix2.value, matrix1.value)),
+    );
+    return;
+  }
+
+  if (
+    decl.mn_sn_mn !== undefined &&
+    arg1._type === "ScalarNumber" &&
+    matrix2._type === "MatrixNumber"
+  ) {
+    stack.push(
+      pokaMakeMatrixNumber(decl.mn_sn_mn(matrix2.value, arg1.value)),
     );
     return;
   }

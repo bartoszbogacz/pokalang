@@ -354,3 +354,13 @@ function pokaMatrixNumberShow(a: MatrixNumber): string {
   result.push("]");
   return result.join("");
 }
+
+function pokaMatrixNumberRotR(a: MatrixNumber, b: number): MatrixNumber {
+  const values: number[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    for (let j = 0; j < a.countCols; j++) {
+      values.push(a.values[i * a.countCols + (j + b) % a.countCols] as number);
+    }
+  }
+  return { _type: "MatrixNumber", countRows: a.countRows, countCols: a.countCols, values: values };
+}

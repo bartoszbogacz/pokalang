@@ -15,6 +15,6 @@ const AOC2025 = {
             "1 3 6 7 9",
         ].join("\n"),
         answer: 2,
-        program: [""],
+        program: ['"\n" split " " split toNumber dup 1 rotr sub'],
     },
 };

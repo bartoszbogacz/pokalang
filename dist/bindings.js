@@ -105,6 +105,12 @@ POKA_WORDS3["split"] = {
     ss_ss_vs: pokaScalarStringSplitScalarString,
     vs_ss_ms: pokaVectorStringSplitScalarString,
 };
+POKA_WORDS3["rotr"] = {
+    doc: [
+        "[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all",
+    ],
+    mn_sn_mn: pokaMatrixNumberRotR,
+};
 function pokaDispatch2(stack, word) {
     if (word === "True") {
         stack.push(pokaMakeScalarBoolean(true));
@@ -112,6 +118,18 @@ function pokaDispatch2(stack, word) {
     }
     if (word === "False") {
         stack.push(pokaMakeScalarBoolean(false));
+        return;
+    }
+    if (word === "id") {
+        return;
+    }
+    if (word === "dup") {
+        const a = stack.pop();
+        if (a === undefined) {
+            throw "dup: Stack underflow";
+        }
+        stack.push(a);
+        stack.push(a);
         return;
     }
     if (word === "spread") {
@@ -255,6 +273,12 @@ function pokaDispatch2(stack, word) {
         matrix1._type === "MatrixNumber" &&
         matrix2._type === "MatrixNumber") {
         stack.push(pokaMakeMatrixNumber(decl.mn_mn_mn(matrix2.value, matrix1.value)));
+        return;
+    }
+    if (decl.mn_sn_mn !== undefined &&
+        arg1._type === "ScalarNumber" &&
+        matrix2._type === "MatrixNumber") {
+        stack.push(pokaMakeMatrixNumber(decl.mn_sn_mn(matrix2.value, arg1.value)));
         return;
     }
     if (decl.mn_sn_vn !== undefined &&
