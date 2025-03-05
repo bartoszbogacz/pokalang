@@ -1,27 +1,27 @@
-interface VectorNumber {
-  _type: "VectorNumber";
+interface PokaVectorNumber {
+  _type: "PokaVectorNumber";
   values: number[];
 }
 
-function pokaVectorNumberMake(values: number[]): VectorNumber {
-  return { _type: "VectorNumber", values: values };
+function pokaVectorNumberMake(values: number[]): PokaVectorNumber {
+  return { _type: "PokaVectorNumber", values: values };
 }
 
 function pokaVectorNumberEqualsVectorNumber(
-  a: VectorNumber,
-  b: VectorNumber,
-): VectorBoolean {
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorBoolean {
   const r: boolean[] = [];
   for (let i = 0; i < a.values.length; i++) {
     r.push(a.values[i] === b.values[i]);
   }
-  return { _type: "VectorBoolean", values: r };
+  return { _type: "PokaVectorBoolean", values: r };
 }
 
 function pokaVectorNumberSubVectorNumber(
-  a: VectorNumber,
-  b: VectorNumber,
-): VectorNumber {
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorNumber {
   if (a.values.length !== b.values.length) {
     throw new Error("Shapes do not match.");
   }
@@ -32,14 +32,14 @@ function pokaVectorNumberSubVectorNumber(
   return pokaVectorNumberMake(newVals);
 }
 
-function pokaVectorNumberAbs(a: VectorNumber): VectorNumber {
+function pokaVectorNumberAbs(a: PokaVectorNumber): PokaVectorNumber {
   return pokaVectorNumberMake(a.values.map(Math.abs));
 }
 
 function pokaVectorNumberAddVectorNumber(
-  a: VectorNumber,
-  b: VectorNumber,
-): VectorNumber {
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorNumber {
   if (a.values.length !== b.values.length) {
     throw new Error("Shapes do not match.");
   }
@@ -50,10 +50,10 @@ function pokaVectorNumberAddVectorNumber(
   return pokaVectorNumberMake(newVals);
 }
 
-function pokaVectorNumberSum(a: VectorNumber): number {
+function pokaVectorNumberSum(a: PokaVectorNumber): number {
   return a.values.reduce((a, b) => a + b);
 }
 
-function pokaVectorNumberShow(a: VectorNumber): string {
+function pokaVectorNumberShow(a: PokaVectorNumber): string {
   return "[" + a.values.map((x) => x.toFixed(2)).join(", ") + "]";
 }

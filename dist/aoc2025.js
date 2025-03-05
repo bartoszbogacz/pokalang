@@ -3,7 +3,9 @@ const AOC2025 = {
     day1a: {
         input: ["3   4", "4   3", "2   5", "1   3", "3   9", "3   3"].join("\n"),
         answer: 11,
-        program: ['"\n" split "   " split toNumber sortCols [0 col, 1 col] spread sub abs sum'],
+        program: [
+            '"\n" split "   " split toNumber sortCols [0 col, 1 col] spread sub abs sum',
+        ],
     },
     day2a: {
         input: [

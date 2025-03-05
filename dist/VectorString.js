@@ -1,9 +1,9 @@
 "use strict";
 function pokaVectorStringMake(values) {
-    return { _type: "VectorString", values: values };
+    return { _type: "PokaVectorString", values: values };
 }
 function pokaScalarStringSplitScalarString(value, separator) {
-    return { _type: "VectorString", values: value.split(separator) };
+    return { _type: "PokaVectorString", values: value.split(separator) };
 }
 function pokaVectorStringEqualsVectorString(a, b) {
     if (a.values.length !== b.values.length) {
@@ -13,7 +13,7 @@ function pokaVectorStringEqualsVectorString(a, b) {
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
-    return { _type: "VectorBoolean", values: r };
+    return { _type: "PokaVectorBoolean", values: r };
 }
 function pokaVectorStringShow(a) {
     return "[" + a.values.map((x) => '"' + x + '"').join(", ") + "]";

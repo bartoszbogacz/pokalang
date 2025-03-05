@@ -88,7 +88,7 @@ function pokaMatrixStringMake(countRows, countCols, values) {
         throw "Shape mismatch";
     }
     return {
-        _type: "MatrixString",
+        _type: "PokaMatrixString",
         countRows: countRows,
         countCols: countCols,
         values: values,
@@ -114,7 +114,7 @@ function pokaVectorStringSplitScalarString(vecA, separator) {
         }
     }
     return {
-        _type: "MatrixString",
+        _type: "PokaMatrixString",
         countRows: vecA.values.length,
         countCols: maxLen,
         values: newValues,
@@ -136,7 +136,7 @@ function pokaVectorStringCat(values) {
         combinedValues.push(...mat.values);
     }
     return {
-        _type: "MatrixString",
+        _type: "PokaMatrixString",
         countRows: values.length,
         countCols: firstLen,
         values: combinedValues,
@@ -151,7 +151,7 @@ function pokaMatrixStringEqualsMatrixString(a, b) {
         r.push(a.values[i] === b.values[i]);
     }
     return {
-        _type: "MatrixBoolean",
+        _type: "PokaMatrixBoolean",
         countRows: a.countRows,
         countCols: a.countCols,
         values: r,

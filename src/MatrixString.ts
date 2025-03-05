@@ -83,8 +83,8 @@ class _MatrixString {
 }
 */
 
-interface MatrixString {
-  _type: "MatrixString";
+interface PokaMatrixString {
+  _type: "PokaMatrixString";
   values: string[];
   countRows: number;
   countCols: number;
@@ -94,12 +94,12 @@ function pokaMatrixStringMake(
   countRows: number,
   countCols: number,
   values: string[],
-): MatrixString {
+): PokaMatrixString {
   if (countRows * countCols !== values.length) {
     throw "Shape mismatch";
   }
   return {
-    _type: "MatrixString",
+    _type: "PokaMatrixString",
     countRows: countRows,
     countCols: countCols,
     values: values,
@@ -107,9 +107,9 @@ function pokaMatrixStringMake(
 }
 
 function pokaVectorStringSplitScalarString(
-  vecA: VectorString,
+  vecA: PokaVectorString,
   separator: string,
-): MatrixString {
+): PokaMatrixString {
   const splitted: string[][] = vecA.values.map((val) => val.split(separator));
 
   let maxLen = 0;
@@ -131,14 +131,14 @@ function pokaVectorStringSplitScalarString(
   }
 
   return {
-    _type: "MatrixString",
+    _type: "PokaMatrixString",
     countRows: vecA.values.length,
     countCols: maxLen,
     values: newValues,
   };
 }
 
-function pokaVectorStringCat(values: VectorString[]): MatrixString {
+function pokaVectorStringCat(values: PokaVectorString[]): PokaMatrixString {
   const first = values[0];
   if (first === undefined) {
     throw new Error("Cannot concatenate an empty list of vectors.");
@@ -146,7 +146,7 @@ function pokaVectorStringCat(values: VectorString[]): MatrixString {
   const firstLen = first.values.length;
 
   for (let i = 1; i < values.length; i++) {
-    if ((values[i] as VectorString).values.length !== firstLen) {
+    if ((values[i] as PokaVectorString).values.length !== firstLen) {
       throw new Error("Cannot concatenate vectors with different lengths.");
     }
   }
@@ -157,7 +157,7 @@ function pokaVectorStringCat(values: VectorString[]): MatrixString {
   }
 
   return {
-    _type: "MatrixString",
+    _type: "PokaMatrixString",
     countRows: values.length,
     countCols: firstLen,
     values: combinedValues,
@@ -165,9 +165,9 @@ function pokaVectorStringCat(values: VectorString[]): MatrixString {
 }
 
 function pokaMatrixStringEqualsMatrixString(
-  a: MatrixString,
-  b: MatrixString,
-): MatrixBoolean {
+  a: PokaMatrixString,
+  b: PokaMatrixString,
+): PokaMatrixBoolean {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw "Shape mismatch";
   }
@@ -176,14 +176,14 @@ function pokaMatrixStringEqualsMatrixString(
     r.push(a.values[i] === b.values[i]);
   }
   return {
-    _type: "MatrixBoolean",
+    _type: "PokaMatrixBoolean",
     countRows: a.countRows,
     countCols: a.countCols,
     values: r,
   };
 }
 
-function pokaMatrixStringToNumber(a: MatrixString): MatrixNumber {
+function pokaMatrixStringToNumber(a: PokaMatrixString): PokaMatrixNumber {
   return pokaMatrixNumberMake(
     a.countRows,
     a.countCols,
@@ -191,7 +191,7 @@ function pokaMatrixStringToNumber(a: MatrixString): MatrixNumber {
   );
 }
 
-function pokaMatrixStringShow(a: MatrixString): string {
+function pokaMatrixStringShow(a: PokaMatrixString): string {
   const result: string[] = [];
   result.push("[");
   for (let i = 0; i < a.countRows; i++) {

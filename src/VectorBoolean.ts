@@ -1,23 +1,23 @@
-interface VectorBoolean {
-  _type: "VectorBoolean";
+interface PokaVectorBoolean {
+  _type: "PokaVectorBoolean";
   values: boolean[];
 }
 
-function pokaVectorBooleanAll(a: VectorBoolean): boolean {
+function pokaVectorBooleanAll(a: PokaVectorBoolean): boolean {
   return a.values.reduce((a, b) => a && b);
 }
 
-function pokaVectorBooleanShow(a: VectorBoolean): string {
+function pokaVectorBooleanShow(a: PokaVectorBoolean): string {
   return "[" + a.values.map((x) => (x ? "X" : ".")).join(",") + "]";
 }
 
 function pokaVectorBooleanEqualsVectorBoolean(
-  a: VectorBoolean,
-  b: VectorBoolean,
-): VectorBoolean {
+  a: PokaVectorBoolean,
+  b: PokaVectorBoolean,
+): PokaVectorBoolean {
   const r: boolean[] = [];
   for (let i = 0; i < a.values.length; i++) {
     r.push(a.values[i] === b.values[i]);
   }
-  return { _type: "VectorBoolean", values: r };
+  return { _type: "PokaVectorBoolean", values: r };
 }

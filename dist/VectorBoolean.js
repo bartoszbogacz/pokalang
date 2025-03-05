@@ -10,5 +10,5 @@ function pokaVectorBooleanEqualsVectorBoolean(a, b) {
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
-    return { _type: "VectorBoolean", values: r };
+    return { _type: "PokaVectorBoolean", values: r };
 }

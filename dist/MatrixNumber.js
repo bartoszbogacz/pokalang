@@ -196,7 +196,7 @@ function pokaMatrixNumberMake(countRows, countCols, values) {
         throw "Shape mismatch";
     }
     return {
-        _type: "MatrixNumber",
+        _type: "PokaMatrixNumber",
         countRows: countRows,
         countCols: countCols,
         values: values,
@@ -231,7 +231,7 @@ function pokaVectorNumberCat(values) {
         combinedValues.push(...mat.values);
     }
     return {
-        _type: "MatrixNumber",
+        _type: "PokaMatrixNumber",
         countRows: values.length,
         countCols: firstLen,
         values: combinedValues,
@@ -246,7 +246,7 @@ function pokaMatrixNumberEqualsMatrixNumber(a, b) {
         r.push(a.values[i] === b.values[i]);
     }
     return {
-        _type: "MatrixBoolean",
+        _type: "PokaMatrixBoolean",
         countRows: a.countRows,
         countCols: a.countCols,
         values: r,
@@ -321,8 +321,13 @@ function pokaMatrixNumberRotR(a, b) {
     const values = [];
     for (let i = 0; i < a.countRows; i++) {
         for (let j = 0; j < a.countCols; j++) {
-            values.push(a.values[i * a.countCols + (j + b) % a.countCols]);
+            values.push(a.values[i * a.countCols + ((j + b) % a.countCols)]);
         }
     }
-    return { _type: "MatrixNumber", countRows: a.countRows, countCols: a.countCols, values: values };
+    return {
+        _type: "PokaMatrixNumber",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: values,
+    };
 }

@@ -1,13 +1,13 @@
 "use strict";
 function pokaVectorNumberMake(values) {
-    return { _type: "VectorNumber", values: values };
+    return { _type: "PokaVectorNumber", values: values };
 }
 function pokaVectorNumberEqualsVectorNumber(a, b) {
     const r = [];
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
-    return { _type: "VectorBoolean", values: r };
+    return { _type: "PokaVectorBoolean", values: r };
 }
 function pokaVectorNumberSubVectorNumber(a, b) {
     if (a.values.length !== b.values.length) {

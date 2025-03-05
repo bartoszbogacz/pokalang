@@ -191,8 +191,8 @@ class MatrixDouble {
 }
 */
 
-interface MatrixNumber {
-  _type: "MatrixNumber";
+interface PokaMatrixNumber {
+  _type: "PokaMatrixNumber";
   values: number[];
   countRows: number;
   countCols: number;
@@ -202,12 +202,12 @@ function pokaMatrixNumberMake(
   countRows: number,
   countCols: number,
   values: number[],
-): MatrixNumber {
+): PokaMatrixNumber {
   if (countRows * countCols !== values.length) {
     throw "Shape mismatch";
   }
   return {
-    _type: "MatrixNumber",
+    _type: "PokaMatrixNumber",
     countRows: countRows,
     countCols: countCols,
     values: values,
@@ -215,9 +215,9 @@ function pokaMatrixNumberMake(
 }
 
 function pokaMatrixNumberColScalarNumber(
-  matA: MatrixNumber,
+  matA: PokaMatrixNumber,
   n: number,
-): VectorNumber {
+): PokaVectorNumber {
   if (n < 0) {
     n = matA.countCols + n;
   }
@@ -231,7 +231,7 @@ function pokaMatrixNumberColScalarNumber(
   return pokaVectorNumberMake(colValues);
 }
 
-function pokaVectorNumberCat(values: VectorNumber[]): MatrixNumber {
+function pokaVectorNumberCat(values: PokaVectorNumber[]): PokaMatrixNumber {
   const first = values[0];
   if (first === undefined) {
     throw new Error("Cannot concatenate an empty list of vectors.");
@@ -239,7 +239,7 @@ function pokaVectorNumberCat(values: VectorNumber[]): MatrixNumber {
   const firstLen = first.values.length;
 
   for (let i = 1; i < values.length; i++) {
-    if ((values[i] as VectorNumber).values.length !== firstLen) {
+    if ((values[i] as PokaVectorNumber).values.length !== firstLen) {
       throw new Error("Cannot concatenate vectors with different lengths.");
     }
   }
@@ -250,7 +250,7 @@ function pokaVectorNumberCat(values: VectorNumber[]): MatrixNumber {
   }
 
   return {
-    _type: "MatrixNumber",
+    _type: "PokaMatrixNumber",
     countRows: values.length,
     countCols: firstLen,
     values: combinedValues,
@@ -258,9 +258,9 @@ function pokaVectorNumberCat(values: VectorNumber[]): MatrixNumber {
 }
 
 function pokaMatrixNumberEqualsMatrixNumber(
-  a: MatrixNumber,
-  b: MatrixNumber,
-): MatrixBoolean {
+  a: PokaMatrixNumber,
+  b: PokaMatrixNumber,
+): PokaMatrixBoolean {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw "Shape mismatch";
   }
@@ -269,14 +269,14 @@ function pokaMatrixNumberEqualsMatrixNumber(
     r.push(a.values[i] === b.values[i]);
   }
   return {
-    _type: "MatrixBoolean",
+    _type: "PokaMatrixBoolean",
     countRows: a.countRows,
     countCols: a.countCols,
     values: r,
   };
 }
 
-function pokaMatrixNumberTranspose(a: MatrixNumber): MatrixNumber {
+function pokaMatrixNumberTranspose(a: PokaMatrixNumber): PokaMatrixNumber {
   const newVals: number[] = [];
   for (let j = 0; j < a.countCols; j++) {
     for (let i = 0; i < a.countRows; i++) {
@@ -286,7 +286,7 @@ function pokaMatrixNumberTranspose(a: MatrixNumber): MatrixNumber {
   return pokaMatrixNumberMake(a.countCols, a.countRows, newVals);
 }
 
-function pokaMatrixNumberSortRows(a: MatrixNumber): MatrixNumber {
+function pokaMatrixNumberSortRows(a: PokaMatrixNumber): PokaMatrixNumber {
   const newVals: number[] = [];
   for (let r = 0; r < a.countRows; r++) {
     const start = r * a.countCols;
@@ -298,7 +298,7 @@ function pokaMatrixNumberSortRows(a: MatrixNumber): MatrixNumber {
   return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }
 
-function pokaMatrixNumberSortCols(a: MatrixNumber): MatrixNumber {
+function pokaMatrixNumberSortCols(a: PokaMatrixNumber): PokaMatrixNumber {
   a = pokaMatrixNumberTranspose(a);
   a = pokaMatrixNumberSortRows(a);
   a = pokaMatrixNumberTranspose(a);
@@ -306,9 +306,9 @@ function pokaMatrixNumberSortCols(a: MatrixNumber): MatrixNumber {
 }
 
 function pokaMatrixNumberSubMatrixNumber(
-  a: MatrixNumber,
-  b: MatrixNumber,
-): MatrixNumber {
+  a: PokaMatrixNumber,
+  b: PokaMatrixNumber,
+): PokaMatrixNumber {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw new Error("Shapes do not match for subMatrix.");
   }
@@ -319,14 +319,14 @@ function pokaMatrixNumberSubMatrixNumber(
   return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }
 
-function pokaMatrixNumberAbs(a: MatrixNumber): MatrixNumber {
+function pokaMatrixNumberAbs(a: PokaMatrixNumber): PokaMatrixNumber {
   return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(Math.abs));
 }
 
 function pokaMatrixNumberAddMatrixNumber(
-  a: MatrixNumber,
-  b: MatrixNumber,
-): MatrixNumber {
+  a: PokaMatrixNumber,
+  b: PokaMatrixNumber,
+): PokaMatrixNumber {
   if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
     throw new Error("Shapes do not match for subMatrix.");
   }
@@ -337,11 +337,11 @@ function pokaMatrixNumberAddMatrixNumber(
   return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }
 
-function pokaMatrixNumberSum(a: MatrixNumber): number {
+function pokaMatrixNumberSum(a: PokaMatrixNumber): number {
   return a.values.reduce((a, b) => a + b);
 }
 
-function pokaMatrixNumberShow(a: MatrixNumber): string {
+function pokaMatrixNumberShow(a: PokaMatrixNumber): string {
   const result: string[] = [];
   result.push("[");
   for (let i = 0; i < a.countRows; i++) {
@@ -355,12 +355,22 @@ function pokaMatrixNumberShow(a: MatrixNumber): string {
   return result.join("");
 }
 
-function pokaMatrixNumberRotR(a: MatrixNumber, b: number): MatrixNumber {
+function pokaMatrixNumberRotR(
+  a: PokaMatrixNumber,
+  b: number,
+): PokaMatrixNumber {
   const values: number[] = [];
   for (let i = 0; i < a.countRows; i++) {
     for (let j = 0; j < a.countCols; j++) {
-      values.push(a.values[i * a.countCols + (j + b) % a.countCols] as number);
+      values.push(
+        a.values[i * a.countCols + ((j + b) % a.countCols)] as number,
+      );
     }
   }
-  return { _type: "MatrixNumber", countRows: a.countRows, countCols: a.countCols, values: values };
+  return {
+    _type: "PokaMatrixNumber",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: values,
+  };
 }

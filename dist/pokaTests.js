@@ -85,6 +85,7 @@ function pokaTestsShow() {
     if (elem === null) {
         throw "Test output div not found";
     }
-    elem.innerText = pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTestsRun();
+    elem.innerText =
+        pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTestsRun();
 }
 pokaTestsShow();

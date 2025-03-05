@@ -4,7 +4,7 @@ function pokaMatrixBooleanMake(countRows, countCols, values) {
         throw "Shape mismatch";
     }
     return {
-        _type: "MatrixBoolean",
+        _type: "PokaMatrixBoolean",
         countRows: countRows,
         countCols: countCols,
         values: values,
@@ -42,7 +42,7 @@ function pokaVectorBooleanCat(values) {
         combinedValues.push(...mat.values);
     }
     return {
-        _type: "MatrixBoolean",
+        _type: "PokaMatrixBoolean",
         countRows: values.length,
         countCols: firstLen,
         values: combinedValues,

@@ -13,36 +13,6 @@ interface PokaScalarString {
   value: string;
 }
 
-interface PokaVectorBoolean {
-  _type: "VectorBoolean";
-  value: VectorBoolean;
-}
-
-interface PokaVectorNumber {
-  _type: "VectorNumber";
-  value: VectorNumber;
-}
-
-interface PokaVectorString {
-  _type: "VectorString";
-  value: VectorString;
-}
-
-interface PokaMatrixBoolean {
-  _type: "MatrixBoolean";
-  value: MatrixBoolean;
-}
-
-interface PokaMatrixNumber {
-  _type: "MatrixNumber";
-  value: MatrixNumber;
-}
-
-interface PokaMatrixString {
-  _type: "MatrixString";
-  value: MatrixString;
-}
-
 interface PokaList {
   _type: "List";
   value: PokaValue[];
@@ -69,28 +39,28 @@ interface InterpreterState {
 
 interface DeprecatedPokaNativeFun {
   pokaMatrixBooleanToScalarBoolean: {
-    [key: string]: (a: MatrixBoolean) => boolean;
+    [key: string]: (a: PokaMatrixBoolean) => boolean;
   };
   pokaMatrixStringToMatrixNumber: {
-    [key: string]: (a: MatrixString) => MatrixNumber;
+    [key: string]: (a: PokaMatrixString) => PokaMatrixNumber;
   };
   pokaMatrixNumberAndScalarNumberToVectorNumber: {
-    [key: string]: (a: MatrixNumber, b: number) => VectorNumber;
+    [key: string]: (a: PokaMatrixNumber, b: number) => PokaVectorNumber;
   };
   pokaMatrixNumberToMatrixNumber: {
-    [key: string]: (a: MatrixNumber) => MatrixNumber;
+    [key: string]: (a: PokaMatrixNumber) => PokaMatrixNumber;
   };
   pokaMatrixNumberToScalarNumber: {
-    [key: string]: (a: MatrixNumber) => number;
+    [key: string]: (a: PokaMatrixNumber) => number;
   };
   pokaScalarStringAndScalarStringToVectorString: {
-    [key: string]: (a: string, b: string) => VectorString;
+    [key: string]: (a: string, b: string) => PokaVectorString;
   };
   pokaVectorNumberToScalarNumber: {
-    [key: string]: (a: VectorNumber) => number;
+    [key: string]: (a: PokaVectorNumber) => number;
   };
   pokaVectorNumberToVectorNumber: {
-    [key: string]: (a: VectorNumber) => VectorNumber;
+    [key: string]: (a: PokaVectorNumber) => PokaVectorNumber;
   };
   pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
     [key: string]: (a: boolean, b: boolean) => boolean;
@@ -99,57 +69,75 @@ interface DeprecatedPokaNativeFun {
     [key: string]: (a: number, b: number) => boolean;
   };
   pokaVectorStringAndScalarStringToMatrixString: {
-    [key: string]: (a: VectorString, b: string) => MatrixString;
+    [key: string]: (a: PokaVectorString, b: string) => PokaMatrixString;
   };
   pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
-    [key: string]: (a: VectorBoolean, b: VectorBoolean) => VectorBoolean;
+    [key: string]: (
+      a: PokaVectorBoolean,
+      b: PokaVectorBoolean,
+    ) => PokaVectorBoolean;
   };
   pokaVectorNumberAndVectorNumberToVectorNumber: {
-    [key: string]: (a: VectorNumber, b: VectorNumber) => VectorNumber;
+    [key: string]: (
+      a: PokaVectorNumber,
+      b: PokaVectorNumber,
+    ) => PokaVectorNumber;
   };
   pokaVectorStringAndVectorStringToVectorBoolean: {
-    [key: string]: (a: VectorString, b: VectorString) => VectorBoolean;
+    [key: string]: (
+      a: PokaVectorString,
+      b: PokaVectorString,
+    ) => PokaVectorBoolean;
   };
   pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
-    [key: string]: (a: MatrixNumber, b: MatrixNumber) => MatrixBoolean;
+    [key: string]: (
+      a: PokaMatrixNumber,
+      b: PokaMatrixNumber,
+    ) => PokaMatrixBoolean;
   };
   pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
-    [key: string]: (a: MatrixNumber, b: MatrixNumber) => MatrixNumber;
+    [key: string]: (
+      a: PokaMatrixNumber,
+      b: PokaMatrixNumber,
+    ) => PokaMatrixNumber;
   };
   pokaMatrixStringAndMatrixStringToMatrixBoolean: {
-    [key: string]: (a: MatrixString, b: MatrixString) => MatrixBoolean;
+    [key: string]: (
+      a: PokaMatrixString,
+      b: PokaMatrixString,
+    ) => PokaMatrixBoolean;
   };
 }
 
 interface PokaNativeFun2 {
   doc: string[];
   //
-  mb_sb?: (a: MatrixBoolean) => boolean;
-  mn_mn?: (a: MatrixNumber) => MatrixNumber;
-  mn_sn?: (a: MatrixNumber) => number;
-  ms_mn?: (a: MatrixString) => MatrixNumber;
+  mb_sb?: (a: PokaMatrixBoolean) => boolean;
+  mn_mn?: (a: PokaMatrixNumber) => PokaMatrixNumber;
+  mn_sn?: (a: PokaMatrixNumber) => number;
+  ms_mn?: (a: PokaMatrixString) => PokaMatrixNumber;
   sn_sn?: (a: number) => number;
   ss_sn?: (a: string) => number;
-  vb_sb?: (a: VectorBoolean) => boolean;
-  vn_sn?: (a: VectorNumber) => number;
-  vn_vn?: (a: VectorNumber) => VectorNumber;
-  vs_vn?: (a: VectorString) => VectorNumber;
+  vb_sb?: (a: PokaVectorBoolean) => boolean;
+  vn_sn?: (a: PokaVectorNumber) => number;
+  vn_vn?: (a: PokaVectorNumber) => PokaVectorNumber;
+  vs_vn?: (a: PokaVectorString) => PokaVectorNumber;
   //
-  mn_mn_mb?: (a: MatrixNumber, b: MatrixNumber) => MatrixBoolean;
-  mn_mn_mn?: (a: MatrixNumber, b: MatrixNumber) => MatrixNumber;
-  mn_sn_mn?: (a: MatrixNumber, b: number) => MatrixNumber;
-  mn_sn_vn?: (a: MatrixNumber, b: number) => VectorNumber;
-  ms_ms_mb?: (a: MatrixString, b: MatrixString) => MatrixBoolean;
+  mn_mn_mb?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixBoolean;
+  mn_mn_mn?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixNumber;
+  mn_sn_mn?: (a: PokaMatrixNumber, b: number) => PokaMatrixNumber;
+  mn_sn_vn?: (a: PokaMatrixNumber, b: number) => PokaVectorNumber;
+  ms_ms_mb?: (a: PokaMatrixString, b: PokaMatrixString) => PokaMatrixBoolean;
   sb_sb_sb?: (a: boolean, b: boolean) => boolean;
   sn_sn_sb?: (a: number, b: number) => boolean;
   sn_sn_sn?: (a: number, b: number) => number;
   ss_ss_sb?: (a: string, b: string) => boolean;
-  ss_ss_vs?: (a: string, b: string) => VectorString;
-  vb_vb_vb?: (a: VectorBoolean, b: VectorBoolean) => VectorBoolean;
-  vn_vn_vb?: (a: VectorNumber, b: VectorNumber) => VectorBoolean;
-  vn_vn_vn?: (a: VectorNumber, b: VectorNumber) => VectorNumber;
-  vs_ss_ms?: (a: VectorString, b: string) => MatrixString;
-  vs_vs_vb?: (a: VectorString, b: VectorString) => VectorBoolean;
+  ss_ss_vs?: (a: string, b: string) => PokaVectorString;
+  vb_vb_vb?: (a: PokaVectorBoolean, b: PokaVectorBoolean) => PokaVectorBoolean;
+  vn_vn_vb?: (a: PokaVectorNumber, b: PokaVectorNumber) => PokaVectorBoolean;
+  vn_vn_vn?: (a: PokaVectorNumber, b: PokaVectorNumber) => PokaVectorNumber;
+  vs_ss_ms?: (a: PokaVectorString, b: string) => PokaMatrixString;
+  vs_vs_vb?: (a: PokaVectorString, b: PokaVectorString) => PokaVectorBoolean;
 }
 
 function pokaShow(value: PokaValue): string {
@@ -159,18 +147,18 @@ function pokaShow(value: PokaValue): string {
     return value.value.toString();
   } else if (value._type === "ScalarString") {
     return '"' + value.value + '"';
-  } else if (value._type === "VectorBoolean") {
-    return pokaVectorBooleanShow(value.value);
-  } else if (value._type === "VectorNumber") {
-    return pokaVectorNumberShow(value.value);
-  } else if (value._type === "VectorString") {
-    return pokaVectorStringShow(value.value);
-  } else if (value._type === "MatrixBoolean") {
-    return pokaMatrixBooleanShow(value.value);
-  } else if (value._type === "MatrixNumber") {
-    return pokaMatrixNumberShow(value.value);
-  } else if (value._type === "MatrixString") {
-    return pokaMatrixStringShow(value.value);
+  } else if (value._type === "PokaVectorBoolean") {
+    return pokaVectorBooleanShow(value);
+  } else if (value._type === "PokaVectorNumber") {
+    return pokaVectorNumberShow(value);
+  } else if (value._type === "PokaVectorString") {
+    return pokaVectorStringShow(value);
+  } else if (value._type === "PokaMatrixBoolean") {
+    return pokaMatrixBooleanShow(value);
+  } else if (value._type === "PokaMatrixNumber") {
+    return pokaMatrixNumberShow(value);
+  } else if (value._type === "PokaMatrixString") {
+    return pokaMatrixStringShow(value);
   } else if (value._type === "List") {
     return "[" + value.value.map(pokaShow).join(", ") + "]";
   } else {
@@ -196,30 +184,6 @@ function pokaMakeScalarNumber(value: number): PokaScalarNumber {
 
 function pokaMakeScalarString(value: string): PokaScalarString {
   return { _type: "ScalarString", value: value };
-}
-
-function pokaMakeVectorBoolean(value: VectorBoolean): PokaVectorBoolean {
-  return { _type: "VectorBoolean", value: value };
-}
-
-function pokaMakeVectorNumber(value: VectorNumber): PokaVectorNumber {
-  return { _type: "VectorNumber", value: value };
-}
-
-function pokaMakeVectorString(value: VectorString): PokaVectorString {
-  return { _type: "VectorString", value: value };
-}
-
-function pokaMakeMatrixBoolean(value: MatrixBoolean): PokaMatrixBoolean {
-  return { _type: "MatrixBoolean", value: value };
-}
-
-function pokaMakeMatrixNumber(value: MatrixNumber): PokaMatrixNumber {
-  return { _type: "MatrixNumber", value: value };
-}
-
-function pokaMakeMatrixString(value: MatrixString): PokaMatrixString {
-  return { _type: "MatrixString", value: value };
 }
 
 function pokaMakeList(values: PokaValue[]): PokaList {
@@ -248,20 +212,20 @@ function pokaTryToVector(value: PokaValue): PokaValue {
   }
 
   if (valuesScalarBoolean.length === value.value.length) {
-    return pokaMakeVectorBoolean({
-      _type: "VectorBoolean",
+    return {
+      _type: "PokaVectorBoolean",
       values: valuesScalarBoolean,
-    });
+    };
   } else if (valuesScalarNumber.length === value.value.length) {
-    return pokaMakeVectorNumber({
-      _type: "VectorNumber",
+    return {
+      _type: "PokaVectorNumber",
       values: valuesScalarNumber,
-    });
+    };
   } else if (valuesScalarString.length === value.value.length) {
-    return pokaMakeVectorString({
-      _type: "VectorString",
+    return {
+      _type: "PokaVectorString",
       values: valuesScalarString,
-    });
+    };
   } else {
     return value;
   }
@@ -272,31 +236,31 @@ function pokaTryToMatrix(value: PokaValue): PokaValue {
     return value;
   }
 
-  const valuesVectorBoolean: VectorBoolean[] = [];
-  const valuesVectorNumber: VectorNumber[] = [];
-  const valuesVectorString: VectorString[] = [];
+  const valuesVectorBoolean: PokaVectorBoolean[] = [];
+  const valuesVectorNumber: PokaVectorNumber[] = [];
+  const valuesVectorString: PokaVectorString[] = [];
 
   for (const val of value.value) {
     const coerced: PokaValue =
       val._type === "List" ? pokaTryToVector(val) : val;
 
-    if (coerced._type === "VectorBoolean") {
-      valuesVectorBoolean.push(coerced.value);
-    } else if (coerced._type === "VectorNumber") {
-      valuesVectorNumber.push(coerced.value);
-    } else if (coerced._type === "VectorString") {
-      valuesVectorString.push(coerced.value);
+    if (coerced._type === "PokaVectorBoolean") {
+      valuesVectorBoolean.push(coerced);
+    } else if (coerced._type === "PokaVectorNumber") {
+      valuesVectorNumber.push(coerced);
+    } else if (coerced._type === "PokaVectorString") {
+      valuesVectorString.push(coerced);
     } else {
       return value;
     }
   }
 
   if (valuesVectorBoolean.length === value.value.length) {
-    return pokaMakeMatrixBoolean(pokaVectorBooleanCat(valuesVectorBoolean));
+    return pokaVectorBooleanCat(valuesVectorBoolean);
   } else if (valuesVectorNumber.length === value.value.length) {
-    return pokaMakeMatrixNumber(pokaVectorNumberCat(valuesVectorNumber));
+    return pokaVectorNumberCat(valuesVectorNumber);
   } else if (valuesVectorString.length === value.value.length) {
-    return pokaMakeMatrixString(pokaVectorStringCat(valuesVectorString));
+    return pokaVectorStringCat(valuesVectorString);
   } else {
     return value;
   }
