@@ -114,8 +114,12 @@ POKA_WORDS3["cols"] = {
     mn_vn_mn: pokaMatrixNumberColsVectorNumber,
 };
 POKA_WORDS3["less"] = {
-    doc: ["[[1, 2], [3, 4]] [[5, 6], [7, 8]] less all"],
+    doc: [
+        "[[1, 2], [3, 4]] [[5, 6], [7, 8]] less all",
+        "[[1, 2], [3, 4]] 5 less all",
+    ],
     mn_mn_mb: pokaMatrixNumberLessMatrixNumber,
+    mn_sn_mb: pokaMatrixNumberLessScalarNumber,
 };
 function pokaDispatch2(env, stack, word) {
     const env_value = env[word];
@@ -274,6 +278,12 @@ function pokaDispatch2(env, stack, word) {
         return;
     }
     const matrix2 = pokaTryToMatrix(arg2);
+    if (decl.mn_sn_mb !== undefined &&
+        arg1._type === "ScalarNumber" &&
+        matrix2._type === "PokaMatrixNumber") {
+        stack.push(decl.mn_sn_mb(matrix2, arg1.value));
+        return;
+    }
     if (decl.mn_vn_mn !== undefined &&
         vector1._type === "PokaVectorNumber" &&
         matrix2._type === "PokaMatrixNumber") {

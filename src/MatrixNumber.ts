@@ -415,3 +415,19 @@ function pokaMatrixNumberLessMatrixNumber(
     values: values,
   };
 }
+
+function pokaMatrixNumberLessScalarNumber(
+  a: PokaMatrixNumber,
+  b: number,
+): PokaMatrixBoolean {
+  const values: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    values.push((a.values[i] as number) < b);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: values,
+  };
+}

@@ -362,3 +362,15 @@ function pokaMatrixNumberLessMatrixNumber(a, b) {
         values: values,
     };
 }
+function pokaMatrixNumberLessScalarNumber(a, b) {
+    const values = [];
+    for (let i = 0; i < a.values.length; i++) {
+        values.push(a.values[i] < b);
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: values,
+    };
+}
