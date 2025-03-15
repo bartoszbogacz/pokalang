@@ -455,9 +455,9 @@ function run(line: string): InterpreterState {
   return state;
 }
 
-function runWithEnvironment(line: string, environment: {[word: string]: string}): InterpreterState {
+function runWithEnvironment(line: string, environment: {[word: string]: PokaValue}): InterpreterState {
   const state: InterpreterState = {
-    line: line,
+    line: line.replace("\\n", "\n"),
     pos: 0,
     stack: [],
     error: "",
@@ -465,7 +465,7 @@ function runWithEnvironment(line: string, environment: {[word: string]: string})
   };
 
   for (const [word, value] of Object.entries(environment)) {
-    state.env[word] = pokaMakeScalarString(value);
+    state.env[word] = value;
   }
 
   let error: string = "";
@@ -492,6 +492,10 @@ function onInput(ev: InputEvent) {
     throw "No preview";
   }
   const text = target.value;
-  const state = run(text);
+  const env: {[word: string]: PokaValue} = {};
+  for (const [_, day] of Object.entries(AOC2025)) {
+    env[day.input_name] = pokaMakeScalarString(day.input_text);
+  }
+  const state = runWithEnvironment(text, env);
   preview.innerText = showInterpreterState(state);
 }

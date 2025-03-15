@@ -309,14 +309,14 @@ function run(line) {
 }
 function runWithEnvironment(line, environment) {
     const state = {
-        line: line,
+        line: line.replace("\\n", "\n"),
         pos: 0,
         stack: [],
         error: "",
         env: {},
     };
     for (const [word, value] of Object.entries(environment)) {
-        state.env[word] = pokaMakeScalarString(value);
+        state.env[word] = value;
     }
     let error = "";
     try {
@@ -340,6 +340,10 @@ function onInput(ev) {
         throw "No preview";
     }
     const text = target.value;
-    const state = run(text);
+    const env = {};
+    for (const [_, day] of Object.entries(AOC2025)) {
+        env[day.input_name] = pokaMakeScalarString(day.input_text);
+    }
+    const state = runWithEnvironment(text, env);
     preview.innerText = showInterpreterState(state);
 }
