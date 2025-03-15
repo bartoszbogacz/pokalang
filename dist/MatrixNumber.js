@@ -345,3 +345,20 @@ function pokaMatrixNumberColsVectorNumber(a, b) {
         values: values,
     };
 }
+function pokaMatrixNumberLessMatrixNumber(a, b) {
+    const values = [];
+    if (a.values.length !== b.values.length) {
+        throw "Mismatching shape";
+    }
+    for (let i = 0; i < a.values.length; i++) {
+        for (let j = 0; j < b.values.length; j++) {
+            values.push(a.values[i] < b.values[j]);
+        }
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: values,
+    };
+}

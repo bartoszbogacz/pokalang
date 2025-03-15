@@ -127,6 +127,11 @@ POKA_WORDS3["cols"] = {
   mn_vn_mn: pokaMatrixNumberColsVectorNumber,
 }
 
+POKA_WORDS3["less"] = {
+  doc: ["[[1, 2], [3, 4]] [[5, 6], [7, 8]] less all"],
+  mn_mn_mb: pokaMatrixNumberLessMatrixNumber,
+}
+
 function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], word: string): void {
   const env_value: PokaValue | undefined = env[word];
   if (env_value !== undefined) {

@@ -394,3 +394,24 @@ function pokaMatrixNumberColsVectorNumber(
     values: values,
   };
 }
+
+function pokaMatrixNumberLessMatrixNumber(
+  a: PokaMatrixNumber,
+  b: PokaMatrixNumber,
+): PokaMatrixBoolean {
+  const values: boolean[] = [];
+  if (a.values.length !== b.values.length) {
+    throw "Mismatching shape";
+  }
+  for (let i = 0; i < a.values.length; i++) {
+    for (let j = 0; j < b.values.length; j++) {
+      values.push((a.values[i] as number) < (b.values[j] as number));
+    }
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: values,
+  };
+}
