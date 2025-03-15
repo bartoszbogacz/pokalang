@@ -35,6 +35,7 @@ interface InterpreterState {
   pos: number;
   stack: PokaValue[];
   error: string;
+  env: {[word: string]: PokaValue};
 }
 
 interface DeprecatedPokaNativeFun {
@@ -381,7 +382,7 @@ function consumeIdentifer(state: InterpreterState): void {
     throw "Expected identifier";
   }
   const token = state.line.slice(start, state.pos);
-  pokaDispatch2(state.stack, token);
+  pokaDispatch2(state.env, state.stack, token);
 }
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {
@@ -437,6 +438,7 @@ function run(line: string): InterpreterState {
     pos: 0,
     stack: [],
     error: "",
+    env: {},
   };
 
   let error: string = "";
@@ -453,13 +455,18 @@ function run(line: string): InterpreterState {
   return state;
 }
 
-function runWithInput(line: string, input: string): InterpreterState {
+function runWithEnvironment(line: string, environment: {[word: string]: string}): InterpreterState {
   const state: InterpreterState = {
     line: line,
     pos: 0,
-    stack: [pokaMakeScalarString(input)],
+    stack: [],
     error: "",
+    env: {},
   };
+
+  for (const [word, value] of Object.entries(environment)) {
+    state.env[word] = pokaMakeScalarString(value);
+  }
 
   let error: string = "";
   try {

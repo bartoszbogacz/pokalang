@@ -109,7 +109,12 @@ POKA_WORDS3["rotr"] = {
     doc: ["[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all"],
     mn_sn_mn: pokaMatrixNumberRotR,
 };
-function pokaDispatch2(stack, word) {
+function pokaDispatch2(env, stack, word) {
+    const env_value = env[word];
+    if (env_value !== undefined) {
+        stack.push(env_value);
+        return;
+    }
     if (word === "True") {
         stack.push(pokaMakeScalarBoolean(true));
         return;

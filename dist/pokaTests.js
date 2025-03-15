@@ -59,7 +59,10 @@ function pokaTestsAocRun() {
     for (const [_, day] of Object.entries(AOC2025)) {
         for (const line of day.program) {
             try {
-                const state = runWithInput(line, day.input);
+                const env = {
+                    [day.input_name]: day.input_text
+                };
+                const state = runWithEnvironment(line, env);
                 const top = state.stack.pop();
                 if (top === undefined) {
                     throw "Stack exhausted";

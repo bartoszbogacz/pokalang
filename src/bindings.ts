@@ -122,7 +122,13 @@ POKA_WORDS3["rotr"] = {
   mn_sn_mn: pokaMatrixNumberRotR,
 };
 
-function pokaDispatch2(stack: PokaValue[], word: string): void {
+function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], word: string): void {
+  const env_value: PokaValue | undefined = env[word];
+  if (env_value !== undefined) {
+    stack.push(env_value);
+    return
+  }
+  
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
     return;

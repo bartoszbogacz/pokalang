@@ -239,7 +239,7 @@ function consumeIdentifer(state) {
         throw "Expected identifier";
     }
     const token = state.line.slice(start, state.pos);
-    pokaDispatch2(state.stack, token);
+    pokaDispatch2(state.env, state.stack, token);
 }
 function peekLiteral(state, literal) {
     for (let i = 0; i < literal.length; i++) {
@@ -293,6 +293,7 @@ function run(line) {
         pos: 0,
         stack: [],
         error: "",
+        env: {},
     };
     let error = "";
     try {
@@ -306,13 +307,17 @@ function run(line) {
     state.error = error;
     return state;
 }
-function runWithInput(line, input) {
+function runWithEnvironment(line, environment) {
     const state = {
         line: line,
         pos: 0,
-        stack: [pokaMakeScalarString(input)],
+        stack: [],
         error: "",
+        env: {},
     };
+    for (const [word, value] of Object.entries(environment)) {
+        state.env[word] = pokaMakeScalarString(value);
+    }
     let error = "";
     try {
         while (!peekEOL(state)) {
