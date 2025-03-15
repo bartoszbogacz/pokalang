@@ -122,6 +122,11 @@ POKA_WORDS3["rotr"] = {
   mn_sn_mn: pokaMatrixNumberRotR,
 };
 
+POKA_WORDS3["cols"] = {
+  doc: ["[[1, 2, 3], [3, 4, 5]] [0, 1] cols [[1, 2], [3, 4]] equals all"],
+  mn_vn_mn: pokaMatrixNumberColsVectorNumber,
+}
+
 function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], word: string): void {
   const env_value: PokaValue | undefined = env[word];
   if (env_value !== undefined) {
@@ -332,6 +337,15 @@ function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], wor
   }
 
   const matrix2 = pokaTryToMatrix(arg2);
+
+  if (
+    decl.mn_vn_mn !== undefined &&
+    vector1._type === "PokaVectorNumber" &&
+    matrix2._type === "PokaMatrixNumber"
+  ) {
+    stack.push(decl.mn_vn_mn(matrix2, vector1));
+    return;
+  }
 
   if (
     decl.mn_mn_mb !== undefined &&

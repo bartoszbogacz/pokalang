@@ -128,6 +128,7 @@ interface PokaNativeFun2 {
   mn_mn_mn?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixNumber;
   mn_sn_mn?: (a: PokaMatrixNumber, b: number) => PokaMatrixNumber;
   mn_sn_vn?: (a: PokaMatrixNumber, b: number) => PokaVectorNumber;
+  mn_vn_mn?: (a: PokaMatrixNumber, b: PokaVectorNumber) => PokaMatrixNumber;
   ms_ms_mb?: (a: PokaMatrixString, b: PokaMatrixString) => PokaMatrixBoolean;
   sb_sb_sb?: (a: boolean, b: boolean) => boolean;
   sn_sn_sb?: (a: number, b: number) => boolean;

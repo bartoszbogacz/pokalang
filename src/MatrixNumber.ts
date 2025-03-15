@@ -374,3 +374,23 @@ function pokaMatrixNumberRotR(
     values: values,
   };
 }
+
+function pokaMatrixNumberColsVectorNumber(
+  a: PokaMatrixNumber,
+  b: PokaVectorNumber,
+): PokaMatrixNumber {
+  const values: number[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    for (let j = 0; j < b.values.length; j++) {
+      values.push(
+        a.values[i * a.countCols + (j < 0 ? a.countCols - j : j)] as number,
+      );
+    }
+  }
+  return {
+    _type: "PokaMatrixNumber",
+    countRows: a.countRows,
+    countCols: b.values.length,
+    values: values,
+  };
+}
