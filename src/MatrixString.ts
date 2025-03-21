@@ -193,13 +193,15 @@ function pokaMatrixStringToNumber(a: PokaMatrixString): PokaMatrixNumber {
 
 function pokaMatrixStringShow(a: PokaMatrixString): string {
   const result: string[] = [];
-  result.push("[");
+  result.push("[\n");
   for (let i = 0; i < a.countRows; i++) {
-    result.push(" [");
+    result.push("  [");
     for (let j = 0; j < a.countCols; j++) {
-      result.push('"' + a.values[i * a.countCols + j] + '", ');
+      result.push(
+        '"' + a.values[i * a.countCols + j]?.replace("\n", "\\n") + '", ',
+      );
     }
-    result.push("], ");
+    result.push("],\n");
   }
   result.push("]");
   return result.join("");

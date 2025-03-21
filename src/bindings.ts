@@ -27,6 +27,7 @@ POKA_WORDS3["equals"] = {
   vb_vb_vb: pokaVectorBooleanEqualsVectorBoolean,
   vn_vn_vb: pokaVectorNumberEqualsVectorNumber,
   vs_vs_vb: pokaVectorStringEqualsVectorString,
+  mb_mb_mb: pokaMatrixBooleanEqualsMatrixBoolean,
   mn_mn_mb: pokaMatrixNumberEqualsMatrixNumber,
   ms_ms_mb: pokaMatrixStringEqualsMatrixString,
 };
@@ -125,7 +126,7 @@ POKA_WORDS3["rotr"] = {
 POKA_WORDS3["cols"] = {
   doc: ["[[1, 2, 3], [3, 4, 5]] [0, 1] cols [[1, 2], [3, 4]] equals all"],
   mn_vn_mn: pokaMatrixNumberColsVectorNumber,
-}
+};
 
 POKA_WORDS3["less"] = {
   doc: [
@@ -134,15 +135,55 @@ POKA_WORDS3["less"] = {
   ],
   mn_mn_mb: pokaMatrixNumberLessMatrixNumber,
   mn_sn_mb: pokaMatrixNumberLessScalarNumber,
-}
+};
 
-function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], word: string): void {
+POKA_WORDS3["equalsRows"] = {
+  doc: [
+    "[[1, 1, 1], [2, 3, 2], [3, 3, 3]] equalsRows [[True], [False], [True]] equals all",
+  ],
+  mb_mb: pokaMatrixBooleanEqualsRows,
+  mn_mb: pokaMatrixNumberEqualsRows,
+};
+
+POKA_WORDS3["allRows"] = {
+  doc: [
+    "[[True, True, True], [True, False, True], [False, False, False]] allRows [[True], [False], [False]] equals all",
+  ],
+  mb_mb: pokaMatrixBooleanAllRows,
+};
+
+POKA_WORDS3["rows"] = {
+  doc: ["[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"],
+  mn_vb_mn: pokaMatrixNumberRowsVectorBoolean,
+};
+
+POKA_WORDS3["squeeze"] = {
+  doc: [
+    "[[1], [2], [3]] squeeze [1, 2, 3] equals all",
+    "[[True], [False]] squeeze [True, False] equals all",
+  ],
+  mb_vb: pokaMatrixBooleanSqueeze,
+  mn_vn: pokaMatrixNumberSqueeze,
+};
+
+POKA_WORDS3["and"] = {
+  doc: [
+    "[True, False, True] [True, False, False] and [True, False, False] equals all",
+  ],
+  vb_vb_vb: pokaVectorBooleanAndVectorBoolean,
+};
+
+function pokaDispatch2(
+  env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+  word: string,
+): void {
   const env_value: PokaValue | undefined = env[word];
   if (env_value !== undefined) {
     stack.push(env_value);
-    return
+    return;
   }
-  
+
   if (word === "True") {
     stack.push(pokaMakeScalarBoolean(true));
     return;
@@ -228,6 +269,11 @@ function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], wor
 
   const matrix1 = pokaTryToMatrix(arg1);
 
+  if (decl.mb_mb !== undefined && matrix1._type === "PokaMatrixBoolean") {
+    stack.push(decl.mb_mb(matrix1));
+    return;
+  }
+
   if (decl.mb_sb !== undefined && matrix1._type === "PokaMatrixBoolean") {
     stack.push(pokaMakeScalarBoolean(decl.mb_sb(matrix1)));
     return;
@@ -235,6 +281,21 @@ function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], wor
 
   if (decl.mn_sn !== undefined && matrix1._type === "PokaMatrixNumber") {
     stack.push(pokaMakeScalarNumber(decl.mn_sn(matrix1)));
+    return;
+  }
+
+  if (decl.mn_mb !== undefined && matrix1._type === "PokaMatrixNumber") {
+    stack.push(decl.mn_mb(matrix1));
+    return;
+  }
+
+  if (decl.mn_vn !== undefined && matrix1._type === "PokaMatrixNumber") {
+    stack.push(decl.mn_vn(matrix1));
+    return;
+  }
+
+  if (decl.mb_vb !== undefined && matrix1._type === "PokaMatrixBoolean") {
+    stack.push(decl.mb_vb(matrix1));
     return;
   }
 
@@ -366,6 +427,15 @@ function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], wor
   }
 
   if (
+    decl.mn_vb_mn !== undefined &&
+    vector1._type === "PokaVectorBoolean" &&
+    matrix2._type === "PokaMatrixNumber"
+  ) {
+    stack.push(decl.mn_vb_mn(matrix2, vector1));
+    return;
+  }
+
+  if (
     decl.mn_mn_mb !== undefined &&
     matrix1._type === "PokaMatrixNumber" &&
     matrix2._type === "PokaMatrixNumber"
@@ -407,6 +477,15 @@ function pokaDispatch2(env: {[word: string]: PokaValue}, stack: PokaValue[], wor
     matrix2._type === "PokaMatrixString"
   ) {
     stack.push(decl.ms_ms_mb(matrix2, matrix1));
+    return;
+  }
+
+  if (
+    decl.mb_mb_mb !== undefined &&
+    matrix1._type === "PokaMatrixBoolean" &&
+    matrix2._type === "PokaMatrixBoolean"
+  ) {
+    stack.push(decl.mb_mb_mb(matrix2, matrix1));
     return;
   }
 

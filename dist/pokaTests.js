@@ -19,10 +19,10 @@ function pokaTestsRun() {
             if (top.value !== true) {
                 throw "Test failed";
             }
-            result.push("OK   | " + expr);
+            result.push("OK   | " + expr.replace("\n", "\\n"));
         }
         catch (exc) {
-            result.push("FAIL | " + expr);
+            result.push("FAIL | " + expr.replace("\n", "\\n"));
             result.push("EXC  | " + exc);
         }
     }
@@ -44,10 +44,10 @@ function pokaDocTestsRun() {
                 if (top.value !== true) {
                     throw "Test failed";
                 }
-                result.push("OK   | " + line);
+                result.push("OK   | " + line.replace("\n", "\\n"));
             }
             catch (exc) {
-                result.push("FAIL | " + line);
+                result.push("FAIL | " + line.replace("\n", "\\n"));
                 result.push(" EXC | " + exc);
             }
         }
@@ -73,10 +73,10 @@ function pokaTestsAocRun() {
                 if (top.value !== day.answer) {
                     throw "Test failed";
                 }
-                result.push("OK   | " + line);
+                result.push("OK   | " + line.replace("\n", "\\n"));
             }
             catch (exc) {
-                result.push("FAIL | " + line);
+                result.push("FAIL | " + line.replace("\n", "\\n"));
                 result.push(" EXC | " + exc);
             }
         }

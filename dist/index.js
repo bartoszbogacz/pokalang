@@ -7,7 +7,7 @@ function pokaShow(value) {
         return value.value.toString();
     }
     else if (value._type === "ScalarString") {
-        return '"' + value.value + '"';
+        return '"' + value.value.replace("\n", "\\n") + '"';
     }
     else if (value._type === "PokaVectorBoolean") {
         return pokaVectorBooleanShow(value);

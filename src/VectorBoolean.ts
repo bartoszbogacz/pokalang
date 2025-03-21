@@ -21,3 +21,14 @@ function pokaVectorBooleanEqualsVectorBoolean(
   }
   return { _type: "PokaVectorBoolean", values: r };
 }
+
+function pokaVectorBooleanAndVectorBoolean(
+  a: PokaVectorBoolean,
+  b: PokaVectorBoolean,
+): PokaVectorBoolean {
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push((a.values[i] as boolean) && (b.values[i] as boolean));
+  }
+  return { _type: "PokaVectorBoolean", values: r };
+}

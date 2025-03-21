@@ -19,9 +19,9 @@ function pokaTestsRun(): string {
       if (top.value !== true) {
         throw "Test failed";
       }
-      result.push("OK   | " + expr);
+      result.push("OK   | " + expr.replace("\n", "\\n"));
     } catch (exc) {
-      result.push("FAIL | " + expr);
+      result.push("FAIL | " + expr.replace("\n", "\\n"));
       result.push("EXC  | " + exc);
     }
   }
@@ -44,9 +44,9 @@ function pokaDocTestsRun(): string {
         if (top.value !== true) {
           throw "Test failed";
         }
-        result.push("OK   | " + line);
+        result.push("OK   | " + line.replace("\n", "\\n"));
       } catch (exc) {
-        result.push("FAIL | " + line);
+        result.push("FAIL | " + line.replace("\n", "\\n"));
         result.push(" EXC | " + exc);
       }
     }
@@ -59,8 +59,8 @@ function pokaTestsAocRun(): string {
   for (const [_, day] of Object.entries(AOC2025)) {
     for (const line of day.program) {
       try {
-        const env: {[word: string]: PokaValue} = {
-          [day.input_name]: pokaMakeScalarString(day.input_text)
+        const env: { [word: string]: PokaValue } = {
+          [day.input_name]: pokaMakeScalarString(day.input_text),
         };
         const state = runWithEnvironment(line, env);
         const top = state.stack.pop();
@@ -73,9 +73,9 @@ function pokaTestsAocRun(): string {
         if (top.value !== day.answer) {
           throw "Test failed";
         }
-        result.push("OK   | " + line);
+        result.push("OK   | " + line.replace("\n", "\\n"));
       } catch (exc) {
-        result.push("FAIL | " + line);
+        result.push("FAIL | " + line.replace("\n", "\\n"));
         result.push(" EXC | " + exc);
       }
     }

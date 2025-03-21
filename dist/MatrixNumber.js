@@ -306,13 +306,13 @@ function pokaMatrixNumberSum(a) {
 }
 function pokaMatrixNumberShow(a) {
     const result = [];
-    result.push("[");
+    result.push("[\n");
     for (let i = 0; i < a.countRows; i++) {
-        result.push(" [");
+        result.push("  [");
         for (let j = 0; j < a.countCols; j++) {
             result.push(a.values[i * a.countCols + j].toFixed(2) + ", ");
         }
-        result.push("], ");
+        result.push("],\n");
     }
     result.push("]");
     return result.join("");
@@ -373,4 +373,62 @@ function pokaMatrixNumberLessScalarNumber(a, b) {
         countCols: a.countCols,
         values: values,
     };
+}
+function pokaMatrixNumberEqualsRows(a) {
+    if (a.countCols === 0) {
+        throw new Error("No columns");
+    }
+    const values = [];
+    for (let i = 0; i < a.countRows; i++) {
+        let acc = true;
+        for (let j = 0; j < a.countCols; j++) {
+            acc = acc && (a.values[i * a.countCols] === a.values[i * a.countCols + j]);
+        }
+        values.push(acc);
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: 1,
+        values: values,
+    };
+}
+function pokaMatrixNumberRowsVectorBoolean(a, b) {
+    if (b.values.length != a.countRows) {
+        throw new Error("Shape mismatch");
+    }
+    let countRows = 0;
+    const values = [];
+    for (let i = 0; i < a.countRows; i++) {
+        if (b.values[i] === false) {
+            continue;
+        }
+        countRows = countRows + 1;
+        for (let j = 0; j < a.countCols; j++) {
+            values.push(a.values[i * a.countCols + j]);
+        }
+    }
+    return {
+        _type: "PokaMatrixNumber",
+        countRows: countRows,
+        countCols: a.countCols,
+        values: values,
+    };
+}
+function pokaMatrixNumberSqueeze(a) {
+    if (a.countCols === 1) {
+        return {
+            _type: "PokaVectorNumber",
+            values: a.values,
+        };
+    }
+    else if (a.countRows === 1) {
+        return {
+            _type: "PokaVectorNumber",
+            values: a.values,
+        };
+    }
+    else {
+        throw new Error("Cannot squeeze");
+    }
 }

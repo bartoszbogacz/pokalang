@@ -35,7 +35,7 @@ interface InterpreterState {
   pos: number;
   stack: PokaValue[];
   error: string;
-  env: {[word: string]: PokaValue};
+  env: { [word: string]: PokaValue };
 }
 
 interface DeprecatedPokaNativeFun {
@@ -113,9 +113,13 @@ interface DeprecatedPokaNativeFun {
 interface PokaNativeFun2 {
   doc: string[];
   //
+  mb_mb?: (a: PokaMatrixBoolean) => PokaMatrixBoolean;
   mb_sb?: (a: PokaMatrixBoolean) => boolean;
+  mb_vb?: (a: PokaMatrixBoolean) => PokaVectorBoolean;
+  mn_mb?: (a: PokaMatrixNumber) => PokaMatrixBoolean;
   mn_mn?: (a: PokaMatrixNumber) => PokaMatrixNumber;
   mn_sn?: (a: PokaMatrixNumber) => number;
+  mn_vn?: (a: PokaMatrixNumber) => PokaVectorNumber;
   ms_mn?: (a: PokaMatrixString) => PokaMatrixNumber;
   sn_sn?: (a: number) => number;
   ss_sn?: (a: string) => number;
@@ -124,11 +128,13 @@ interface PokaNativeFun2 {
   vn_vn?: (a: PokaVectorNumber) => PokaVectorNumber;
   vs_vn?: (a: PokaVectorString) => PokaVectorNumber;
   //
+  mb_mb_mb?: (a: PokaMatrixBoolean, b: PokaMatrixBoolean) => PokaMatrixBoolean;
   mn_mn_mb?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixBoolean;
   mn_mn_mn?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixNumber;
-  mn_sn_mn?: (a: PokaMatrixNumber, b: number) => PokaMatrixNumber;
   mn_sn_mb?: (a: PokaMatrixNumber, b: number) => PokaMatrixBoolean;
+  mn_sn_mn?: (a: PokaMatrixNumber, b: number) => PokaMatrixNumber;
   mn_sn_vn?: (a: PokaMatrixNumber, b: number) => PokaVectorNumber;
+  mn_vb_mn?: (a: PokaMatrixNumber, b: PokaVectorBoolean) => PokaMatrixNumber;
   mn_vn_mn?: (a: PokaMatrixNumber, b: PokaVectorNumber) => PokaMatrixNumber;
   ms_ms_mb?: (a: PokaMatrixString, b: PokaMatrixString) => PokaMatrixBoolean;
   sb_sb_sb?: (a: boolean, b: boolean) => boolean;
@@ -149,7 +155,7 @@ function pokaShow(value: PokaValue): string {
   } else if (value._type === "ScalarNumber") {
     return value.value.toString();
   } else if (value._type === "ScalarString") {
-    return '"' + value.value + '"';
+    return '"' + value.value.replace("\n", "\\n") + '"';
   } else if (value._type === "PokaVectorBoolean") {
     return pokaVectorBooleanShow(value);
   } else if (value._type === "PokaVectorNumber") {
@@ -457,7 +463,10 @@ function run(line: string): InterpreterState {
   return state;
 }
 
-function runWithEnvironment(line: string, environment: {[word: string]: PokaValue}): InterpreterState {
+function runWithEnvironment(
+  line: string,
+  environment: { [word: string]: PokaValue },
+): InterpreterState {
   const state: InterpreterState = {
     line: line.replace("\\n", "\n"),
     pos: 0,
@@ -494,7 +503,7 @@ function onInput(ev: InputEvent) {
     throw "No preview";
   }
   const text = target.value;
-  const env: {[word: string]: PokaValue} = {};
+  const env: { [word: string]: PokaValue } = {};
   for (const [_, day] of Object.entries(AOC2025)) {
     env[day.input_name] = pokaMakeScalarString(day.input_text);
   }

@@ -161,14 +161,15 @@ function pokaMatrixStringToNumber(a) {
     return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(parseFloat));
 }
 function pokaMatrixStringShow(a) {
+    var _a;
     const result = [];
-    result.push("[");
+    result.push("[\n");
     for (let i = 0; i < a.countRows; i++) {
-        result.push(" [");
+        result.push("  [");
         for (let j = 0; j < a.countCols; j++) {
-            result.push('"' + a.values[i * a.countCols + j] + '", ');
+            result.push('"' + ((_a = a.values[i * a.countCols + j]) === null || _a === void 0 ? void 0 : _a.replace("\n", "\\n")) + '", ');
         }
-        result.push("], ");
+        result.push("],\n");
     }
     result.push("]");
     return result.join("");

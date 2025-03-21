@@ -12,3 +12,10 @@ function pokaVectorBooleanEqualsVectorBoolean(a, b) {
     }
     return { _type: "PokaVectorBoolean", values: r };
 }
+function pokaVectorBooleanAndVectorBoolean(a, b) {
+    const r = [];
+    for (let i = 0; i < a.values.length; i++) {
+        r.push(a.values[i] && b.values[i]);
+    }
+    return { _type: "PokaVectorBoolean", values: r };
+}
