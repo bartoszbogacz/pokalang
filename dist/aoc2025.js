@@ -19,6 +19,8 @@ const AOC2025 = {
         ].join("\n"),
         input_name: "aoc2025day2a",
         answer: 2,
-        program: ['aoc2025day2a "\n" split " " split toNumber dup 1 rotr sub [1, 2, 3, 4] cols [0 unequals allRows squeeze, 0 less equalsRows squeeze, abs 4 less allRows squeeze] spread and and count'],
+        program: [
+            'aoc2025day2a "\n" split " " split toNumber dup 1 rotr sub [1, 2, 3, 4] cols [0 unequals allRows squeeze, 0 less equalsRows squeeze, abs 4 less allRows squeeze] spread and and count',
+        ],
     },
 };
