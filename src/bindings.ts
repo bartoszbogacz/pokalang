@@ -181,7 +181,6 @@ POKA_WORDS3["anyRows"] = {
   mb_mb: pokaMatrixBooleanAnyRows,
 };
 
-
 POKA_WORDS3["unequals"] = {
   doc: [
     "[[1, 2]] [[2, 2]] unequals [[True, False]] equals all",
@@ -198,8 +197,7 @@ POKA_WORDS3["count"] = {
   ],
   mb_sn: pokaMatrixBooleanCount,
   vb_sn: pokaVectorBooleanCount,
-}
-
+};
 
 function pokaDispatch2(
   env: { [word: string]: PokaValue },
