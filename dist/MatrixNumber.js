@@ -382,7 +382,7 @@ function pokaMatrixNumberEqualsRows(a) {
     for (let i = 0; i < a.countRows; i++) {
         let acc = true;
         for (let j = 0; j < a.countCols; j++) {
-            acc = acc && (a.values[i * a.countCols] === a.values[i * a.countCols + j]);
+            acc = acc && a.values[i * a.countCols] === a.values[i * a.countCols + j];
         }
         values.push(acc);
     }
@@ -431,4 +431,43 @@ function pokaMatrixNumberSqueeze(a) {
     else {
         throw new Error("Cannot squeeze");
     }
+}
+function pokaMatrixNumberEqualsScalarNumber(a, b) {
+    const values = [];
+    for (let i = 0; i < a.values.length; i++) {
+        values.push(a.values[i] === b);
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: values,
+    };
+}
+function pokaMatrixNumberUnequalsMatrixNumber(a, b) {
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+        throw "Shape mismatch";
+    }
+    const r = [];
+    for (let i = 0; i < a.values.length; i++) {
+        r.push(a.values[i] !== b.values[i]);
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: r,
+    };
+}
+function pokaMatrixNumberUnequalsScalarNumber(a, b) {
+    const values = [];
+    for (let i = 0; i < a.values.length; i++) {
+        values.push(a.values[i] !== b);
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: a.countCols,
+        values: values,
+    };
 }

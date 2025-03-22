@@ -28,6 +28,7 @@ POKA_WORDS3["equals"] = {
     vs_vs_vb: pokaVectorStringEqualsVectorString,
     mb_mb_mb: pokaMatrixBooleanEqualsMatrixBoolean,
     mn_mn_mb: pokaMatrixNumberEqualsMatrixNumber,
+    mn_sn_mb: pokaMatrixNumberEqualsScalarNumber,
     ms_ms_mb: pokaMatrixStringEqualsMatrixString,
 };
 POKA_WORDS3["add"] = {
@@ -136,9 +137,7 @@ POKA_WORDS3["allRows"] = {
     mb_mb: pokaMatrixBooleanAllRows,
 };
 POKA_WORDS3["rows"] = {
-    doc: [
-        "[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"
-    ],
+    doc: ["[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"],
     mn_vb_mn: pokaMatrixNumberRowsVectorBoolean,
 };
 POKA_WORDS3["squeeze"] = {
@@ -154,6 +153,28 @@ POKA_WORDS3["and"] = {
         "[True, False, True] [True, False, False] and [True, False, False] equals all",
     ],
     vb_vb_vb: pokaVectorBooleanAndVectorBoolean,
+};
+POKA_WORDS3["anyRows"] = {
+    doc: [
+        "[[True, True, True], [True, False, True], [False, False, False]] anyRows [[True], [True], [False]] equals all",
+    ],
+    mb_mb: pokaMatrixBooleanAnyRows,
+};
+POKA_WORDS3["unequals"] = {
+    doc: [
+        "[[1, 2]] [[2, 2]] unequals [[True, False]] equals all",
+        "[[1, 2]] 2 unequals [[True, False]] equals all",
+    ],
+    mn_mn_mb: pokaMatrixNumberUnequalsMatrixNumber,
+    mn_sn_mb: pokaMatrixNumberUnequalsScalarNumber,
+};
+POKA_WORDS3["count"] = {
+    doc: [
+        "[[True, False], [False, False]] count 1 equals",
+        "[True, False, False] count 1 equals",
+    ],
+    mb_sn: pokaMatrixBooleanCount,
+    vb_sn: pokaVectorBooleanCount,
 };
 function pokaDispatch2(env, stack, word) {
     const env_value = env[word];
@@ -217,6 +238,10 @@ function pokaDispatch2(env, stack, word) {
         stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1)));
         return;
     }
+    if (decl.vb_sn !== undefined && vector1._type === "PokaVectorBoolean") {
+        stack.push(pokaMakeScalarNumber(decl.vb_sn(vector1)));
+        return;
+    }
     if (decl.vn_sn !== undefined && vector1._type === "PokaVectorNumber") {
         stack.push(pokaMakeScalarNumber(decl.vn_sn(vector1)));
         return;
@@ -236,6 +261,10 @@ function pokaDispatch2(env, stack, word) {
     }
     if (decl.mb_sb !== undefined && matrix1._type === "PokaMatrixBoolean") {
         stack.push(pokaMakeScalarBoolean(decl.mb_sb(matrix1)));
+        return;
+    }
+    if (decl.mb_sn !== undefined && matrix1._type === "PokaMatrixBoolean") {
+        stack.push(pokaMakeScalarNumber(decl.mb_sn(matrix1)));
         return;
     }
     if (decl.mn_sn !== undefined && matrix1._type === "PokaMatrixNumber") {

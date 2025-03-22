@@ -32,3 +32,11 @@ function pokaVectorBooleanAndVectorBoolean(
   }
   return { _type: "PokaVectorBoolean", values: r };
 }
+
+function pokaVectorBooleanCount(a: PokaVectorBoolean): number {
+  let acc = 0;
+  for (let i = 0; i < a.values.length; i++) {
+    acc += a.values[i] ? 1 : 0;
+  }
+  return acc;
+}

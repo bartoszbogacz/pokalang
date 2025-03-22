@@ -493,3 +493,54 @@ function pokaMatrixNumberSqueeze(a: PokaMatrixNumber): PokaVectorNumber {
     throw new Error("Cannot squeeze");
   }
 }
+
+function pokaMatrixNumberEqualsScalarNumber(
+  a: PokaMatrixNumber,
+  b: number,
+): PokaMatrixBoolean {
+  const values: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    values.push((a.values[i] as number) === b);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: values,
+  };
+}
+
+function pokaMatrixNumberUnequalsMatrixNumber(
+  a: PokaMatrixNumber,
+  b: PokaMatrixNumber,
+): PokaMatrixBoolean {
+  if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+    throw "Shape mismatch";
+  }
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push(a.values[i] !== b.values[i]);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: r,
+  };
+}
+
+function pokaMatrixNumberUnequalsScalarNumber(
+  a: PokaMatrixNumber,
+  b: number,
+): PokaMatrixBoolean {
+  const values: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    values.push((a.values[i] as number) !== b);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: values,
+  };
+}

@@ -56,7 +56,7 @@ function pokaMatrixBooleanEqualsRows(a) {
     for (let i = 0; i < a.countRows; i++) {
         let acc = true;
         for (let j = 0; j < a.countCols; j++) {
-            acc = acc && (a.values[i * a.countCols] === a.values[i * a.countCols + j]);
+            acc = acc && a.values[i * a.countCols] === a.values[i * a.countCols + j];
         }
         values.push(acc);
     }
@@ -117,4 +117,30 @@ function pokaMatrixBooleanSqueeze(a) {
     else {
         throw new Error("Cannot squeeze");
     }
+}
+function pokaMatrixBooleanAnyRows(a) {
+    if (a.countCols === 0) {
+        throw new Error("No columns");
+    }
+    const values = [];
+    for (let i = 0; i < a.countRows; i++) {
+        let acc = a.values[i * a.countCols];
+        for (let j = 1; j < a.countCols; j++) {
+            acc = acc || a.values[i * a.countCols + j];
+        }
+        values.push(acc);
+    }
+    return {
+        _type: "PokaMatrixBoolean",
+        countRows: a.countRows,
+        countCols: 1,
+        values: values,
+    };
+}
+function pokaMatrixBooleanCount(a) {
+    let acc = 0;
+    for (let i = 0; i < a.values.length; i++) {
+        acc += a.values[i] ? 1 : 0;
+    }
+    return acc;
 }

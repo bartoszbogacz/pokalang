@@ -19,3 +19,10 @@ function pokaVectorBooleanAndVectorBoolean(a, b) {
     }
     return { _type: "PokaVectorBoolean", values: r };
 }
+function pokaVectorBooleanCount(a) {
+    let acc = 0;
+    for (let i = 0; i < a.values.length; i++) {
+        acc += a.values[i] ? 1 : 0;
+    }
+    return acc;
+}

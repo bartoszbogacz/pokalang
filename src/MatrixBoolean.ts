@@ -139,3 +139,31 @@ function pokaMatrixBooleanSqueeze(a: PokaMatrixBoolean): PokaVectorBoolean {
     throw new Error("Cannot squeeze");
   }
 }
+
+function pokaMatrixBooleanAnyRows(a: PokaMatrixBoolean): PokaMatrixBoolean {
+  if (a.countCols === 0) {
+    throw new Error("No columns");
+  }
+  const values: boolean[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    let acc: boolean = a.values[i * a.countCols] as boolean;
+    for (let j = 1; j < a.countCols; j++) {
+      acc = acc || (a.values[i * a.countCols + j] as boolean);
+    }
+    values.push(acc);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: 1,
+    values: values,
+  };
+}
+
+function pokaMatrixBooleanCount(a: PokaMatrixBoolean): number {
+  let acc = 0;
+  for (let i = 0; i < a.values.length; i++) {
+    acc += a.values[i] ? 1 : 0;
+  }
+  return acc;
+}
