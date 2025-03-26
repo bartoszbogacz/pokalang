@@ -1,33 +1,5 @@
 "use strict";
 const POKA_WORDS3 = {};
-POKA_WORDS3["abs"] = {
-    doc: [
-        "-1 abs 1 equals",
-        "[-1, -1] abs [1, 1] equals all",
-        "[[-1, -1], [-1, -1]] abs [[1, 1], [1, 1]] equals all",
-    ],
-    sn_sn: Math.abs,
-    vn_vn: pokaVectorNumberAbs,
-    mn_mn: pokaMatrixNumberAbs,
-};
-POKA_WORDS3["sortRows"] = {
-    doc: ["[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all"],
-    mn_mn: pokaMatrixNumberSortRows,
-};
-POKA_WORDS3["sortCols"] = {
-    doc: [
-        "[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all",
-        "[[1, 2], [2, 1]] sortCols [[1, 1], [2, 2]] equals all",
-    ],
-    mn_mn: pokaMatrixNumberSortCols,
-};
-POKA_WORDS3["transpose"] = {
-    doc: [
-        "[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all",
-        "[[1, 2, 3], [4, 5, 6]] transpose [[1, 4], [2, 5], [3, 6]] equals all",
-    ],
-    mn_mn: pokaMatrixNumberTranspose,
-};
 POKA_WORDS3["col"] = {
     doc: ["[[1, 2], [3, 4]] 1 col [2, 4] equals all"],
     mn_sn_vn: pokaMatrixNumberColScalarNumber,

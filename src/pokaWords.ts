@@ -328,3 +328,31 @@ POKA_WORDS4["sortCols"] = {
   ],
   fun: pokaWordSortCols,
 };
+
+function pokaWordTranspose(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberTranspose(am));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["transpose"] = {
+  doc: [
+    "[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all",
+    "[[1, 2, 3], [4, 5, 6]] transpose [[1, 4], [2, 5], [3, 6]] equals all",
+  ],
+  fun: pokaWordTranspose,
+};

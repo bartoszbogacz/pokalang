@@ -1,13 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["transpose"] = {
-  doc: [
-    "[[1, 2], [3, 4]] transpose [[1, 3], [2, 4]] equals all",
-    "[[1, 2, 3], [4, 5, 6]] transpose [[1, 4], [2, 5], [3, 6]] equals all",
-  ],
-  mn_mn: pokaMatrixNumberTranspose,
-};
-
 POKA_WORDS3["col"] = {
   doc: ["[[1, 2], [3, 4]] 1 col [2, 4] equals all"],
   mn_sn_vn: pokaMatrixNumberColScalarNumber,
