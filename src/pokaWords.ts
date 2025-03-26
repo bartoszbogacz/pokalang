@@ -300,3 +300,31 @@ POKA_WORDS4["sortRows"] = {
   doc: ["[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all"],
   fun: pokaWordSortRows,
 };
+
+function pokaWordSortCols(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberSortCols(am));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["sortCols"] = {
+  doc: [
+    "[[4, 1], [2, 3]] sortCols [[2, 1], [4, 3]] equals all",
+    "[[1, 2], [2, 1]] sortCols [[1, 1], [2, 2]] equals all",
+  ],
+  fun: pokaWordSortCols,
+};
