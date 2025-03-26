@@ -150,3 +150,24 @@ POKA_WORDS4["sub"] = {
     ],
     fun: pokaWordSub,
 };
+function pokaWordSum(_env, stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const av = pokaTryToVector(a);
+    if (av._type === "PokaVectorNumber") {
+        stack.push(pokaScalarNumberMake(pokaVectorNumberSum(av)));
+        return;
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixNumber") {
+        stack.push(pokaScalarNumberMake(pokaMatrixNumberSum(am)));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["sum"] = {
+    doc: ["[1, 1] sum 2 equals", "[[1, 1], [2, 2]] sum 6 equals"],
+    fun: pokaWordSum,
+};

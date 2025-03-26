@@ -1,11 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["sum"] = {
-  doc: ["[1, 1] sum 2 equals", "[[1, 1], [2, 2]] sum 6 equals"],
-  vn_sn: pokaVectorNumberSum,
-  mn_sn: pokaMatrixNumberSum,
-};
-
 POKA_WORDS3["abs"] = {
   doc: [
     "-1 abs 1 equals",
