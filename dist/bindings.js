@@ -1,15 +1,5 @@
 "use strict";
 const POKA_WORDS3 = {};
-POKA_WORDS3["add"] = {
-    doc: [
-        "1 1 add 2 equals",
-        "[1, 1] [1, 1] add [2, 2] equals all",
-        "[[1, 1], [1, 1]] [[1, 1], [1, 1]] add [[2, 2], [2, 2]] equals all",
-    ],
-    sn_sn_sn: (a, b) => a + b,
-    vn_vn_vn: pokaVectorNumberAddVectorNumber,
-    mn_mn_mn: pokaMatrixNumberAddMatrixNumber,
-};
 POKA_WORDS3["sub"] = {
     doc: [
         "3 1 sub 2 equals",

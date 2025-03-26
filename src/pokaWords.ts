@@ -114,3 +114,47 @@ POKA_WORDS4["equals"] = {
   ],
   fun: pokaWordEquals,
 };
+
+function pokaWordAdd(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberMake(a.value + b.value));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberAddVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberAddMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["add"] = {
+  doc: [
+    "1 1 add 2 equals",
+    "[1, 1] [1, 1] add [2, 2] equals all",
+    "[[1, 1], [1, 1]] [[1, 1], [1, 1]] add [[2, 2], [2, 2]] equals all",
+  ],
+  fun: pokaWordAdd,
+};

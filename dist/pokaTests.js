@@ -54,6 +54,32 @@ function pokaDocTestsRun() {
     }
     return result.join("\n");
 }
+function pokaDocTests4Run() {
+    const result = [];
+    for (const [_, decl] of Object.entries(POKA_WORDS4)) {
+        for (const line of decl.doc) {
+            try {
+                const state = run(line);
+                const top = state.stack.pop();
+                if (top === undefined) {
+                    throw "Stack exhausted";
+                }
+                if (top._type !== "ScalarBoolean") {
+                    throw "Test has non-boolean result: " + pokaShow(top);
+                }
+                if (top.value !== true) {
+                    throw "Test failed";
+                }
+                result.push("OK   | " + line.replace("\n", "\\n"));
+            }
+            catch (exc) {
+                result.push("FAIL | " + line.replace("\n", "\\n"));
+                result.push(" EXC | " + exc);
+            }
+        }
+    }
+    return result.join("\n");
+}
 function pokaTestsAocRun() {
     const result = [];
     for (const [_, day] of Object.entries(AOC2025)) {
@@ -89,6 +115,6 @@ function pokaTestsShow() {
         throw "Test output div not found";
     }
     elem.innerText =
-        pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTestsRun();
+        pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTestsRun() + "\n" + pokaDocTests4Run();
 }
 pokaTestsShow();
