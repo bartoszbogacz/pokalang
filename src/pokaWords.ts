@@ -158,3 +158,47 @@ POKA_WORDS4["add"] = {
   ],
   fun: pokaWordAdd,
 };
+
+function pokaWordSub(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberMake(a.value - b.value));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberSubVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberSubMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["sub"] = {
+  doc: [
+    "3 1 sub 2 equals",
+    "[3, 3] [1, 1] sub [2, 2] equals all",
+    "[[3, 3], [3, 3]] [[1, 1], [1, 1]] sub [[2, 2], [2, 2]] equals all",
+  ],
+  fun: pokaWordSub,
+};

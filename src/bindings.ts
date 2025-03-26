@@ -1,16 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["sub"] = {
-  doc: [
-    "3 1 sub 2 equals",
-    "[3, 3] [1, 1] sub [2, 2] equals all",
-    "[[3, 3], [3, 3]] [[1, 1], [1, 1]] sub [[2, 2], [2, 2]] equals all",
-  ],
-  sn_sn_sn: (a, b) => a - b,
-  vn_vn_vn: pokaVectorNumberSubVectorNumber,
-  mn_mn_mn: pokaMatrixNumberSubMatrixNumber,
-};
-
 POKA_WORDS3["sum"] = {
   doc: ["[1, 1] sum 2 equals", "[[1, 1], [2, 2]] sum 6 equals"],
   vn_sn: pokaVectorNumberSum,

@@ -115,7 +115,13 @@ function pokaTestsShow(): void {
     throw "Test output div not found";
   }
   elem.innerText =
-    pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTestsRun() + "\n" + pokaDocTests4Run();
+    pokaTestsAocRun() +
+    "\n" +
+    pokaTestsRun() +
+    "\n" +
+    pokaDocTestsRun() +
+    "\n" +
+    pokaDocTests4Run();
 }
 
 pokaTestsShow();
