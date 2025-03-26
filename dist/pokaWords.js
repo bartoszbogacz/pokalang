@@ -254,3 +254,19 @@ POKA_WORDS4["transpose"] = {
     ],
     fun: pokaWordTranspose,
 };
+function pokaWordCol(_env, stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixNumber") {
+        stack.push(pokaMatrixNumberTranspose(am));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["col"] = {
+    doc: ["[[1, 2], [3, 4]] 1 col [2, 4] equals all"],
+    fun: pokaWordCol,
+};
