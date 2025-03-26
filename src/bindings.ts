@@ -1,26 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["equals"] = {
-  doc: [
-    "True True equals",
-    "False False equals",
-    "1 1 equals",
-    '"a" "a" equals',
-    "[True, False] [True, False] equals all",
-    "[False, True] [True, False] equals all False equals",
-  ],
-  sb_sb_sb: (a, b) => a === b,
-  sn_sn_sb: (a, b) => a === b,
-  ss_ss_sb: (a, b) => a === b,
-  vb_vb_vb: pokaVectorBooleanEqualsVectorBoolean,
-  vn_vn_vb: pokaVectorNumberEqualsVectorNumber,
-  vs_vs_vb: pokaVectorStringEqualsVectorString,
-  mb_mb_mb: pokaMatrixBooleanEqualsMatrixBoolean,
-  mn_mn_mb: pokaMatrixNumberEqualsMatrixNumber,
-  mn_sn_mb: pokaMatrixNumberEqualsScalarNumber,
-  ms_ms_mb: pokaMatrixStringEqualsMatrixString,
-};
-
 POKA_WORDS3["add"] = {
   doc: [
     "1 1 add 2 equals",
