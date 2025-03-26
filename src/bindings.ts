@@ -1,21 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["col"] = {
-  doc: ["[[1, 2], [3, 4]] 1 col [2, 4] equals all"],
-  mn_sn_vn: pokaMatrixNumberColScalarNumber,
-};
-
-POKA_WORDS3["toNumber"] = {
-  doc: [
-    '"1" toNumber 1 equals',
-    '["1", "2"] toNumber [1, 2] equals all',
-    '[["1", "2"], ["3", "4"]] toNumber [[1, 2], [3, 4]] equals all',
-  ],
-  ss_sn: parseFloat,
-  vs_vn: pokaVectorStringToNumber,
-  ms_mn: pokaMatrixStringToNumber,
-};
-
 POKA_WORDS3["split"] = {
   doc: [
     '"1 2" " " split ["1", "2"] equals all',

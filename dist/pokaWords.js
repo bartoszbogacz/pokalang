@@ -255,18 +255,56 @@ POKA_WORDS4["transpose"] = {
     fun: pokaWordTranspose,
 };
 function pokaWordCol(_env, stack) {
+    const b = stack.pop();
     const a = stack.pop();
-    if (a === undefined) {
+    if (a === undefined || b === undefined) {
         throw "Stack underflow";
     }
     const am = pokaTryToMatrix(a);
-    if (am._type === "PokaMatrixNumber") {
-        stack.push(pokaMatrixNumberTranspose(am));
+    if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
+        stack.push(pokaMatrixNumberColScalarNumber(am, b.value));
+        return;
+    }
+    const bv = pokaTryToVector(b);
+    if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorNumber") {
+        stack.push(pokaMatrixNumberColsVectorNumber(am, bv));
         return;
     }
     throw "No implementation";
 }
 POKA_WORDS4["col"] = {
-    doc: ["[[1, 2], [3, 4]] 1 col [2, 4] equals all"],
+    doc: [
+        "[[1, 2], [3, 4]] 1 col [2, 4] equals all",
+        "[[1, 2], [3, 4]] [1] col [[2], [4]] equals all",
+    ],
     fun: pokaWordCol,
+};
+function pokaWordToNumber(_env, stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    if (a._type === "ScalarString") {
+        stack.push(pokaScalarNumberMake(parseFloat(a.value)));
+        return;
+    }
+    const av = pokaTryToVector(a);
+    if (av._type === "PokaVectorString") {
+        stack.push(pokaVectorStringToNumber(av));
+        return;
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixString") {
+        stack.push(pokaMatrixStringToNumber(am));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["toNumber"] = {
+    doc: [
+        '"1" toNumber 1 equals',
+        '["1", "2"] toNumber [1, 2] equals all',
+        '[["1", "2"], ["3", "4"]] toNumber [[1, 2], [3, 4]] equals all',
+    ],
+    fun: pokaWordToNumber,
 };

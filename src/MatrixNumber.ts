@@ -382,9 +382,9 @@ function pokaMatrixNumberColsVectorNumber(
   const values: number[] = [];
   for (let i = 0; i < a.countRows; i++) {
     for (let j = 0; j < b.values.length; j++) {
-      values.push(
-        a.values[i * a.countCols + (j < 0 ? a.countCols - j : j)] as number,
-      );
+      let index = b.values[j] as number;
+      index = index < 0 ? a.countCols - index : index;
+      values.push(a.values[i * a.countCols + index] as number);
     }
   }
   return {
