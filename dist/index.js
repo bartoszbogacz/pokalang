@@ -41,16 +41,16 @@ function showInterpreterState(state) {
     }
     return state.error + "\n" + result.join("\n");
 }
-function pokaMakeScalarBoolean(value) {
+function pokaScalarBooleanMake(value) {
     return { _type: "ScalarBoolean", value: value };
 }
-function pokaMakeScalarNumber(value) {
+function pokaScalarNumberMake(value) {
     return { _type: "ScalarNumber", value: value };
 }
-function pokaMakeScalarString(value) {
+function pokaScalarStringMake(value) {
     return { _type: "ScalarString", value: value };
 }
-function pokaMakeList(values) {
+function pokaListMake(values) {
     return { _type: "List", value: values };
 }
 function pokaTryToVector(value) {
@@ -216,7 +216,7 @@ function consumeList(state) {
     }
     consumeLiteral(state, "]");
     state.stack = origStack;
-    state.stack.push(pokaMakeList(values));
+    state.stack.push(pokaListMake(values));
 }
 function peekIdentifier(state) {
     const c = state.line.charAt(state.pos);
@@ -342,7 +342,7 @@ function onInput(ev) {
     const text = target.value;
     const env = {};
     for (const [_, day] of Object.entries(AOC2025)) {
-        env[day.input_name] = pokaMakeScalarString(day.input_text);
+        env[day.input_name] = pokaScalarStringMake(day.input_text);
     }
     const state = runWithEnvironment(text, env);
     preview.innerText = showInterpreterState(state);

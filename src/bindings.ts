@@ -1,17 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["all"] = {
-  doc: [
-    "[True, True] all True equals",
-    "[False, False] all False equals",
-    "[True, False] all False equals",
-    "[[True, True] [True, True]] all True equals",
-    "[[True, False] [False, True]] all False equals",
-  ],
-  vb_sb: pokaVectorBooleanAll,
-  mb_sb: pokaMatrixBooleanAll,
-};
-
 POKA_WORDS3["equals"] = {
   doc: [
     "True True equals",
@@ -211,12 +199,12 @@ function pokaDispatch2(
   }
 
   if (word === "True") {
-    stack.push(pokaMakeScalarBoolean(true));
+    stack.push(pokaScalarBooleanMake(true));
     return;
   }
 
   if (word === "False") {
-    stack.push(pokaMakeScalarBoolean(false));
+    stack.push(pokaScalarBooleanMake(false));
     return;
   }
 
@@ -250,6 +238,13 @@ function pokaDispatch2(
     }
   }
 
+  const word4 = POKA_WORDS4[word];
+
+  if (word4 !== undefined) {
+    word4.fun(env, stack);
+    return;
+  }
+
   const decl = POKA_WORDS3[word];
 
   if (decl === undefined) {
@@ -262,29 +257,29 @@ function pokaDispatch2(
   }
 
   if (decl.ss_sn !== undefined && arg1._type === "ScalarString") {
-    stack.push(pokaMakeScalarNumber(decl.ss_sn(arg1.value)));
+    stack.push(pokaScalarNumberMake(decl.ss_sn(arg1.value)));
     return;
   }
 
   if (decl.sn_sn !== undefined && arg1._type === "ScalarNumber") {
-    stack.push(pokaMakeScalarNumber(decl.sn_sn(arg1.value)));
+    stack.push(pokaScalarNumberMake(decl.sn_sn(arg1.value)));
     return;
   }
 
   const vector1 = pokaTryToVector(arg1);
 
   if (decl.vb_sb !== undefined && vector1._type === "PokaVectorBoolean") {
-    stack.push(pokaMakeScalarBoolean(decl.vb_sb(vector1)));
+    stack.push(pokaScalarBooleanMake(decl.vb_sb(vector1)));
     return;
   }
 
   if (decl.vb_sn !== undefined && vector1._type === "PokaVectorBoolean") {
-    stack.push(pokaMakeScalarNumber(decl.vb_sn(vector1)));
+    stack.push(pokaScalarNumberMake(decl.vb_sn(vector1)));
     return;
   }
 
   if (decl.vn_sn !== undefined && vector1._type === "PokaVectorNumber") {
-    stack.push(pokaMakeScalarNumber(decl.vn_sn(vector1)));
+    stack.push(pokaScalarNumberMake(decl.vn_sn(vector1)));
     return;
   }
 
@@ -306,17 +301,17 @@ function pokaDispatch2(
   }
 
   if (decl.mb_sb !== undefined && matrix1._type === "PokaMatrixBoolean") {
-    stack.push(pokaMakeScalarBoolean(decl.mb_sb(matrix1)));
+    stack.push(pokaScalarBooleanMake(decl.mb_sb(matrix1)));
     return;
   }
 
   if (decl.mb_sn !== undefined && matrix1._type === "PokaMatrixBoolean") {
-    stack.push(pokaMakeScalarNumber(decl.mb_sn(matrix1)));
+    stack.push(pokaScalarNumberMake(decl.mb_sn(matrix1)));
     return;
   }
 
   if (decl.mn_sn !== undefined && matrix1._type === "PokaMatrixNumber") {
-    stack.push(pokaMakeScalarNumber(decl.mn_sn(matrix1)));
+    stack.push(pokaScalarNumberMake(decl.mn_sn(matrix1)));
     return;
   }
 
@@ -355,7 +350,7 @@ function pokaDispatch2(
     arg1._type === "ScalarBoolean" &&
     arg2._type === "ScalarBoolean"
   ) {
-    stack.push(pokaMakeScalarBoolean(decl.sb_sb_sb(arg2.value, arg1.value)));
+    stack.push(pokaScalarBooleanMake(decl.sb_sb_sb(arg2.value, arg1.value)));
     return;
   }
 
@@ -364,7 +359,7 @@ function pokaDispatch2(
     arg1._type === "ScalarNumber" &&
     arg2._type === "ScalarNumber"
   ) {
-    stack.push(pokaMakeScalarBoolean(decl.sn_sn_sb(arg2.value, arg1.value)));
+    stack.push(pokaScalarBooleanMake(decl.sn_sn_sb(arg2.value, arg1.value)));
     return;
   }
 
@@ -373,7 +368,7 @@ function pokaDispatch2(
     arg1._type === "ScalarNumber" &&
     arg2._type === "ScalarNumber"
   ) {
-    stack.push(pokaMakeScalarNumber(decl.sn_sn_sn(arg2.value, arg1.value)));
+    stack.push(pokaScalarNumberMake(decl.sn_sn_sn(arg2.value, arg1.value)));
     return;
   }
 
@@ -382,7 +377,7 @@ function pokaDispatch2(
     arg1._type === "ScalarString" &&
     arg2._type === "ScalarString"
   ) {
-    stack.push(pokaMakeScalarBoolean(decl.ss_ss_sb(arg2.value, arg1.value)));
+    stack.push(pokaScalarBooleanMake(decl.ss_ss_sb(arg2.value, arg1.value)));
     return;
   }
 

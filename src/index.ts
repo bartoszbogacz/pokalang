@@ -151,6 +151,11 @@ interface PokaNativeFun2 {
   vs_vs_vb?: (a: PokaVectorString, b: PokaVectorString) => PokaVectorBoolean;
 }
 
+interface PokaWordDecl3 {
+  doc: string[];
+  fun: (env: { [word: string]: PokaValue }, stack: PokaValue[]) => void;
+}
+
 function pokaShow(value: PokaValue): string {
   if (value._type === "ScalarBoolean") {
     return value.value ? "True" : "False";
@@ -185,19 +190,19 @@ function showInterpreterState(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-function pokaMakeScalarBoolean(value: boolean): PokaScalarBoolean {
+function pokaScalarBooleanMake(value: boolean): PokaScalarBoolean {
   return { _type: "ScalarBoolean", value: value };
 }
 
-function pokaMakeScalarNumber(value: number): PokaScalarNumber {
+function pokaScalarNumberMake(value: number): PokaScalarNumber {
   return { _type: "ScalarNumber", value: value };
 }
 
-function pokaMakeScalarString(value: string): PokaScalarString {
+function pokaScalarStringMake(value: string): PokaScalarString {
   return { _type: "ScalarString", value: value };
 }
 
-function pokaMakeList(values: PokaValue[]): PokaList {
+function pokaListMake(values: PokaValue[]): PokaList {
   return { _type: "List", value: values };
 }
 
@@ -366,7 +371,7 @@ function consumeList(state: InterpreterState): void {
 
   state.stack = origStack;
 
-  state.stack.push(pokaMakeList(values));
+  state.stack.push(pokaListMake(values));
 }
 
 function peekIdentifier(state: InterpreterState): boolean {
@@ -507,7 +512,7 @@ function onInput(ev: InputEvent) {
   const text = target.value;
   const env: { [word: string]: PokaValue } = {};
   for (const [_, day] of Object.entries(AOC2025)) {
-    env[day.input_name] = pokaMakeScalarString(day.input_text);
+    env[day.input_name] = pokaScalarStringMake(day.input_text);
   }
   const state = runWithEnvironment(text, env);
   preview.innerText = showInterpreterState(state);

@@ -60,7 +60,7 @@ function pokaTestsAocRun(): string {
     for (const line of day.program) {
       try {
         const env: { [word: string]: PokaValue } = {
-          [day.input_name]: pokaMakeScalarString(day.input_text),
+          [day.input_name]: pokaScalarStringMake(day.input_text),
         };
         const state = runWithEnvironment(line, env);
         const top = state.stack.pop();
