@@ -275,3 +275,28 @@ POKA_WORDS4["abs"] = {
   ],
   fun: pokaWordAbs,
 };
+
+function pokaWordSortRows(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberSortRows(am));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["sortRows"] = {
+  doc: ["[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all"],
+  fun: pokaWordSortRows,
+};
