@@ -234,3 +234,44 @@ POKA_WORDS4["sum"] = {
   doc: ["[1, 1] sum 2 equals", "[[1, 1], [2, 2]] sum 6 equals"],
   fun: pokaWordSum,
 };
+
+function pokaWordAbs(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberMake(Math.abs(a.value)));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+
+  if (av._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberAbs(av));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberAbs(am));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["abs"] = {
+  doc: [
+    "-1 abs 1 equals",
+    "[-1, -1] abs [1, 1] equals all",
+    "[[-1, -1], [-1, -1]] abs [[1, 1], [1, 1]] equals all",
+  ],
+  fun: pokaWordAbs,
+};
