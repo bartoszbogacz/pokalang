@@ -389,6 +389,7 @@ POKA_WORDS4["col"] = {
   doc: [
     "[[1, 2], [3, 4]] 1 col [2, 4] equals all",
     "[[1, 2], [3, 4]] [1] col [[2], [4]] equals all",
+    "[[1, 2, 3], [3, 4, 5]] [0, 1] col [[1, 2], [3, 4]] equals all",
   ],
   fun: pokaWordCol,
 };
@@ -483,7 +484,7 @@ function pokaWordRotr(
   const am = pokaTryToMatrix(a);
 
   if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaMatrixNumberRotr(am, b.value));
+    stack.push(pokaMatrixNumberRotrScalarNumber(am, b.value));
     return;
   }
 
@@ -493,4 +494,40 @@ function pokaWordRotr(
 POKA_WORDS4["rotr"] = {
   doc: ["[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all"],
   fun: pokaWordRotr,
+};
+
+function pokaWordLess(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaMatrixNumberLessScalarNumber(am, b.value));
+    return;
+  }
+
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberLessMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No Implementation";
+}
+
+POKA_WORDS4["less"] = {
+  doc: [
+    "[[1, 2], [3, 4]] [[5, 6], [7, 8]] less all",
+    "[[1, 2], [3, 4]] 5 less all",
+  ],
+  fun: pokaWordLess,
 };

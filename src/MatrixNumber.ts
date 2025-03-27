@@ -355,7 +355,7 @@ function pokaMatrixNumberShow(a: PokaMatrixNumber): string {
   return result.join("");
 }
 
-function pokaMatrixNumberRotr(
+function pokaMatrixNumberRotrScalarNumber(
   a: PokaMatrixNumber,
   b: number,
 ): PokaMatrixNumber {
