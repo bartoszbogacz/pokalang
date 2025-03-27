@@ -308,3 +308,28 @@ POKA_WORDS4["toNumber"] = {
     ],
     fun: pokaWordToNumber,
 };
+function pokaWordSplit(_env, stack) {
+    const b = stack.pop();
+    const a = stack.pop();
+    if (a === undefined || b === undefined) {
+        throw "Stack underflow";
+    }
+    if (a._type === "ScalarString" && b._type === "ScalarString") {
+        stack.push(pokaScalarStringSplitScalarString(a.value, b.value));
+        return;
+    }
+    const av = pokaTryToVector(a);
+    if (av._type === "PokaVectorString" && b._type === "ScalarString") {
+        stack.push(pokaVectorStringSplitScalarString(av, b.value));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["split"] = {
+    doc: [
+        '"1 2" " " split ["1", "2"] equals all',
+        '"1 2 3" " " split ["1", "2", "3"] equals all',
+        '["1 2", "3 4"] " " split [["1", "2"], ["3", "4"]] equals all',
+    ],
+    fun: pokaWordSplit,
+};
