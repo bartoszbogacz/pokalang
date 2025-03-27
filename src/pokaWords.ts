@@ -679,3 +679,30 @@ POKA_WORDS4["allRows"] = {
   ],
   fun: pokaWordAllRows,
 };
+
+function pokaWordAnyRows(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixBoolean") {
+    stack.push(pokaMatrixBooleanAnyRows(am));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["anyRows"] = {
+  doc: [
+    "[[True, True, True], [True, False, True], [False, False, False]] anyRows [[True], [True], [False]] equals all",
+  ],
+  fun: pokaWordAnyRows,
+};

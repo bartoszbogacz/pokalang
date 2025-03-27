@@ -1,11 +1,5 @@
 "use strict";
 const POKA_WORDS3 = {};
-POKA_WORDS3["anyRows"] = {
-    doc: [
-        "[[True, True, True], [True, False, True], [False, False, False]] anyRows [[True], [True], [False]] equals all",
-    ],
-    mb_mb: pokaMatrixBooleanAnyRows,
-};
 POKA_WORDS3["unequals"] = {
     doc: [
         "[[1, 2]] [[2, 2]] unequals [[True, False]] equals all",
