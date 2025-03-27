@@ -11,20 +11,6 @@ function pokaDispatch2(
     return;
   }
 
-  if (word === "id") {
-    return;
-  }
-
-  if (word === "dup") {
-    const a = stack.pop();
-    if (a === undefined) {
-      throw "dup: Stack underflow";
-    }
-    stack.push(a);
-    stack.push(a);
-    return;
-  }
-
   const word4 = POKA_WORDS4[word];
 
   if (word4 !== undefined) {

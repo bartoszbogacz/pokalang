@@ -618,3 +618,26 @@ POKA_WORDS4["spread"] = {
     doc: ["[1, 1] spread equals"],
     fun: pokaWordSpread,
 };
+function pokaWordDup(_env, stack) {
+    const arg1 = stack.pop();
+    if (arg1 === undefined) {
+        throw "Stack underflow";
+    }
+    stack.push(arg1);
+    stack.push(arg1);
+}
+POKA_WORDS4["dup"] = {
+    doc: ["1 dup equals"],
+    fun: pokaWordDup,
+};
+function pokaWordId(_env, stack) {
+    const arg1 = stack.pop();
+    if (arg1 === undefined) {
+        throw "Stack underflow";
+    }
+    stack.push(arg1);
+}
+POKA_WORDS4["id"] = {
+    doc: ["1 1 id id equals"],
+    fun: pokaWordId,
+};
