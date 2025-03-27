@@ -38,120 +38,7 @@ interface InterpreterState {
   env: { [word: string]: PokaValue };
 }
 
-interface DeprecatedPokaNativeFun {
-  pokaMatrixBooleanToScalarBoolean: {
-    [key: string]: (a: PokaMatrixBoolean) => boolean;
-  };
-  pokaMatrixStringToMatrixNumber: {
-    [key: string]: (a: PokaMatrixString) => PokaMatrixNumber;
-  };
-  pokaMatrixNumberAndScalarNumberToVectorNumber: {
-    [key: string]: (a: PokaMatrixNumber, b: number) => PokaVectorNumber;
-  };
-  pokaMatrixNumberToMatrixNumber: {
-    [key: string]: (a: PokaMatrixNumber) => PokaMatrixNumber;
-  };
-  pokaMatrixNumberToScalarNumber: {
-    [key: string]: (a: PokaMatrixNumber) => number;
-  };
-  pokaScalarStringAndScalarStringToVectorString: {
-    [key: string]: (a: string, b: string) => PokaVectorString;
-  };
-  pokaVectorNumberToScalarNumber: {
-    [key: string]: (a: PokaVectorNumber) => number;
-  };
-  pokaVectorNumberToVectorNumber: {
-    [key: string]: (a: PokaVectorNumber) => PokaVectorNumber;
-  };
-  pokaScalarBooleanAndScalarBooleanToScalarBoolean: {
-    [key: string]: (a: boolean, b: boolean) => boolean;
-  };
-  pokaScalarNumberAndScalarNumberToScalarBoolean: {
-    [key: string]: (a: number, b: number) => boolean;
-  };
-  pokaVectorStringAndScalarStringToMatrixString: {
-    [key: string]: (a: PokaVectorString, b: string) => PokaMatrixString;
-  };
-  pokaVectorBooleanAndVectorBooleanToVectorBoolean: {
-    [key: string]: (
-      a: PokaVectorBoolean,
-      b: PokaVectorBoolean,
-    ) => PokaVectorBoolean;
-  };
-  pokaVectorNumberAndVectorNumberToVectorNumber: {
-    [key: string]: (
-      a: PokaVectorNumber,
-      b: PokaVectorNumber,
-    ) => PokaVectorNumber;
-  };
-  pokaVectorStringAndVectorStringToVectorBoolean: {
-    [key: string]: (
-      a: PokaVectorString,
-      b: PokaVectorString,
-    ) => PokaVectorBoolean;
-  };
-  pokaMatrixNumberAndMatrixNumberToMatrixBoolean: {
-    [key: string]: (
-      a: PokaMatrixNumber,
-      b: PokaMatrixNumber,
-    ) => PokaMatrixBoolean;
-  };
-  pokaMatrixNumberAndMatrixNumberToMatrixNumber: {
-    [key: string]: (
-      a: PokaMatrixNumber,
-      b: PokaMatrixNumber,
-    ) => PokaMatrixNumber;
-  };
-  pokaMatrixStringAndMatrixStringToMatrixBoolean: {
-    [key: string]: (
-      a: PokaMatrixString,
-      b: PokaMatrixString,
-    ) => PokaMatrixBoolean;
-  };
-}
-
-interface PokaNativeFun2 {
-  doc: string[];
-  //
-  mb_mb?: (a: PokaMatrixBoolean) => PokaMatrixBoolean;
-  mb_sb?: (a: PokaMatrixBoolean) => boolean;
-  mb_sn?: (a: PokaMatrixBoolean) => number;
-  mb_vb?: (a: PokaMatrixBoolean) => PokaVectorBoolean;
-  mn_mb?: (a: PokaMatrixNumber) => PokaMatrixBoolean;
-  mn_mn?: (a: PokaMatrixNumber) => PokaMatrixNumber;
-  mn_sn?: (a: PokaMatrixNumber) => number;
-  mn_vn?: (a: PokaMatrixNumber) => PokaVectorNumber;
-  ms_mn?: (a: PokaMatrixString) => PokaMatrixNumber;
-  sn_sn?: (a: number) => number;
-  ss_sn?: (a: string) => number;
-  vb_sb?: (a: PokaVectorBoolean) => boolean;
-  vb_sn?: (a: PokaVectorBoolean) => number;
-  vn_sn?: (a: PokaVectorNumber) => number;
-  vn_vn?: (a: PokaVectorNumber) => PokaVectorNumber;
-  vs_vn?: (a: PokaVectorString) => PokaVectorNumber;
-  //
-  mb_mb_mb?: (a: PokaMatrixBoolean, b: PokaMatrixBoolean) => PokaMatrixBoolean;
-  mn_mn_mb?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixBoolean;
-  mn_mn_mn?: (a: PokaMatrixNumber, b: PokaMatrixNumber) => PokaMatrixNumber;
-  mn_sn_mb?: (a: PokaMatrixNumber, b: number) => PokaMatrixBoolean;
-  mn_sn_mn?: (a: PokaMatrixNumber, b: number) => PokaMatrixNumber;
-  mn_sn_vn?: (a: PokaMatrixNumber, b: number) => PokaVectorNumber;
-  mn_vb_mn?: (a: PokaMatrixNumber, b: PokaVectorBoolean) => PokaMatrixNumber;
-  mn_vn_mn?: (a: PokaMatrixNumber, b: PokaVectorNumber) => PokaMatrixNumber;
-  ms_ms_mb?: (a: PokaMatrixString, b: PokaMatrixString) => PokaMatrixBoolean;
-  sb_sb_sb?: (a: boolean, b: boolean) => boolean;
-  sn_sn_sb?: (a: number, b: number) => boolean;
-  sn_sn_sn?: (a: number, b: number) => number;
-  ss_ss_sb?: (a: string, b: string) => boolean;
-  ss_ss_vs?: (a: string, b: string) => PokaVectorString;
-  vb_vb_vb?: (a: PokaVectorBoolean, b: PokaVectorBoolean) => PokaVectorBoolean;
-  vn_vn_vb?: (a: PokaVectorNumber, b: PokaVectorNumber) => PokaVectorBoolean;
-  vn_vn_vn?: (a: PokaVectorNumber, b: PokaVectorNumber) => PokaVectorNumber;
-  vs_ss_ms?: (a: PokaVectorString, b: string) => PokaMatrixString;
-  vs_vs_vb?: (a: PokaVectorString, b: PokaVectorString) => PokaVectorBoolean;
-}
-
-interface PokaWordDecl3 {
+interface PokaWord4 {
   doc: string[];
   fun: (env: { [word: string]: PokaValue }, stack: PokaValue[]) => void;
 }
@@ -397,7 +284,7 @@ function consumeIdentifer(state: InterpreterState): void {
     throw "Expected identifier";
   }
   const token = state.line.slice(start, state.pos);
-  
+
   pokaDispatch3(state.env, state.stack, token);
 }
 
@@ -471,7 +358,6 @@ function run(line: string): InterpreterState {
   return state;
 }
 
-
 function pokaDispatch3(
   env: { [word: string]: PokaValue },
   stack: PokaValue[],
@@ -492,7 +378,6 @@ function pokaDispatch3(
 
   throw "No such function";
 }
-
 
 function runWithEnvironment(
   line: string,

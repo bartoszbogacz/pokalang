@@ -1,4 +1,4 @@
-const POKA_WORDS4: { [key: string]: PokaWordDecl3 } = {};
+const POKA_WORDS4: { [key: string]: PokaWord4 } = {};
 
 function pokaWordAll(
   _env: { [word: string]: PokaValue },
