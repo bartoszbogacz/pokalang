@@ -376,3 +376,19 @@ POKA_WORDS4["less"] = {
     ],
     fun: pokaWordLess,
 };
+function pokaWordEqualsRows(_env, stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixBoolean") {
+        stack.push(pokaMatrixBooleanEqualsRows(am));
+        return;
+    }
+    if (am._type === "PokaMatrixNumber") {
+        stack.push(pokaMatrixNumberEqualsRows(am));
+        return;
+    }
+    throw "No implementation";
+}

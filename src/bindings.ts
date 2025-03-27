@@ -1,27 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["cols"] = {
-  doc: ["[[1, 2, 3], [3, 4, 5]] [0, 1] cols [[1, 2], [3, 4]] equals all"],
-  mn_vn_mn: pokaMatrixNumberColsVectorNumber,
-};
-
-POKA_WORDS3["less"] = {
-  doc: [
-    "[[1, 2], [3, 4]] [[5, 6], [7, 8]] less all",
-    "[[1, 2], [3, 4]] 5 less all",
-  ],
-  mn_mn_mb: pokaMatrixNumberLessMatrixNumber,
-  mn_sn_mb: pokaMatrixNumberLessScalarNumber,
-};
-
-POKA_WORDS3["equalsRows"] = {
-  doc: [
-    "[[1, 1, 1], [2, 3, 2], [3, 3, 3]] equalsRows [[True], [False], [True]] equals all",
-  ],
-  mb_mb: pokaMatrixBooleanEqualsRows,
-  mn_mb: pokaMatrixNumberEqualsRows,
-};
-
 POKA_WORDS3["allRows"] = {
   doc: [
     "[[True, True, True], [True, False, True], [False, False, False]] allRows [[True], [False], [False]] equals all",
