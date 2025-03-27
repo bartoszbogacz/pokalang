@@ -13,7 +13,7 @@ const AOC2025: {
     input_name: "aoc2025day1a",
     answer: 11,
     program: [
-      'aoc2025day1a "\n" split "   " split toNumber sortCols [0 col, 1 col] spread sub abs sum',
+      'aoc2025day1a "\n" split "   " split toNumber sortCols [0 cols, 1 cols] spread sub abs sum',
     ],
   },
   day2a: {

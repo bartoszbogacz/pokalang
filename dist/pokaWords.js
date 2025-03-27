@@ -254,7 +254,7 @@ POKA_WORDS4["transpose"] = {
     ],
     fun: pokaWordTranspose,
 };
-function pokaWordCol(_env, stack) {
+function pokaWordCols(_env, stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -272,13 +272,13 @@ function pokaWordCol(_env, stack) {
     }
     throw "No implementation";
 }
-POKA_WORDS4["col"] = {
+POKA_WORDS4["cols"] = {
     doc: [
-        "[[1, 2], [3, 4]] 1 col [2, 4] equals all",
-        "[[1, 2], [3, 4]] [1] col [[2], [4]] equals all",
-        "[[1, 2, 3], [3, 4, 5]] [0, 1] col [[1, 2], [3, 4]] equals all",
+        "[[1, 2], [3, 4]] 1 cols [2, 4] equals all",
+        "[[1, 2], [3, 4]] [1] cols [[2], [4]] equals all",
+        "[[1, 2, 3], [3, 4, 5]] [0, 1] cols [[1, 2], [3, 4]] equals all",
     ],
-    fun: pokaWordCol,
+    fun: pokaWordCols,
 };
 function pokaWordToNumber(_env, stack) {
     const a = stack.pop();
@@ -392,3 +392,27 @@ function pokaWordEqualsRows(_env, stack) {
     }
     throw "No implementation";
 }
+POKA_WORDS4["equalsRows"] = {
+    doc: [
+        "[[1, 1, 1], [2, 3, 2], [3, 3, 3]] equalsRows [[True], [False], [True]] equals all",
+    ],
+    fun: pokaWordEqualsRows,
+};
+function pokaWordRows(_env, stack) {
+    const b = stack.pop();
+    const a = stack.pop();
+    if (a === undefined || b === undefined) {
+        throw "Stack underflow";
+    }
+    const am = pokaTryToMatrix(a);
+    const bv = pokaTryToVector(b);
+    if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorBoolean") {
+        stack.push(pokaMatrixNumberRowsVectorBoolean(am, bv));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["rows"] = {
+    doc: ["[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"],
+    fun: pokaWordRows,
+};
