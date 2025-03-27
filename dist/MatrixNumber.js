@@ -317,7 +317,7 @@ function pokaMatrixNumberShow(a) {
     result.push("]");
     return result.join("");
 }
-function pokaMatrixNumberRotR(a, b) {
+function pokaMatrixNumberRotr(a, b) {
     const values = [];
     for (let i = 0; i < a.countRows; i++) {
         for (let j = 0; j < a.countCols; j++) {

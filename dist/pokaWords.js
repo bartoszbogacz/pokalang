@@ -333,3 +333,20 @@ POKA_WORDS4["split"] = {
     ],
     fun: pokaWordSplit,
 };
+function pokaWordRotr(_env, stack) {
+    const b = stack.pop();
+    const a = stack.pop();
+    if (a === undefined || b === undefined) {
+        throw "Stack underflow";
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
+        stack.push(pokaMatrixNumberRotr(am, b.value));
+        return;
+    }
+    throw "No Implementation";
+}
+POKA_WORDS4["rotr"] = {
+    doc: ["[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all"],
+    fun: pokaWordRotr,
+};

@@ -1,20 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["split"] = {
-  doc: [
-    '"1 2" " " split ["1", "2"] equals all',
-    '"1 2 3" " " split ["1", "2", "3"] equals all',
-    '["1 2", "3 4"] " " split [["1", "2"], ["3", "4"]] equals all',
-  ],
-  ss_ss_vs: pokaScalarStringSplitScalarString,
-  vs_ss_ms: pokaVectorStringSplitScalarString,
-};
-
-POKA_WORDS3["rotr"] = {
-  doc: ["[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all"],
-  mn_sn_mn: pokaMatrixNumberRotR,
-};
-
 POKA_WORDS3["cols"] = {
   doc: ["[[1, 2, 3], [3, 4, 5]] [0, 1] cols [[1, 2], [3, 4]] equals all"],
   mn_vn_mn: pokaMatrixNumberColsVectorNumber,
