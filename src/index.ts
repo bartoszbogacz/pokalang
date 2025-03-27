@@ -397,7 +397,8 @@ function consumeIdentifer(state: InterpreterState): void {
     throw "Expected identifier";
   }
   const token = state.line.slice(start, state.pos);
-  pokaDispatch2(state.env, state.stack, token);
+  
+  pokaDispatch3(state.env, state.stack, token);
 }
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {
@@ -469,6 +470,29 @@ function run(line: string): InterpreterState {
 
   return state;
 }
+
+
+function pokaDispatch3(
+  env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+  token: string,
+): void {
+  const value: PokaValue | undefined = env[token];
+  if (value !== undefined) {
+    stack.push(value);
+    return;
+  }
+
+  const word = POKA_WORDS4[token];
+
+  if (word !== undefined) {
+    word.fun(env, stack);
+    return;
+  }
+
+  throw "No such function";
+}
+
 
 function runWithEnvironment(
   line: string,
