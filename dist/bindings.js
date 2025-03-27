@@ -18,21 +18,6 @@ function pokaDispatch2(env, stack, word) {
         stack.push(a);
         return;
     }
-    if (word === "spread") {
-        const arg1 = stack.pop();
-        if (arg1 === undefined) {
-            throw "No implementation with no arguments";
-        }
-        if (arg1._type === "List") {
-            for (const elem of arg1.value) {
-                stack.push(elem);
-            }
-            return;
-        }
-        else {
-            throw "spread only implemented for List";
-        }
-    }
     const word4 = POKA_WORDS4[word];
     if (word4 !== undefined) {
         word4.fun(env, stack);

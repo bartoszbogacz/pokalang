@@ -850,3 +850,27 @@ POKA_WORDS4["False"] = {
   doc: ["False False equals"],
   fun: pokaWordFalse,
 };
+
+function pokaWordSpread(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const arg1 = stack.pop();
+  if (arg1 === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (arg1._type === "List") {
+    for (const elem of arg1.value) {
+      stack.push(elem);
+    }
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["spread"] = {
+  doc: ["[1, 1] spread equals"],
+  fun: pokaWordSpread,
+};
