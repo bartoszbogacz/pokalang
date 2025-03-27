@@ -6,14 +6,6 @@ function pokaDispatch2(env, stack, word) {
         stack.push(env_value);
         return;
     }
-    if (word === "True") {
-        stack.push(pokaScalarBooleanMake(true));
-        return;
-    }
-    if (word === "False") {
-        stack.push(pokaScalarBooleanMake(false));
-        return;
-    }
     if (word === "id") {
         return;
     }

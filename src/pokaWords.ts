@@ -826,3 +826,27 @@ POKA_WORDS4["count"] = {
   ],
   fun: pokaWordCount,
 };
+
+function pokaWordTrue(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  stack.push(pokaScalarBooleanMake(true));
+}
+
+POKA_WORDS4["True"] = {
+  doc: ["True True equals"],
+  fun: pokaWordTrue,
+};
+
+function pokaWordFalse(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  stack.push(pokaScalarBooleanMake(false));
+}
+
+POKA_WORDS4["False"] = {
+  doc: ["False False equals"],
+  fun: pokaWordFalse,
+};
