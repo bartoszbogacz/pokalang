@@ -1,12 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["and"] = {
-  doc: [
-    "[True, False, True] [True, False, False] and [True, False, False] equals all",
-  ],
-  vb_vb_vb: pokaVectorBooleanAndVectorBoolean,
-};
-
 POKA_WORDS3["anyRows"] = {
   doc: [
     "[[True, True, True], [True, False, True], [False, False, False]] anyRows [[True], [True], [False]] equals all",

@@ -439,3 +439,41 @@ POKA_WORDS4["squeeze"] = {
     ],
     fun: pokaWordSqueeze,
 };
+function pokaWordAnd(_env, stack) {
+    const b = stack.pop();
+    const a = stack.pop();
+    if (a === undefined || b === undefined) {
+        throw "Stack underflow";
+    }
+    const av = pokaTryToVector(a);
+    const bv = pokaTryToVector(b);
+    if (av._type === "PokaVectorBoolean" && bv._type === "PokaVectorBoolean") {
+        stack.push(pokaVectorBooleanAndVectorBoolean(av, bv));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["and"] = {
+    doc: [
+        "[True, False, True] [True, False, False] and [True, False, False] equals all",
+    ],
+    fun: pokaWordAnd,
+};
+function pokaWordAllRows(_env, stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixBoolean") {
+        stack.push(pokaMatrixBooleanAllRows(am));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["allRows"] = {
+    doc: [
+        "[[True, True, True], [True, False, True], [False, False, False]] allRows [[True], [False], [False]] equals all",
+    ],
+    fun: pokaWordAllRows,
+};

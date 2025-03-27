@@ -1,29 +1,5 @@
 "use strict";
 const POKA_WORDS3 = {};
-POKA_WORDS3["allRows"] = {
-    doc: [
-        "[[True, True, True], [True, False, True], [False, False, False]] allRows [[True], [False], [False]] equals all",
-    ],
-    mb_mb: pokaMatrixBooleanAllRows,
-};
-POKA_WORDS3["rows"] = {
-    doc: ["[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"],
-    mn_vb_mn: pokaMatrixNumberRowsVectorBoolean,
-};
-POKA_WORDS3["squeeze"] = {
-    doc: [
-        "[[1], [2], [3]] squeeze [1, 2, 3] equals all",
-        "[[True], [False]] squeeze [True, False] equals all",
-    ],
-    mb_vb: pokaMatrixBooleanSqueeze,
-    mn_vn: pokaMatrixNumberSqueeze,
-};
-POKA_WORDS3["and"] = {
-    doc: [
-        "[True, False, True] [True, False, False] and [True, False, False] equals all",
-    ],
-    vb_vb_vb: pokaVectorBooleanAndVectorBoolean,
-};
 POKA_WORDS3["anyRows"] = {
     doc: [
         "[[True, True, True], [True, False, True], [False, False, False]] anyRows [[True], [True], [False]] equals all",
