@@ -1,13 +1,5 @@
 "use strict";
 const POKA_WORDS3 = {};
-POKA_WORDS3["unequals"] = {
-    doc: [
-        "[[1, 2]] [[2, 2]] unequals [[True, False]] equals all",
-        "[[1, 2]] 2 unequals [[True, False]] equals all",
-    ],
-    mn_mn_mb: pokaMatrixNumberUnequalsMatrixNumber,
-    mn_sn_mb: pokaMatrixNumberUnequalsScalarNumber,
-};
 POKA_WORDS3["count"] = {
     doc: [
         "[[True, False], [False, False]] count 1 equals",
