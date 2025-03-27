@@ -1,14 +1,5 @@
 const POKA_WORDS3: { [key: string]: PokaNativeFun2 } = {};
 
-POKA_WORDS3["count"] = {
-  doc: [
-    "[[True, False], [False, False]] count 1 equals",
-    "[True, False, False] count 1 equals",
-  ],
-  mb_sn: pokaMatrixBooleanCount,
-  vb_sn: pokaVectorBooleanCount,
-};
-
 function pokaDispatch2(
   env: { [word: string]: PokaValue },
   stack: PokaValue[],

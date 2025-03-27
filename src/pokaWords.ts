@@ -791,3 +791,38 @@ POKA_WORDS4["unequals"] = {
   ],
   fun: pokaWordUnequals,
 };
+
+function pokaWordCount(
+  _env: { [word: string]: PokaValue },
+  stack: PokaValue[],
+): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const av = pokaTryToVector(a);
+
+  if (av._type === "PokaVectorBoolean") {
+    stack.push(pokaScalarNumberMake(pokaVectorBooleanCount(av)));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+
+  if (am._type === "PokaMatrixBoolean") {
+    stack.push(pokaScalarNumberMake(pokaMatrixBooleanCount(am)));
+    return;
+  }
+
+  throw "No implemenetation";
+}
+
+POKA_WORDS4["count"] = {
+  doc: [
+    "[[True, False], [False, False]] count 1 equals",
+    "[True, False, False] count 1 equals",
+  ],
+  fun: pokaWordCount,
+};
