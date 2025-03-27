@@ -416,3 +416,26 @@ POKA_WORDS4["rows"] = {
     doc: ["[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"],
     fun: pokaWordRows,
 };
+function pokaWordSqueeze(_env, stack) {
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const am = pokaTryToMatrix(a);
+    if (am._type === "PokaMatrixNumber") {
+        stack.push(pokaMatrixNumberSqueeze(am));
+        return;
+    }
+    if (am._type === "PokaMatrixBoolean") {
+        stack.push(pokaMatrixBooleanSqueeze(am));
+        return;
+    }
+    throw "No implementation";
+}
+POKA_WORDS4["squeeze"] = {
+    doc: [
+        "[[1], [2], [3]] squeeze [1, 2, 3] equals all",
+        "[[True], [False]] squeeze [True, False] equals all",
+    ],
+    fun: pokaWordSqueeze,
+};
