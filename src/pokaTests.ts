@@ -8,7 +8,8 @@ function pokaTestsRun(): string {
   const result: string[] = [];
   for (const expr of POKA_TESTS) {
     try {
-      const state = run(expr);
+      const state = pokaInterpreterMake(expr, {}, {});
+      pokaInterpreterEvaluate(state);
       const top = state.stack.pop();
       if (top === undefined) {
         throw "Stack exhausted";
@@ -33,7 +34,8 @@ function pokaDocTests4Run(): string {
   for (const [_, decl] of Object.entries(POKA_WORDS4)) {
     for (const line of decl.doc) {
       try {
-        const state = run(line);
+        const state = pokaInterpreterMake(line, {}, {});
+        pokaInterpreterEvaluate(state);
         const top = state.stack.pop();
         if (top === undefined) {
           throw "Stack exhausted";
@@ -62,7 +64,8 @@ function pokaTestsAocRun(): string {
         const env: { [word: string]: PokaValue } = {
           [day.input_name]: pokaScalarStringMake(day.input_text),
         };
-        const state = runWithEnvironment(line, env);
+        const state = pokaInterpreterMake(line, env, {});
+        pokaInterpreterEvaluate(state);
         const top = state.stack.pop();
         if (top === undefined) {
           throw "Stack exhausted";
