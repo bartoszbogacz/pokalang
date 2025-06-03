@@ -8,7 +8,7 @@ function pokaTestsRun() {
     const result = [];
     for (const expr of POKA_TESTS) {
         try {
-            const state = pokaInterpreterMake(expr, {}, {});
+            const state = pokaInterpreterMake(expr, {});
             pokaInterpreterEvaluate(state);
             const top = state.stack.pop();
             if (top === undefined) {
@@ -34,7 +34,7 @@ function pokaDocTests4Run() {
     for (const [_, decl] of Object.entries(POKA_WORDS4)) {
         for (const line of decl.doc) {
             try {
-                const state = pokaInterpreterMake(line, {}, {});
+                const state = pokaInterpreterMake(line, {});
                 pokaInterpreterEvaluate(state);
                 const top = state.stack.pop();
                 if (top === undefined) {
@@ -64,7 +64,7 @@ function pokaTestsAocRun() {
                 const env = {
                     [day.input_name]: pokaScalarStringMake(day.input_text),
                 };
-                const state = pokaInterpreterMake(line, env, {});
+                const state = pokaInterpreterMake(line, env);
                 pokaInterpreterEvaluate(state);
                 const top = state.stack.pop();
                 if (top === undefined) {

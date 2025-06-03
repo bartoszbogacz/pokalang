@@ -228,7 +228,8 @@ function consumeIdentifer(state) {
         const c = state.line.charAt(state.pos);
         if ((c >= "a" && c <= "z") ||
             (c >= "A" && c <= "Z") ||
-            (c >= "0" && c <= "9")) {
+            (c >= "0" && c <= "9") ||
+            (c === ">" || c === "<")) {
             state.pos++;
         }
         else {
@@ -239,27 +240,13 @@ function consumeIdentifer(state) {
         throw "Expected identifier";
     }
     const token = state.line.slice(start, state.pos);
-    if (token === "read") {
-        const arg2 = state.stack.pop();
-        if (arg2 === undefined) {
-            throw "Stack underflow";
+    if (token.endsWith(">")) {
+        const variableName = token.slice(0, token.length - 1);
+        let value = state.env[variableName];
+        if (value === undefined) {
+            throw "No variable: " + variableName;
         }
-        const arg1 = state.stack.pop();
-        if (arg1 === undefined) {
-            throw "Stack underflow";
-        }
-        if (arg1._type !== "ScalarString") {
-            throw "Type mismatch";
-        }
-        if (arg2._type !== "ScalarString") {
-            throw "Type mismatch";
-        }
-        let portValue = state.ports[arg1.value];
-        if (portValue === undefined) {
-            portValue = arg2.value;
-            state.ports[arg1.value] = portValue;
-        }
-        state.stack.push(pokaScalarStringMake(portValue));
+        state.stack.push(value);
     }
     else {
         pokaDispatch3(state.env, state.stack, token);
@@ -312,11 +299,6 @@ function consumeExpression(state) {
     consumeWhitespace(state);
 }
 function pokaDispatch3(env, stack, token) {
-    const value = env[token];
-    if (value !== undefined) {
-        stack.push(value);
-        return;
-    }
     const word = POKA_WORDS4[token];
     if (word !== undefined) {
         word.fun(env, stack);
@@ -324,20 +306,16 @@ function pokaDispatch3(env, stack, token) {
     }
     throw "No such function";
 }
-function pokaInterpreterMake(line, environment, ports) {
+function pokaInterpreterMake(line, environment) {
     const state = {
         line: line.replace("\\n", "\n"),
         pos: 0,
         stack: [],
         error: "",
         env: {},
-        ports: {},
     };
     for (const [word, value] of Object.entries(environment)) {
         state.env[word] = value;
-    }
-    for (const [port, value] of Object.entries(ports)) {
-        state.ports[port] = value;
     }
     return state;
 }
@@ -362,33 +340,31 @@ function pokaInterpreterInteract(state) {
     for (let i = 0; i < collection.length; i++) {
         const elem = collection[i];
         const portName = elem.id.slice("pokaPortDiv-".length);
-        if (!(portName in state.ports)) {
+        if (!(portName in state.env)) {
             elem.remove();
         }
     }
-    for (const [portName, value] of Object.entries(state.ports)) {
-        let textAreaElem = document.getElementById("pokaPort-" + portName);
-        if (textAreaElem === null) {
-            const portDiv = document.createElement("div");
-            portDiv.className = "PokaPortDiv";
-            portDiv.id = "pokaPortDiv-" + portName;
-            textAreaElem = document.createElement("textarea");
-            if (!(textAreaElem instanceof HTMLTextAreaElement)) {
-                throw "Internal error: Wrong element type";
+    for (const [variableName, value] of Object.entries(state.env)) {
+        let elem = document.getElementById("pokaPort-" + variableName);
+        if (value._type === "ScalarString")
+            if (elem === null) {
+                const portDiv = document.createElement("div");
+                portDiv.className = "PokaPortDiv";
+                portDiv.id = "pokaPortDiv-" + variableName;
+                const textAreaElem = document.createElement("textarea");
+                textAreaElem.className = "PokaPort";
+                textAreaElem.id = "pokaPort-" + variableName;
+                textAreaElem.value = value.value;
+                textAreaElem.addEventListener("input", pokaOnChange);
+                portDiv.appendChild(textAreaElem);
+                inputDiv.appendChild(portDiv);
             }
-            textAreaElem.className = "PokaPort";
-            textAreaElem.id = "pokaPort-" + portName;
-            textAreaElem.value = value;
-            textAreaElem.addEventListener("input", pokaOnChange);
-            portDiv.appendChild(textAreaElem);
-            inputDiv.appendChild(portDiv);
-        }
-        else {
-            if (!(textAreaElem instanceof HTMLTextAreaElement)) {
-                throw "Internal error: Wrong element type";
+            else {
+                if (!(elem instanceof HTMLTextAreaElement)) {
+                    throw "Internal error: Wrong element type";
+                }
+                state.env[variableName] = pokaScalarStringMake(elem.value);
             }
-            state.ports[portName] = textAreaElem.value;
-        }
     }
 }
 function pokaOnChange() {
@@ -404,10 +380,10 @@ function pokaOnChange() {
     for (const [_, day] of Object.entries(AOC2025)) {
         env[day.input_name] = pokaScalarStringMake(day.input_text);
     }
-    const state1 = pokaInterpreterMake(commandline.value, env, {});
+    const state1 = pokaInterpreterMake(commandline.value, env);
     pokaInterpreterEvaluate(state1);
     pokaInterpreterInteract(state1);
-    const state2 = pokaInterpreterMake(commandline.value, env, state1.ports);
+    const state2 = pokaInterpreterMake(commandline.value, state1.env);
     pokaInterpreterEvaluate(state2);
     preview.innerText = pokaInterpreterShow(state2);
 }
