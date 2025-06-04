@@ -206,3 +206,53 @@ function pokaMatrixStringShow(a: PokaMatrixString): string {
   result.push("]");
   return result.join("");
 }
+
+function pokaMatrixStringMatch(
+  text: string,
+  pattern: string,
+): PokaMatrixString {
+  const patternRegExp = new RegExp(pattern, "g");
+  let countRows: number = 0;
+  let countCols: number = 0;
+  const values: string[] = [];
+  for (const match of text.matchAll(patternRegExp)) {
+    countRows += 1;
+    countCols = match.length - 1;
+    for (let i = 1; i < match.length; i++) {
+      values.push(match[i] as string);
+    }
+  }
+  return pokaMatrixStringMake(countRows, countCols, values);
+}
+
+function pokaMatrixStringColScalarNumber(
+  matA: PokaMatrixString,
+  n: number,
+): PokaVectorString {
+  if (n < 0) {
+    n = matA.countCols + n;
+  }
+  if (n < 0 || n >= matA.countCols) {
+    throw new Error("Column index out of range: " + n);
+  }
+  const colValues: string[] = [];
+  for (let r = 0; r < matA.countRows; r++) {
+    colValues.push(matA.values[r * matA.countCols + n] as string);
+  }
+  return pokaVectorStringMake(colValues);
+}
+
+function pokaMatrixStringColsVectorNumber(
+  a: PokaMatrixString,
+  b: PokaVectorNumber,
+): PokaMatrixString {
+  const values: string[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    for (let j = 0; j < b.values.length; j++) {
+      let index = b.values[j] as number;
+      index = index < 0 ? a.countCols - index : index;
+      values.push(a.values[i * a.countCols + index] as string);
+    }
+  }
+  return pokaMatrixStringMake(a.countRows, b.values.length, values);
+}

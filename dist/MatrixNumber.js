@@ -340,12 +340,7 @@ function pokaMatrixNumberColsVectorNumber(a, b) {
             values.push(a.values[i * a.countCols + index]);
         }
     }
-    return {
-        _type: "PokaMatrixNumber",
-        countRows: a.countRows,
-        countCols: b.values.length,
-        values: values,
-    };
+    return pokaMatrixNumberMake(a.countRows, b.values.length, values);
 }
 function pokaMatrixNumberLessMatrixNumber(a, b) {
     const values = [];
@@ -472,4 +467,14 @@ function pokaMatrixNumberUnequalsScalarNumber(a, b) {
         countCols: a.countCols,
         values: values,
     };
+}
+function pokaMatrixNumberMulMatrixNumber(a, b) {
+    if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+        throw new Error("Shapes do not match for subMatrix.");
+    }
+    const newVals = [];
+    for (let i = 0; i < a.values.length; i++) {
+        newVals.push(a.values[i] * b.values[i]);
+    }
+    return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
 }

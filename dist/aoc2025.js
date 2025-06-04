@@ -24,11 +24,11 @@ const AOC2025 = {
         ],
     },
     day3a: {
-        input_text: "",
+        input_text: "xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))",
         input_name: "aoc2025day3a",
-        answer: 0,
+        answer: 161,
         program: [
-            'aoc2025day3a> "mul\\((\\d+),(\\d+)\\)" match (0 cols toNumber, 1 cols toNumber) add sum',
-        ]
-    }
+            'aoc2025day3a> "mul\\((\\d+),(\\d+)\\)" match (0 cols toNumber, 1 cols toNumber) mul sum',
+        ],
+    },
 };

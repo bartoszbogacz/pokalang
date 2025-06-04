@@ -57,3 +57,17 @@ function pokaVectorNumberSum(a: PokaVectorNumber): number {
 function pokaVectorNumberShow(a: PokaVectorNumber): string {
   return "[" + a.values.map((x) => x.toFixed(2)).join(", ") + "]";
 }
+
+function pokaVectorNumberMulVectorNumber(
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorNumber {
+  if (a.values.length !== b.values.length) {
+    throw new Error("Shapes do not match.");
+  }
+  const newVals: number[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    newVals.push((a.values[i] as number) * (b.values[i] as number));
+  }
+  return pokaVectorNumberMake(newVals);
+}

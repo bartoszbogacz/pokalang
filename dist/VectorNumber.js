@@ -38,3 +38,13 @@ function pokaVectorNumberSum(a) {
 function pokaVectorNumberShow(a) {
     return "[" + a.values.map((x) => x.toFixed(2)).join(", ") + "]";
 }
+function pokaVectorNumberMulVectorNumber(a, b) {
+    if (a.values.length !== b.values.length) {
+        throw new Error("Shapes do not match.");
+    }
+    const newVals = [];
+    for (let i = 0; i < a.values.length; i++) {
+        newVals.push(a.values[i] * b.values[i]);
+    }
+    return pokaVectorNumberMake(newVals);
+}

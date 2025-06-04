@@ -161,16 +161,53 @@ function pokaMatrixStringToNumber(a) {
     return pokaMatrixNumberMake(a.countRows, a.countCols, a.values.map(parseFloat));
 }
 function pokaMatrixStringShow(a) {
-    var _a;
     const result = [];
     result.push("[\n");
     for (let i = 0; i < a.countRows; i++) {
         result.push("  [");
         for (let j = 0; j < a.countCols; j++) {
-            result.push('"' + ((_a = a.values[i * a.countCols + j]) === null || _a === void 0 ? void 0 : _a.replace("\n", "\\n")) + '", ');
+            result.push('"' + a.values[i * a.countCols + j]?.replace("\n", "\\n") + '", ');
         }
         result.push("],\n");
     }
     result.push("]");
     return result.join("");
+}
+function pokaMatrixStringMatch(text, pattern) {
+    const patternRegExp = new RegExp(pattern, "g");
+    let countRows = 0;
+    let countCols = 0;
+    const values = [];
+    for (const match of text.matchAll(patternRegExp)) {
+        countRows += 1;
+        countCols = match.length - 1;
+        for (let i = 1; i < match.length; i++) {
+            values.push(match[i]);
+        }
+    }
+    return pokaMatrixStringMake(countRows, countCols, values);
+}
+function pokaMatrixStringColScalarNumber(matA, n) {
+    if (n < 0) {
+        n = matA.countCols + n;
+    }
+    if (n < 0 || n >= matA.countCols) {
+        throw new Error("Column index out of range: " + n);
+    }
+    const colValues = [];
+    for (let r = 0; r < matA.countRows; r++) {
+        colValues.push(matA.values[r * matA.countCols + n]);
+    }
+    return pokaVectorStringMake(colValues);
+}
+function pokaMatrixStringColsVectorNumber(a, b) {
+    const values = [];
+    for (let i = 0; i < a.countRows; i++) {
+        for (let j = 0; j < b.values.length; j++) {
+            let index = b.values[j];
+            index = index < 0 ? a.countCols - index : index;
+            values.push(a.values[i * a.countCols + index]);
+        }
+    }
+    return pokaMatrixStringMake(a.countRows, b.values.length, values);
 }

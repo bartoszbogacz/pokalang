@@ -375,10 +375,20 @@ function pokaWordCols(
     return;
   }
 
+  if (am._type === "PokaMatrixString" && b._type === "ScalarNumber") {
+    stack.push(pokaMatrixStringColScalarNumber(am, b.value));
+    return;
+  }
+
   const bv = pokaTryToVector(b);
 
   if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorNumber") {
     stack.push(pokaMatrixNumberColsVectorNumber(am, bv));
+    return;
+  }
+
+  if (am._type === "PokaMatrixString" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaMatrixStringColsVectorNumber(am, bv));
     return;
   }
 
@@ -908,4 +918,66 @@ function pokaWordId(
 POKA_WORDS4["id"] = {
   doc: ["1 1 id id equals"],
   fun: pokaWordId,
+};
+
+POKA_WORDS4["match"] = {
+  doc: ['"a" "(a)" match [["a"]] equals all'],
+  fun: (_env: { [varName: string]: PokaValue }, stack: PokaValue[]) => {
+    const arg2 = stack.pop();
+    if (arg2 === undefined) {
+      throw "Stack underflow";
+    }
+    const arg1 = stack.pop();
+    if (arg1 === undefined) {
+      throw "Stack underflow";
+    }
+
+    if (arg2._type !== "ScalarString") {
+      throw "Type mismatch";
+    }
+    if (arg1._type !== "ScalarString") {
+      throw "Type mismatch";
+    }
+
+    stack.push(pokaMatrixStringMatch(arg1.value, arg2.value));
+  },
+};
+
+POKA_WORDS4["mul"] = {
+  doc: [
+    "1 1 mul 1 equals",
+    "[1, 1] [1, 1] mul [1, 1] equals all",
+    "[[1, 1], [1, 1]] [[1, 1], [1, 1]] mul [[1, 1], [1, 1]] equals all",
+  ],
+  fun: (_env: { [word: string]: PokaValue }, stack: PokaValue[]): void => {
+    const b = stack.pop();
+    const a = stack.pop();
+
+    if (a === undefined || b === undefined) {
+      throw "Stack underflow";
+    }
+
+    if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+      stack.push(pokaScalarNumberMake(a.value * b.value));
+      return;
+    }
+
+    const av = pokaTryToVector(a);
+    const bv = pokaTryToVector(b);
+
+    if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+      stack.push(pokaVectorNumberMulVectorNumber(av, bv));
+      return;
+    }
+
+    const am = pokaTryToMatrix(a);
+    const bm = pokaTryToMatrix(b);
+
+    if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+      stack.push(pokaMatrixNumberMulMatrixNumber(am, bm));
+      return;
+    }
+
+    throw "No implementation";
+  },
 };
