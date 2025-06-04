@@ -7,7 +7,7 @@ function pokaShow(value) {
         return value.value.toString();
     }
     else if (value._type === "ScalarString") {
-        return '"' + value.value.replace("\n", "\\n") + '"';
+        return '"' + value.value + '"';
     }
     else if (value._type === "PokaVectorBoolean") {
         return pokaVectorBooleanShow(value);
@@ -187,8 +187,8 @@ function consumeString(state) {
     }
     const token = state.line.slice(start, state.pos);
     state.pos++; // Skip closing quote
-    console.log("String:", token);
-    state.stack.push({ _type: "ScalarString", value: token });
+    const value = token.replace(/\\n/g, "\n");
+    state.stack.push({ _type: "ScalarString", value: value });
 }
 function peekList(state) {
     return peekLiteral(state, "[");
@@ -229,7 +229,8 @@ function consumeIdentifer(state) {
         if ((c >= "a" && c <= "z") ||
             (c >= "A" && c <= "Z") ||
             (c >= "0" && c <= "9") ||
-            (c === ">" || c === "<")) {
+            c === ">" ||
+            c === "<") {
             state.pos++;
         }
         else {
@@ -308,7 +309,7 @@ function pokaDispatch3(env, stack, token) {
 }
 function pokaInterpreterMake(line, environment) {
     const state = {
-        line: line.replace("\\n", "\n"),
+        line: line,
         pos: 0,
         stack: [],
         error: "",
@@ -331,43 +332,7 @@ function pokaInterpreterEvaluate(state) {
     }
     state.error = error;
 }
-function pokaInterpreterInteract(state) {
-    const inputDiv = document.getElementById("pokaPorts");
-    if (inputDiv === null) {
-        throw "No input div";
-    }
-    const collection = document.getElementsByClassName("PokaPortDiv");
-    for (let i = 0; i < collection.length; i++) {
-        const elem = collection[i];
-        const portName = elem.id.slice("pokaPortDiv-".length);
-        if (!(portName in state.env)) {
-            elem.remove();
-        }
-    }
-    for (const [variableName, value] of Object.entries(state.env)) {
-        let elem = document.getElementById("pokaPort-" + variableName);
-        if (value._type === "ScalarString")
-            if (elem === null) {
-                const portDiv = document.createElement("div");
-                portDiv.className = "PokaPortDiv";
-                portDiv.id = "pokaPortDiv-" + variableName;
-                const textAreaElem = document.createElement("textarea");
-                textAreaElem.className = "PokaPort";
-                textAreaElem.id = "pokaPort-" + variableName;
-                textAreaElem.value = value.value;
-                textAreaElem.addEventListener("input", pokaOnChange);
-                portDiv.appendChild(textAreaElem);
-                inputDiv.appendChild(portDiv);
-            }
-            else {
-                if (!(elem instanceof HTMLTextAreaElement)) {
-                    throw "Internal error: Wrong element type";
-                }
-                state.env[variableName] = pokaScalarStringMake(elem.value);
-            }
-    }
-}
-function pokaOnChange() {
+function replOnInput() {
     const commandline = document.getElementById("pokaCommandLine");
     if (commandline === undefined || !(commandline instanceof HTMLInputElement)) {
         throw "No commandline";
@@ -380,10 +345,29 @@ function pokaOnChange() {
     for (const [_, day] of Object.entries(AOC2025)) {
         env[day.input_name] = pokaScalarStringMake(day.input_text);
     }
-    const state1 = pokaInterpreterMake(commandline.value, env);
-    pokaInterpreterEvaluate(state1);
-    pokaInterpreterInteract(state1);
-    const state2 = pokaInterpreterMake(commandline.value, state1.env);
-    pokaInterpreterEvaluate(state2);
-    preview.innerText = pokaInterpreterShow(state2);
+    for (const [varName, varValue] of Object.entries(REPL_ENV)) {
+        env[varName] = varValue;
+    }
+    const state = pokaInterpreterMake(commandline.value, env);
+    pokaInterpreterEvaluate(state);
+    preview.innerText = pokaInterpreterShow(state);
 }
+function replClipboardRead() {
+    navigator.clipboard.readText().then((text) => {
+        REPL_ENV["clipboard"] = pokaScalarStringMake(text);
+    });
+}
+function main() {
+    const commandline = document.getElementById("pokaCommandLine");
+    if (commandline === undefined || !(commandline instanceof HTMLInputElement)) {
+        throw "No commandline";
+    }
+    commandline.addEventListener("input", replOnInput);
+    const clipboardReadButton = document.getElementById("replClipboardRead");
+    if (clipboardReadButton === undefined || !(clipboardReadButton instanceof HTMLButtonElement)) {
+        throw "No button";
+    }
+    clipboardReadButton.addEventListener("click", replClipboardRead);
+}
+const REPL_ENV = {};
+main();
