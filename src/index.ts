@@ -383,14 +383,17 @@ function consumeExpression(state: InterpreterState): void {
 }
 
 function pokaDispatch3(
-  env: { [word: string]: PokaValue },
+  _env: { [word: string]: PokaValue },
   stack: PokaValue[],
   token: string,
 ): void {
   const word = POKA_WORDS4[token];
 
   if (word !== undefined) {
-    word.fun(env, stack);
+    // TODO: Disabled env to ensure no function
+    // actually depend on it. Remove env from
+    // POKA_FUN4 function signature.
+    word.fun({}, stack);
     return;
   }
 
