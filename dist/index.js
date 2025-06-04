@@ -190,6 +190,36 @@ function consumeString(state) {
     const value = token.replace(/\\n/g, "\n");
     state.stack.push({ _type: "ScalarString", value: value });
 }
+function peekRoundBracketExpression(state) {
+    return peekLiteral(state, "(");
+}
+function consumeRoundBracketExpression(state) {
+    const values = [];
+    const origStack = state.stack;
+    consumeLiteral(state, "(");
+    while (!peekLiteral(state, ")") && !peekEOL(state)) {
+        state.stack = origStack.slice();
+        while (!peekLiteral(state, ")") && !peekEOL(state)) {
+            if (peekLiteral(state, ",")) {
+                consumeLiteral(state, ",");
+                break;
+            }
+            consumeExpression(state);
+        }
+        const value = state.stack.pop();
+        if (value === undefined) {
+            throw "Stack empty in fork expression";
+        }
+        else {
+            values.push(value);
+        }
+    }
+    consumeLiteral(state, ")");
+    state.stack = origStack;
+    for (const value of values) {
+        state.stack.push(value);
+    }
+}
 function peekList(state) {
     return peekLiteral(state, "[");
 }
@@ -291,6 +321,9 @@ function consumeExpression(state) {
     else if (peekString(state)) {
         consumeString(state);
     }
+    else if (peekRoundBracketExpression(state)) {
+        consumeRoundBracketExpression(state);
+    }
     else if (peekList(state)) {
         consumeList(state);
     }
@@ -364,7 +397,8 @@ function main() {
     }
     commandline.addEventListener("input", replOnInput);
     const clipboardReadButton = document.getElementById("replClipboardRead");
-    if (clipboardReadButton === undefined || !(clipboardReadButton instanceof HTMLButtonElement)) {
+    if (clipboardReadButton === undefined ||
+        !(clipboardReadButton instanceof HTMLButtonElement)) {
         throw "No button";
     }
     clipboardReadButton.addEventListener("click", replClipboardRead);

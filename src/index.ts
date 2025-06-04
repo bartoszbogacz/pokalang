@@ -229,6 +229,40 @@ function consumeString(state: InterpreterState): void {
   state.stack.push({ _type: "ScalarString", value: value });
 }
 
+function peekRoundBracketExpression(state: InterpreterState): boolean {
+  return peekLiteral(state, "(");
+}
+
+function consumeRoundBracketExpression(state: InterpreterState): void {
+  const values: PokaValue[] = [];
+  const origStack = state.stack;
+
+  consumeLiteral(state, "(");
+  while (!peekLiteral(state, ")") && !peekEOL(state)) {
+    state.stack = origStack.slice();
+    while (!peekLiteral(state, ")") && !peekEOL(state)) {
+      if (peekLiteral(state, ",")) {
+        consumeLiteral(state, ",");
+        break;
+      }
+      consumeExpression(state);
+    }
+    const value = state.stack.pop();
+    if (value === undefined) {
+      throw "Stack empty in fork expression";
+    } else {
+      values.push(value);
+    }
+  }
+  consumeLiteral(state, ")");
+
+  state.stack = origStack;
+
+  for (const value of values) {
+    state.stack.push(value);
+  }
+}
+
 function peekList(state: InterpreterState): boolean {
   return peekLiteral(state, "[");
 }
@@ -338,6 +372,8 @@ function consumeExpression(state: InterpreterState): void {
     consumeNumber(state);
   } else if (peekString(state)) {
     consumeString(state);
+  } else if (peekRoundBracketExpression(state)) {
+    consumeRoundBracketExpression(state);
   } else if (peekList(state)) {
     consumeList(state);
   } else {

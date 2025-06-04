@@ -23,4 +23,12 @@ const AOC2025 = {
             'aoc2025day2a> "\n" split " " split toNumber dup 1 rotr sub [0, 1, 2, 3] cols [0 unequals allRows squeeze, 0 less equalsRows squeeze, abs 4 less allRows squeeze] spread and and count',
         ],
     },
+    day3a: {
+        input_text: "",
+        input_name: "aoc2025day3a",
+        answer: 0,
+        program: [
+            'aoc2025day3a> "mul\\((\\d+),(\\d+)\\)" match (0 cols toNumber, 1 cols toNumber) add sum',
+        ]
+    }
 };
