@@ -332,10 +332,10 @@ function consumeExpression(state) {
     }
     consumeWhitespace(state);
 }
-function pokaDispatch3(env, stack, token) {
+function pokaDispatch3(_env, stack, token) {
     const word = POKA_WORDS4[token];
     if (word !== undefined) {
-        word.fun(env, stack);
+        word.fun(stack);
         return;
     }
     throw "No such function";

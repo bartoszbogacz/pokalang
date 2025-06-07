@@ -40,7 +40,7 @@ interface InterpreterState {
 
 interface PokaWord4 {
   doc: string[];
-  fun: (env: { [word: string]: PokaValue }, stack: PokaValue[]) => void;
+  fun: (stack: PokaValue[]) => void;
 }
 
 function pokaShow(value: PokaValue): string {
@@ -390,10 +390,7 @@ function pokaDispatch3(
   const word = POKA_WORDS4[token];
 
   if (word !== undefined) {
-    // TODO: Disabled env to ensure no function
-    // actually depend on it. Remove env from
-    // POKA_FUN4 function signature.
-    word.fun({}, stack);
+    word.fun(stack);
     return;
   }
 

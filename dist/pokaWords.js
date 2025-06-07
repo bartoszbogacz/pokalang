@@ -1,6 +1,6 @@
 "use strict";
 const POKA_WORDS4 = {};
-function pokaWordAll(_env, stack) {
+function pokaWordAll(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -27,7 +27,7 @@ POKA_WORDS4["all"] = {
     ],
     fun: pokaWordAll,
 };
-function pokaWordEquals(_env, stack) {
+function pokaWordEquals(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -86,7 +86,7 @@ POKA_WORDS4["equals"] = {
     ],
     fun: pokaWordEquals,
 };
-function pokaWordAdd(_env, stack) {
+function pokaWordAdd(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -118,7 +118,7 @@ POKA_WORDS4["add"] = {
     ],
     fun: pokaWordAdd,
 };
-function pokaWordSub(_env, stack) {
+function pokaWordSub(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -150,7 +150,7 @@ POKA_WORDS4["sub"] = {
     ],
     fun: pokaWordSub,
 };
-function pokaWordSum(_env, stack) {
+function pokaWordSum(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -171,7 +171,7 @@ POKA_WORDS4["sum"] = {
     doc: ["[1, 1] sum 2 equals", "[[1, 1], [2, 2]] sum 6 equals"],
     fun: pokaWordSum,
 };
-function pokaWordAbs(_env, stack) {
+function pokaWordAbs(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -200,7 +200,7 @@ POKA_WORDS4["abs"] = {
     ],
     fun: pokaWordAbs,
 };
-function pokaWordSortRows(_env, stack) {
+function pokaWordSortRows(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -216,7 +216,7 @@ POKA_WORDS4["sortRows"] = {
     doc: ["[[2, 1], [4, 3]] sortRows [[1, 2], [3, 4]] equals all"],
     fun: pokaWordSortRows,
 };
-function pokaWordSortCols(_env, stack) {
+function pokaWordSortCols(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -235,7 +235,7 @@ POKA_WORDS4["sortCols"] = {
     ],
     fun: pokaWordSortCols,
 };
-function pokaWordTranspose(_env, stack) {
+function pokaWordTranspose(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -254,7 +254,7 @@ POKA_WORDS4["transpose"] = {
     ],
     fun: pokaWordTranspose,
 };
-function pokaWordCols(_env, stack) {
+function pokaWordCols(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -288,7 +288,7 @@ POKA_WORDS4["cols"] = {
     ],
     fun: pokaWordCols,
 };
-function pokaWordToNumber(_env, stack) {
+function pokaWordToNumber(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -317,7 +317,7 @@ POKA_WORDS4["toNumber"] = {
     ],
     fun: pokaWordToNumber,
 };
-function pokaWordSplit(_env, stack) {
+function pokaWordSplit(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -342,7 +342,7 @@ POKA_WORDS4["split"] = {
     ],
     fun: pokaWordSplit,
 };
-function pokaWordRotr(_env, stack) {
+function pokaWordRotr(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -359,7 +359,7 @@ POKA_WORDS4["rotr"] = {
     doc: ["[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all"],
     fun: pokaWordRotr,
 };
-function pokaWordLess(_env, stack) {
+function pokaWordLess(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -384,7 +384,7 @@ POKA_WORDS4["less"] = {
     ],
     fun: pokaWordLess,
 };
-function pokaWordEqualsRows(_env, stack) {
+function pokaWordEqualsRows(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -406,7 +406,7 @@ POKA_WORDS4["equalsRows"] = {
     ],
     fun: pokaWordEqualsRows,
 };
-function pokaWordRows(_env, stack) {
+function pokaWordRows(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -424,7 +424,7 @@ POKA_WORDS4["rows"] = {
     doc: ["[[1], [2], [3]] [True, False, True] rows [[1], [3]] equals all"],
     fun: pokaWordRows,
 };
-function pokaWordSqueeze(_env, stack) {
+function pokaWordSqueeze(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -447,7 +447,7 @@ POKA_WORDS4["squeeze"] = {
     ],
     fun: pokaWordSqueeze,
 };
-function pokaWordAnd(_env, stack) {
+function pokaWordAnd(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -467,7 +467,7 @@ POKA_WORDS4["and"] = {
     ],
     fun: pokaWordAnd,
 };
-function pokaWordAllRows(_env, stack) {
+function pokaWordAllRows(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -485,7 +485,7 @@ POKA_WORDS4["allRows"] = {
     ],
     fun: pokaWordAllRows,
 };
-function pokaWordAnyRows(_env, stack) {
+function pokaWordAnyRows(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -503,7 +503,7 @@ POKA_WORDS4["anyRows"] = {
     ],
     fun: pokaWordAnyRows,
 };
-function pokaWordUnequals(_env, stack) {
+function pokaWordUnequals(stack) {
     const b = stack.pop();
     const a = stack.pop();
     if (a === undefined || b === undefined) {
@@ -571,7 +571,7 @@ POKA_WORDS4["unequals"] = {
     ],
     fun: pokaWordUnequals,
 };
-function pokaWordCount(_env, stack) {
+function pokaWordCount(stack) {
     const a = stack.pop();
     if (a === undefined) {
         throw "Stack underflow";
@@ -595,21 +595,21 @@ POKA_WORDS4["count"] = {
     ],
     fun: pokaWordCount,
 };
-function pokaWordTrue(_env, stack) {
+function pokaWordTrue(stack) {
     stack.push(pokaScalarBooleanMake(true));
 }
 POKA_WORDS4["True"] = {
     doc: ["True True equals"],
     fun: pokaWordTrue,
 };
-function pokaWordFalse(_env, stack) {
+function pokaWordFalse(stack) {
     stack.push(pokaScalarBooleanMake(false));
 }
 POKA_WORDS4["False"] = {
     doc: ["False False equals"],
     fun: pokaWordFalse,
 };
-function pokaWordSpread(_env, stack) {
+function pokaWordSpread(stack) {
     const arg1 = stack.pop();
     if (arg1 === undefined) {
         throw "Stack underflow";
@@ -626,7 +626,7 @@ POKA_WORDS4["spread"] = {
     doc: ["[1, 1] spread equals"],
     fun: pokaWordSpread,
 };
-function pokaWordDup(_env, stack) {
+function pokaWordDup(stack) {
     const arg1 = stack.pop();
     if (arg1 === undefined) {
         throw "Stack underflow";
@@ -638,7 +638,7 @@ POKA_WORDS4["dup"] = {
     doc: ["1 dup equals"],
     fun: pokaWordDup,
 };
-function pokaWordId(_env, stack) {
+function pokaWordId(stack) {
     const arg1 = stack.pop();
     if (arg1 === undefined) {
         throw "Stack underflow";
@@ -649,54 +649,56 @@ POKA_WORDS4["id"] = {
     doc: ["1 1 id id equals"],
     fun: pokaWordId,
 };
+function pokaWordMatch(stack) {
+    const arg2 = stack.pop();
+    if (arg2 === undefined) {
+        throw "Stack underflow";
+    }
+    const arg1 = stack.pop();
+    if (arg1 === undefined) {
+        throw "Stack underflow";
+    }
+    if (arg2._type !== "ScalarString") {
+        throw "Type mismatch";
+    }
+    if (arg1._type !== "ScalarString") {
+        throw "Type mismatch";
+    }
+    stack.push(pokaMatrixStringMatch(arg1.value, arg2.value));
+}
 POKA_WORDS4["match"] = {
     doc: ['"a" "(a)" match [["a"]] equals all'],
-    fun: (_env, stack) => {
-        const arg2 = stack.pop();
-        if (arg2 === undefined) {
-            throw "Stack underflow";
-        }
-        const arg1 = stack.pop();
-        if (arg1 === undefined) {
-            throw "Stack underflow";
-        }
-        if (arg2._type !== "ScalarString") {
-            throw "Type mismatch";
-        }
-        if (arg1._type !== "ScalarString") {
-            throw "Type mismatch";
-        }
-        stack.push(pokaMatrixStringMatch(arg1.value, arg2.value));
-    },
+    fun: pokaWordMatch,
 };
+function pokaWordMul(stack) {
+    const b = stack.pop();
+    const a = stack.pop();
+    if (a === undefined || b === undefined) {
+        throw "Stack underflow";
+    }
+    if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+        stack.push(pokaScalarNumberMake(a.value * b.value));
+        return;
+    }
+    const av = pokaTryToVector(a);
+    const bv = pokaTryToVector(b);
+    if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+        stack.push(pokaVectorNumberMulVectorNumber(av, bv));
+        return;
+    }
+    const am = pokaTryToMatrix(a);
+    const bm = pokaTryToMatrix(b);
+    if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+        stack.push(pokaMatrixNumberMulMatrixNumber(am, bm));
+        return;
+    }
+    throw "No implementation";
+}
 POKA_WORDS4["mul"] = {
     doc: [
         "1 1 mul 1 equals",
         "[1, 1] [1, 1] mul [1, 1] equals all",
         "[[1, 1], [1, 1]] [[1, 1], [1, 1]] mul [[1, 1], [1, 1]] equals all",
     ],
-    fun: (_env, stack) => {
-        const b = stack.pop();
-        const a = stack.pop();
-        if (a === undefined || b === undefined) {
-            throw "Stack underflow";
-        }
-        if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-            stack.push(pokaScalarNumberMake(a.value * b.value));
-            return;
-        }
-        const av = pokaTryToVector(a);
-        const bv = pokaTryToVector(b);
-        if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
-            stack.push(pokaVectorNumberMulVectorNumber(av, bv));
-            return;
-        }
-        const am = pokaTryToMatrix(a);
-        const bm = pokaTryToMatrix(b);
-        if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
-            stack.push(pokaMatrixNumberMulMatrixNumber(am, bm));
-            return;
-        }
-        throw "No implementation";
-    },
+    fun: pokaWordMul,
 };

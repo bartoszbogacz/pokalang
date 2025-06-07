@@ -1,9 +1,6 @@
 const POKA_WORDS4: { [key: string]: PokaWord4 } = {};
 
-function pokaWordAll(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordAll(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -38,10 +35,7 @@ POKA_WORDS4["all"] = {
   fun: pokaWordAll,
 };
 
-function pokaWordEquals(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordEquals(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -115,10 +109,7 @@ POKA_WORDS4["equals"] = {
   fun: pokaWordEquals,
 };
 
-function pokaWordAdd(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordAdd(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -159,10 +150,7 @@ POKA_WORDS4["add"] = {
   fun: pokaWordAdd,
 };
 
-function pokaWordSub(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSub(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -203,10 +191,7 @@ POKA_WORDS4["sub"] = {
   fun: pokaWordSub,
 };
 
-function pokaWordSum(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSum(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -235,10 +220,7 @@ POKA_WORDS4["sum"] = {
   fun: pokaWordSum,
 };
 
-function pokaWordAbs(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordAbs(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -276,10 +258,7 @@ POKA_WORDS4["abs"] = {
   fun: pokaWordAbs,
 };
 
-function pokaWordSortRows(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSortRows(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -301,10 +280,7 @@ POKA_WORDS4["sortRows"] = {
   fun: pokaWordSortRows,
 };
 
-function pokaWordSortCols(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSortCols(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -329,10 +305,7 @@ POKA_WORDS4["sortCols"] = {
   fun: pokaWordSortCols,
 };
 
-function pokaWordTranspose(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordTranspose(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -357,10 +330,7 @@ POKA_WORDS4["transpose"] = {
   fun: pokaWordTranspose,
 };
 
-function pokaWordCols(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordCols(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -404,10 +374,7 @@ POKA_WORDS4["cols"] = {
   fun: pokaWordCols,
 };
 
-function pokaWordToNumber(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordToNumber(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -445,10 +412,7 @@ POKA_WORDS4["toNumber"] = {
   fun: pokaWordToNumber,
 };
 
-function pokaWordSplit(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSplit(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -480,10 +444,7 @@ POKA_WORDS4["split"] = {
   fun: pokaWordSplit,
 };
 
-function pokaWordRotr(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordRotr(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -506,10 +467,7 @@ POKA_WORDS4["rotr"] = {
   fun: pokaWordRotr,
 };
 
-function pokaWordLess(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordLess(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -542,10 +500,7 @@ POKA_WORDS4["less"] = {
   fun: pokaWordLess,
 };
 
-function pokaWordEqualsRows(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordEqualsRows(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -574,10 +529,7 @@ POKA_WORDS4["equalsRows"] = {
   fun: pokaWordEqualsRows,
 };
 
-function pokaWordRows(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordRows(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -601,10 +553,7 @@ POKA_WORDS4["rows"] = {
   fun: pokaWordRows,
 };
 
-function pokaWordSqueeze(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSqueeze(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -634,10 +583,7 @@ POKA_WORDS4["squeeze"] = {
   fun: pokaWordSqueeze,
 };
 
-function pokaWordAnd(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordAnd(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -663,10 +609,7 @@ POKA_WORDS4["and"] = {
   fun: pokaWordAnd,
 };
 
-function pokaWordAllRows(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordAllRows(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -690,10 +633,7 @@ POKA_WORDS4["allRows"] = {
   fun: pokaWordAllRows,
 };
 
-function pokaWordAnyRows(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordAnyRows(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -717,10 +657,7 @@ POKA_WORDS4["anyRows"] = {
   fun: pokaWordAnyRows,
 };
 
-function pokaWordUnequals(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordUnequals(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
 
@@ -802,10 +739,7 @@ POKA_WORDS4["unequals"] = {
   fun: pokaWordUnequals,
 };
 
-function pokaWordCount(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordCount(stack: PokaValue[]): void {
   const a = stack.pop();
 
   if (a === undefined) {
@@ -837,10 +771,7 @@ POKA_WORDS4["count"] = {
   fun: pokaWordCount,
 };
 
-function pokaWordTrue(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordTrue(stack: PokaValue[]): void {
   stack.push(pokaScalarBooleanMake(true));
 }
 
@@ -849,10 +780,7 @@ POKA_WORDS4["True"] = {
   fun: pokaWordTrue,
 };
 
-function pokaWordFalse(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordFalse(stack: PokaValue[]): void {
   stack.push(pokaScalarBooleanMake(false));
 }
 
@@ -861,10 +789,7 @@ POKA_WORDS4["False"] = {
   fun: pokaWordFalse,
 };
 
-function pokaWordSpread(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordSpread(stack: PokaValue[]): void {
   const arg1 = stack.pop();
   if (arg1 === undefined) {
     throw "Stack underflow";
@@ -885,10 +810,7 @@ POKA_WORDS4["spread"] = {
   fun: pokaWordSpread,
 };
 
-function pokaWordDup(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordDup(stack: PokaValue[]): void {
   const arg1 = stack.pop();
   if (arg1 === undefined) {
     throw "Stack underflow";
@@ -903,10 +825,7 @@ POKA_WORDS4["dup"] = {
   fun: pokaWordDup,
 };
 
-function pokaWordId(
-  _env: { [word: string]: PokaValue },
-  stack: PokaValue[],
-): void {
+function pokaWordId(stack: PokaValue[]): void {
   const arg1 = stack.pop();
   if (arg1 === undefined) {
     throw "Stack underflow";
@@ -920,28 +839,62 @@ POKA_WORDS4["id"] = {
   fun: pokaWordId,
 };
 
+function pokaWordMatch(stack: PokaValue[]): void {
+  const arg2 = stack.pop();
+  if (arg2 === undefined) {
+    throw "Stack underflow";
+  }
+  const arg1 = stack.pop();
+  if (arg1 === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (arg2._type !== "ScalarString") {
+    throw "Type mismatch";
+  }
+  if (arg1._type !== "ScalarString") {
+    throw "Type mismatch";
+  }
+
+  stack.push(pokaMatrixStringMatch(arg1.value, arg2.value));
+}
+
 POKA_WORDS4["match"] = {
   doc: ['"a" "(a)" match [["a"]] equals all'],
-  fun: (_env: { [varName: string]: PokaValue }, stack: PokaValue[]) => {
-    const arg2 = stack.pop();
-    if (arg2 === undefined) {
-      throw "Stack underflow";
-    }
-    const arg1 = stack.pop();
-    if (arg1 === undefined) {
-      throw "Stack underflow";
-    }
-
-    if (arg2._type !== "ScalarString") {
-      throw "Type mismatch";
-    }
-    if (arg1._type !== "ScalarString") {
-      throw "Type mismatch";
-    }
-
-    stack.push(pokaMatrixStringMatch(arg1.value, arg2.value));
-  },
+  fun: pokaWordMatch,
 };
+
+function pokaWordMul(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberMake(a.value * b.value));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberMulVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberMulMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
 
 POKA_WORDS4["mul"] = {
   doc: [
@@ -949,35 +902,5 @@ POKA_WORDS4["mul"] = {
     "[1, 1] [1, 1] mul [1, 1] equals all",
     "[[1, 1], [1, 1]] [[1, 1], [1, 1]] mul [[1, 1], [1, 1]] equals all",
   ],
-  fun: (_env: { [word: string]: PokaValue }, stack: PokaValue[]): void => {
-    const b = stack.pop();
-    const a = stack.pop();
-
-    if (a === undefined || b === undefined) {
-      throw "Stack underflow";
-    }
-
-    if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-      stack.push(pokaScalarNumberMake(a.value * b.value));
-      return;
-    }
-
-    const av = pokaTryToVector(a);
-    const bv = pokaTryToVector(b);
-
-    if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
-      stack.push(pokaVectorNumberMulVectorNumber(av, bv));
-      return;
-    }
-
-    const am = pokaTryToMatrix(a);
-    const bm = pokaTryToMatrix(b);
-
-    if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
-      stack.push(pokaMatrixNumberMulMatrixNumber(am, bm));
-      return;
-    }
-
-    throw "No implementation";
-  },
+  fun: pokaWordMul,
 };
