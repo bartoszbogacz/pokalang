@@ -1,4 +1,7 @@
 "use strict";
+function pokaVectorBooleanMake(values) {
+    return { _type: "PokaVectorBoolean", values: values };
+}
 function pokaVectorBooleanAll(a) {
     return a.values.reduce((a, b) => a && b);
 }
@@ -10,14 +13,14 @@ function pokaVectorBooleanEqualsVectorBoolean(a, b) {
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] === b.values[i]);
     }
-    return { _type: "PokaVectorBoolean", values: r };
+    return pokaVectorBooleanMake(r);
 }
 function pokaVectorBooleanAndVectorBoolean(a, b) {
     const r = [];
     for (let i = 0; i < a.values.length; i++) {
         r.push(a.values[i] && b.values[i]);
     }
-    return { _type: "PokaVectorBoolean", values: r };
+    return pokaVectorBooleanMake(r);
 }
 function pokaVectorBooleanCount(a) {
     let acc = 0;

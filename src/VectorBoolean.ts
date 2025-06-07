@@ -3,6 +3,10 @@ interface PokaVectorBoolean {
   values: boolean[];
 }
 
+function pokaVectorBooleanMake(values: boolean[]): PokaVectorBoolean {
+  return { _type: "PokaVectorBoolean", values: values };
+}
+
 function pokaVectorBooleanAll(a: PokaVectorBoolean): boolean {
   return a.values.reduce((a, b) => a && b);
 }
@@ -19,7 +23,7 @@ function pokaVectorBooleanEqualsVectorBoolean(
   for (let i = 0; i < a.values.length; i++) {
     r.push(a.values[i] === b.values[i]);
   }
-  return { _type: "PokaVectorBoolean", values: r };
+  return pokaVectorBooleanMake(r);
 }
 
 function pokaVectorBooleanAndVectorBoolean(
@@ -30,7 +34,7 @@ function pokaVectorBooleanAndVectorBoolean(
   for (let i = 0; i < a.values.length; i++) {
     r.push((a.values[i] as boolean) && (b.values[i] as boolean));
   }
-  return { _type: "PokaVectorBoolean", values: r };
+  return pokaVectorBooleanMake(r);
 }
 
 function pokaVectorBooleanCount(a: PokaVectorBoolean): number {
