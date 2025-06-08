@@ -372,14 +372,12 @@ function consumeLiteral(state: InterpreterState, literal: string): void {
       throw "Expected: " + literal;
     }
   }
-  console.log("Literal: " + literal);
 }
 
 function consumeWhitespace(state: InterpreterState): void {
   while (state.line.charAt(state.pos) === " ") {
     state.pos++;
   }
-  console.log("Whitespace");
 }
 
 function peekEOL(state: InterpreterState): boolean {
