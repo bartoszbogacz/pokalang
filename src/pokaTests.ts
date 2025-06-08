@@ -2,6 +2,7 @@ const POKA_TESTS = [
   '"1 2 3,4 5 6" "," split " " split [["1", "2", "3"], ["4", "5", "6"]] equals all',
   '"1 2 3,4 5 6" "," split " " split toNumber [0 cols, -1 cols] [[1, 4], [3, 6]] equals all',
   '"1 4,2 3,3 2" "," split " " split toNumber sortCols [0 cols, 1 cols] spread sub abs sum 3 equals',
+  "1 =a 2 =b $b $a sub 1 equals",
 ];
 
 function pokaTestsRun(): string {

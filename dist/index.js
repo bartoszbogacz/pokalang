@@ -315,13 +315,11 @@ function consumeLiteral(state, literal) {
             throw "Expected: " + literal;
         }
     }
-    console.log("Literal: " + literal);
 }
 function consumeWhitespace(state) {
     while (state.line.charAt(state.pos) === " ") {
         state.pos++;
     }
-    console.log("Whitespace");
 }
 function peekEOL(state) {
     return state.pos >= state.line.length;
