@@ -190,16 +190,16 @@ function consumeString(state) {
     const value = token.replace(/\\n/g, "\n");
     state.stack.push({ _type: "ScalarString", value: value });
 }
-function peekRoundBracketExpression(state) {
-    return peekLiteral(state, "(");
+function peekScope(state) {
+    return peekLiteral(state, "{");
 }
-function consumeRoundBracketExpression(state) {
+function consumeScope(state) {
     const values = [];
     const origStack = state.stack;
-    consumeLiteral(state, "(");
-    while (!peekLiteral(state, ")") && !peekEOL(state)) {
+    consumeLiteral(state, "{");
+    while (!peekLiteral(state, "}") && !peekEOL(state)) {
         state.stack = origStack.slice();
-        while (!peekLiteral(state, ")") && !peekEOL(state)) {
+        while (!peekLiteral(state, "}") && !peekEOL(state)) {
             if (peekLiteral(state, ",")) {
                 consumeLiteral(state, ",");
                 break;
@@ -214,7 +214,7 @@ function consumeRoundBracketExpression(state) {
             values.push(value);
         }
     }
-    consumeLiteral(state, ")");
+    consumeLiteral(state, "}");
     state.stack = origStack;
     for (const value of values) {
         state.stack.push(value);
@@ -250,17 +250,21 @@ function consumeList(state) {
 }
 function peekIdentifier(state) {
     const c = state.line.charAt(state.pos);
-    return (c >= "a" && c <= "z") || (c >= "A" && c <= "Z");
+    return (c === "$" || c === "=" || (c >= "a" && c <= "z") || (c >= "A" && c <= "Z"));
 }
 function consumeIdentifer(state) {
     const start = state.pos;
+    if (peekIdentifier(state)) {
+        state.pos++;
+    }
+    else {
+        throw "Expected identifier";
+    }
     while (true) {
         const c = state.line.charAt(state.pos);
         if ((c >= "a" && c <= "z") ||
             (c >= "A" && c <= "Z") ||
-            (c >= "0" && c <= "9") ||
-            c === ">" ||
-            c === "<") {
+            (c >= "0" && c <= "9")) {
             state.pos++;
         }
         else {
@@ -271,16 +275,28 @@ function consumeIdentifer(state) {
         throw "Expected identifier";
     }
     const token = state.line.slice(start, state.pos);
-    if (token.endsWith(">")) {
-        const variableName = token.slice(0, token.length - 1);
-        let value = state.env[variableName];
+    if (token.startsWith("$")) {
+        const variableName = token.slice(1, token.length);
+        const value = state.env[variableName];
         if (value === undefined) {
-            throw "No variable: " + variableName;
+            throw "No such variable: " + variableName;
         }
         state.stack.push(value);
     }
+    else if (token.startsWith("=")) {
+        const variableName = token.slice(1, token.length);
+        const value = state.stack.pop();
+        if (value === undefined) {
+            throw "Stack underflow";
+        }
+        state.env[variableName] = value;
+    }
     else {
-        pokaDispatch3(state.env, state.stack, token);
+        const word = POKA_WORDS4[token];
+        if (word === undefined) {
+            throw "No such function: " + token;
+        }
+        word.fun(state.stack);
     }
 }
 function peekLiteral(state, literal) {
@@ -321,8 +337,8 @@ function consumeExpression(state) {
     else if (peekString(state)) {
         consumeString(state);
     }
-    else if (peekRoundBracketExpression(state)) {
-        consumeRoundBracketExpression(state);
+    else if (peekScope(state)) {
+        consumeScope(state);
     }
     else if (peekList(state)) {
         consumeList(state);
@@ -331,14 +347,6 @@ function consumeExpression(state) {
         throw "Expected expression";
     }
     consumeWhitespace(state);
-}
-function pokaDispatch3(_env, stack, token) {
-    const word = POKA_WORDS4[token];
-    if (word !== undefined) {
-        word.fun(stack);
-        return;
-    }
-    throw "No such function";
 }
 function pokaInterpreterMake(line, environment) {
     const state = {
