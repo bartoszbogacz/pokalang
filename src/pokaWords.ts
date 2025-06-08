@@ -459,11 +459,21 @@ function pokaWordRotr(stack: PokaValue[]): void {
     return;
   }
 
+  const bv = pokaTryToVector(b);
+
+  if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaMatrixNumberRotrVectorNumber(am, bv));
+    return;
+  }
+
   throw "No Implementation";
 }
 
 POKA_WORDS4["rotr"] = {
-  doc: ["[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all"],
+  doc: [
+    "[[1, 2, 3], [3, 4, 5]] 1 rotr [[2, 3, 1], [4, 5, 3]] equals all",
+    "[[1, 2, 3], [3, 4, 5]] [1, 2] rotr [[2, 3, 1], [5, 3, 4]] equals all",
+  ],
   fun: pokaWordRotr,
 };
 

@@ -324,12 +324,7 @@ function pokaMatrixNumberRotrScalarNumber(a, b) {
             values.push(a.values[i * a.countCols + ((j + b) % a.countCols)]);
         }
     }
-    return {
-        _type: "PokaMatrixNumber",
-        countRows: a.countRows,
-        countCols: a.countCols,
-        values: values,
-    };
+    return pokaMatrixNumberMake(a.countRows, a.countCols, values);
 }
 function pokaMatrixNumberColsVectorNumber(a, b) {
     const values = [];
@@ -477,4 +472,14 @@ function pokaMatrixNumberMulMatrixNumber(a, b) {
         newVals.push(a.values[i] * b.values[i]);
     }
     return pokaMatrixNumberMake(a.countRows, a.countCols, newVals);
+}
+function pokaMatrixNumberRotrVectorNumber(a, b) {
+    const values = [];
+    for (let i = 0; i < a.countRows; i++) {
+        for (let j = 0; j < a.countCols; j++) {
+            const amount = b.values[i];
+            values.push(a.values[i * a.countCols + ((j + amount) % a.countCols)]);
+        }
+    }
+    return pokaMatrixNumberMake(a.countRows, a.countCols, values);
 }
