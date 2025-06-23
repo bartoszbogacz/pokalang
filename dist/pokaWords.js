@@ -73,6 +73,12 @@ function pokaWordEquals(stack) {
         stack.push(pokaMatrixStringEqualsMatrixString(am, bm));
         return;
     }
+    const ar = pokaTryToRecord(a);
+    const br = pokaTryToRecord(b);
+    if (ar._type === "PokaRecord" && br._type === "PokaRecord") {
+        stack.push(pokaRecordEqualsPokaRecord(ar, br));
+        return;
+    }
     throw "No implementation";
 }
 POKA_WORDS4["equals"] = {
@@ -83,6 +89,7 @@ POKA_WORDS4["equals"] = {
         '"a" "a" equals',
         "[True, False] [True, False] equals all",
         "[False, True] [True, False] equals all False equals",
+        '[:"a" 1] [:"a" 1] equals',
     ],
     fun: pokaWordEquals,
 };
@@ -709,4 +716,84 @@ POKA_WORDS4["mul"] = {
         "[[1, 1], [1, 1]] [[1, 1], [1, 1]] mul [[1, 1], [1, 1]] equals all",
     ],
     fun: pokaWordMul,
+};
+function pokaWordSet(stack) {
+    const b = stack.pop();
+    if (b === undefined) {
+        throw "Stack underflow";
+    }
+    if (b._type !== "RecordEntry") {
+        throw "Expected RecordEntry";
+    }
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const ar = pokaTryToRecord(a);
+    if (ar._type !== "PokaRecord") {
+        throw "Record must PokaRecord";
+    }
+    const value = {
+        _type: "PokaRecord",
+        value: { ...ar.value },
+    };
+    value.value[b.key] = b.value;
+    stack.push(value);
+}
+POKA_WORDS4["set"] = {
+    doc: ['[] :"a" 1 set "a" get 1 equals'],
+    fun: pokaWordSet,
+};
+function pokaWordGet(stack) {
+    const b = stack.pop();
+    if (b === undefined) {
+        throw "Stack underflow";
+    }
+    if (b._type !== "ScalarString") {
+        throw "Key must be a ScalarString";
+    }
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const ar = pokaTryToRecord(a);
+    if (ar._type !== "PokaRecord") {
+        throw "Record must PokaRecord";
+    }
+    const value = ar.value[b.value];
+    if (value === undefined) {
+        throw "Key not in record";
+    }
+    stack.push(value);
+}
+POKA_WORDS4["get"] = {
+    doc: ['[:"a" 1] "a" get 1 equals'],
+    fun: pokaWordGet,
+};
+function pokaWordDel(stack) {
+    const b = stack.pop();
+    if (b === undefined) {
+        throw "Stack underflow";
+    }
+    if (b._type !== "ScalarString") {
+        throw "Key must be a ScalarString";
+    }
+    const a = stack.pop();
+    if (a === undefined) {
+        throw "Stack underflow";
+    }
+    const ar = pokaTryToRecord(a);
+    if (ar._type !== "PokaRecord") {
+        throw "Record must PokaRecord";
+    }
+    const result = {
+        _type: "PokaRecord",
+        value: { ...ar.value },
+    };
+    delete result.value[b.value];
+    stack.push(result);
+}
+POKA_WORDS4["del"] = {
+    doc: ['[:"a" 1] "a" del [] equals'],
+    fun: pokaWordDel,
 };

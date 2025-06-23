@@ -18,6 +18,17 @@ interface PokaList {
   value: PokaValue[];
 }
 
+interface PokaRecordEntry {
+  _type: "RecordEntry";
+  key: string;
+  value: PokaValue;
+}
+
+interface PokaRecord {
+  _type: "PokaRecord";
+  value: { [key: string]: PokaValue };
+}
+
 type PokaValue =
   | PokaScalarBoolean
   | PokaScalarNumber
@@ -28,7 +39,9 @@ type PokaValue =
   | PokaMatrixBoolean
   | PokaMatrixNumber
   | PokaMatrixString
-  | PokaList;
+  | PokaList
+  | PokaRecordEntry
+  | PokaRecord;
 
 interface InterpreterState {
   line: string;
@@ -64,6 +77,8 @@ function pokaShow(value: PokaValue): string {
     return pokaMatrixStringShow(value);
   } else if (value._type === "List") {
     return "[" + value.value.map(pokaShow).join(", ") + "]";
+  } else if (value._type === "RecordEntry") {
+    return ":" + value.key + " " + pokaShow(value.value);
   } else {
     throw "Unreachable";
   }
@@ -93,8 +108,33 @@ function pokaListMake(values: PokaValue[]): PokaList {
   return { _type: "List", value: values };
 }
 
+function pokaTryToRecord(value: PokaValue): PokaValue {
+  if (value._type !== "List") {
+    return value;
+  }
+
+  const result: PokaRecord = {
+    _type: "PokaRecord",
+    value: {},
+  };
+
+  for (const val of value.value) {
+    if (val._type !== "RecordEntry") {
+      return value;
+    }
+
+    result.value[val.key] = val.value;
+  }
+
+  return result;
+}
+
 function pokaTryToVector(value: PokaValue): PokaValue {
   if (value._type !== "List") {
+    return value;
+  }
+  if (value.value.length === 0) {
+    // FIXME
     return value;
   }
 
@@ -136,6 +176,10 @@ function pokaTryToVector(value: PokaValue): PokaValue {
 
 function pokaTryToMatrix(value: PokaValue): PokaValue {
   if (value._type !== "List") {
+    return value;
+  }
+  if (value.value.length === 0) {
+    // FIXME
     return value;
   }
 
@@ -330,6 +374,11 @@ function consumeIdentifer(state: InterpreterState): void {
 
   const token = state.line.slice(start, state.pos);
 
+  // Variables may only be literals, never expressions.
+  // That allows discovery of all input dependencies
+  // and outputs of a function by simple lexical analysis.
+  // Thus variables and their environment must remain
+  // "second-class".
   if (token.startsWith("$")) {
     const variableName = token.slice(1, token.length);
     const value = state.env[variableName];
@@ -355,6 +404,79 @@ function consumeIdentifer(state: InterpreterState): void {
   }
 }
 
+function peekRecordEntry(state: InterpreterState): boolean {
+  const c = state.line.charAt(state.pos);
+  return c === ":";
+}
+
+function consumeRecordEntry(state: InterpreterState): void {
+  if (peekRecordEntry(state)) {
+    state.pos++;
+  } else {
+    throw "Expected Key";
+  }
+
+  /*
+  const start = state.pos;
+
+  while (true) {
+    const c = state.line.charAt(state.pos);
+    if (
+      (c >= "a" && c <= "z") ||
+      (c >= "A" && c <= "Z") ||
+      (c >= "0" && c <= "9")
+    ) {
+      state.pos++;
+    } else {
+      break;
+    }
+  }
+
+  if (start === state.pos) {
+    throw "Expected Key";
+  }
+
+  const token = state.line.slice(start, state.pos);
+  */
+
+  // const origStack1 = state.stack;
+  // state.stack = origStack1.slice();
+
+  consumeExpression(state);
+
+  const key = state.stack.pop();
+  if (key === undefined) {
+    throw "Stack underflow";
+  }
+  if (key._type !== "ScalarString") {
+    throw "Entry key must be string";
+  }
+
+  // state.stack = origStack1;
+
+  /*
+  if (peekWhitespace(state)) {
+    consumeWhitespace(state);
+  } else {
+    throw "Expected Whitespace";
+  }
+  */
+
+  // const origStack2 = state.stack;
+  // state.stack = origStack2.slice();
+
+  consumeExpression(state);
+
+  const value = state.stack.pop();
+  if (value === undefined) {
+    throw "Stack underflow";
+  }
+
+  // state.stack = origStack2;
+
+  state.stack.push({ _type: "RecordEntry", key: key.value, value: value });
+}
+
 function peekLiteral(state: InterpreterState, literal: string): boolean {
   for (let i = 0; i < literal.length; i++) {
     const c = state.line.charAt(state.pos + i);
@@ -372,6 +494,10 @@ function consumeLiteral(state: InterpreterState, literal: string): void {
       throw "Expected: " + literal;
     }
   }
+}
+
+function peekWhitespace(state: InterpreterState): boolean {
+  return state.line.charAt(state.pos) === " ";
 }
 
 function consumeWhitespace(state: InterpreterState): void {
@@ -396,6 +522,8 @@ function consumeExpression(state: InterpreterState): void {
     consumeScope(state);
   } else if (peekList(state)) {
     consumeList(state);
+  } else if (peekRecordEntry(state)) {
+    consumeRecordEntry(state);
   } else {
     throw "Expected expression";
   }
