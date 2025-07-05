@@ -25,7 +25,7 @@ function pokaRecordEqualsPokaRecord(
       aElem._type === "ScalarNumber" &&
       bElem._type === "ScalarNumber"
     ) {
-      if (aElem.value !== bElem.value) {
+      if (!pokaScalarNumberEqualsScalarNumber(aElem, bElem).value) {
         return pokaScalarBooleanMake(false);
       }
     } else if (

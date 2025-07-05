@@ -49,7 +49,7 @@ function pokaWordEquals(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaScalarBooleanMake(a.value === b.value));
+    stack.push(pokaScalarNumberEqualsScalarNumber(a, b));
     return;
   }
 
@@ -127,7 +127,7 @@ function pokaWordAdd(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaScalarNumberMake(a.value + b.value));
+    stack.push(pokaScalarNumberAddScalarNumber(a, b));
     return;
   }
 
@@ -168,7 +168,7 @@ function pokaWordSub(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaScalarNumberMake(a.value - b.value));
+    stack.push(pokaScalarNumberSubScalarNumber(a, b));
     return;
   }
 
@@ -237,7 +237,7 @@ function pokaWordAbs(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarNumber") {
-    stack.push(pokaScalarNumberMake(Math.abs(a.value)));
+    stack.push(pokaScalarNumberAbs(a));
     return;
   }
 
@@ -690,7 +690,7 @@ function pokaWordUnequals(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaScalarBooleanMake(a.value !== b.value));
+    stack.push(pokaScalarNumberUnequalsScalarNumber(a, b));
     return;
   }
 
@@ -892,7 +892,7 @@ function pokaWordMul(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaScalarNumberMake(a.value * b.value));
+    stack.push(pokaScalarNumberMulScalarNumber(a, b));
     return;
   }
 
