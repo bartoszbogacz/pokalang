@@ -41,3 +41,50 @@ function pokaRecordEqualsPokaRecord(
   }
   return pokaScalarBooleanMake(true);
 }
+
+function pokaRecordGetScalarString(
+  rec: PokaRecord,
+  key: PokaScalarString,
+): PokaValue {
+  const value = rec.value[key.value];
+  if (value === undefined) {
+    throw "Key not in record";
+  }
+  return value;
+}
+
+function pokaRecordGetVectorString(
+  rec: PokaRecord,
+  keys: PokaVectorString,
+): PokaList {
+  const values: PokaValue[] = [];
+  for (const key of keys.values) {
+    const value = rec.value[key];
+    if (value === undefined) {
+      throw "Key not in record";
+    }
+    values.push(value);
+  }
+  return { _type: "List", value: values };
+}
+
+function pokaRecordGetMatrixString(
+  rec: PokaRecord,
+  keys: PokaMatrixString,
+): PokaList {
+  const rows: PokaList[] = [];
+  let index = 0;
+  for (let r = 0; r < keys.countRows; r++) {
+    const rowVals: PokaValue[] = [];
+    for (let c = 0; c < keys.countCols; c++) {
+      const key = keys.values[index++]!;
+      const value = rec.value[key];
+      if (value === undefined) {
+        throw "Key not in record";
+      }
+      rowVals.push(value);
+    }
+    rows.push({ _type: "List", value: rowVals });
+  }
+  return { _type: "List", value: rows };
+}

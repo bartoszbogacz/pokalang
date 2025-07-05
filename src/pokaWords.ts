@@ -1005,9 +1005,6 @@ function pokaWordGet(stack: PokaValue[]): void {
   if (b === undefined) {
     throw "Stack underflow";
   }
-  if (b._type !== "ScalarString") {
-    throw "Key must be a ScalarString";
-  }
 
   const a = stack.pop();
   if (a === undefined) {
@@ -1020,16 +1017,32 @@ function pokaWordGet(stack: PokaValue[]): void {
     throw "Record must PokaRecord";
   }
 
-  const value = ar.value[b.value];
-  if (value === undefined) {
-    throw "Key not in record";
+  if (b._type === "ScalarString") {
+    stack.push(pokaRecordGetScalarString(ar, b));
+    return;
   }
 
-  stack.push(value);
+  const bv = pokaTryToVector(b);
+  if (bv._type === "PokaVectorString") {
+    stack.push(pokaRecordGetVectorString(ar, bv));
+    return;
+  }
+
+  const bm = pokaTryToMatrix(b);
+  if (bm._type === "PokaMatrixString") {
+    stack.push(pokaRecordGetMatrixString(ar, bm));
+    return;
+  }
+
+  throw "Key must be a ScalarString";
 }
 
 POKA_WORDS4["get"] = {
-  doc: ['[:"a" 1] "a" get 1 equals'],
+  doc: [
+    '[:"a" 1] "a" get 1 equals',
+    '[:"a" 1, :"b" 2, :"c" 3] ["a", "b", "c"] get [1, 2, 3] equals all',
+    '[:"a" 1, :"b" 2, :"c" 3] [["a", "b", "c"], ["c", "b", "a"]] get [[1, 2, 3], [3, 2, 1]] equals all',
+  ],
   fun: pokaWordGet,
 };
 
