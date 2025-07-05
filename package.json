@@ -1,10 +1,10 @@
 {
-  "name": "2024_11_19_html_tests",
+  "name": "pokalang",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "test": "npm run build && node run-tests.js"
+    "test": "npm run build && node run_tests.js"
   },
   "author": "",
   "license": "ISC",
