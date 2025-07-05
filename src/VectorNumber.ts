@@ -71,3 +71,23 @@ function pokaVectorNumberMulVectorNumber(
   }
   return pokaVectorNumberMake(newVals);
 }
+
+function pokaVectorNumberWindows(
+  a: PokaVectorNumber,
+  size: number,
+): PokaMatrixNumber {
+  if (size <= 0 || size > a.values.length) {
+    throw new Error("Invalid window size");
+  }
+
+  const countRows = a.values.length - size + 1;
+  const values: number[] = [];
+
+  for (let start = 0; start < countRows; start++) {
+    for (let i = 0; i < size; i++) {
+      values.push(a.values[start + i] as number);
+    }
+  }
+
+  return pokaMatrixNumberMake(countRows, size, values);
+}

@@ -35,3 +35,23 @@ function pokaVectorStringShow(a: PokaVectorString): string {
 function pokaVectorStringToNumber(a: PokaVectorString): PokaVectorNumber {
   return pokaVectorNumberMake(a.values.map(parseFloat));
 }
+
+function pokaVectorStringWindows(
+  a: PokaVectorString,
+  size: number,
+): PokaMatrixString {
+  if (size <= 0 || size > a.values.length) {
+    throw new Error("Invalid window size");
+  }
+
+  const countRows = a.values.length - size + 1;
+  const values: string[] = [];
+
+  for (let start = 0; start < countRows; start++) {
+    for (let i = 0; i < size; i++) {
+      values.push(a.values[start + i] as string);
+    }
+  }
+
+  return pokaMatrixStringMake(countRows, size, values);
+}

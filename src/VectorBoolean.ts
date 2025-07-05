@@ -44,3 +44,23 @@ function pokaVectorBooleanCount(a: PokaVectorBoolean): number {
   }
   return acc;
 }
+
+function pokaVectorBooleanWindows(
+  a: PokaVectorBoolean,
+  size: number,
+): PokaMatrixBoolean {
+  if (size <= 0 || size > a.values.length) {
+    throw new Error("Invalid window size");
+  }
+
+  const countRows = a.values.length - size + 1;
+  const values: boolean[] = [];
+
+  for (let start = 0; start < countRows; start++) {
+    for (let i = 0; i < size; i++) {
+      values.push(a.values[start + i] as boolean);
+    }
+  }
+
+  return pokaMatrixBooleanMake(countRows, size, values);
+}
