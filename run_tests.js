@@ -5,6 +5,7 @@ const vm = require('vm');
 const distDir = path.join(__dirname, 'dist');
 const files = [
   'ScalarBoolean.js',
+  'ScalarNumber.js',
   'VectorBoolean.js',
   'VectorNumber.js',
   'VectorString.js',

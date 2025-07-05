@@ -1,9 +1,4 @@
 
-interface PokaScalarNumber {
-  _type: "ScalarNumber";
-  value: number;
-}
-
 interface PokaScalarString {
   _type: "ScalarString";
   value: string;
@@ -88,10 +83,6 @@ function pokaInterpreterShow(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-
-function pokaScalarNumberMake(value: number): PokaScalarNumber {
-  return { _type: "ScalarNumber", value: value };
-}
 
 function pokaScalarStringMake(value: string): PokaScalarString {
   return { _type: "ScalarString", value: value };
@@ -240,7 +231,7 @@ function consumeNumber(state: InterpreterState): void {
   if (isNaN(value)) {
     throw "`" + token + "` is not a number.";
   } else {
-    state.stack.push({ _type: "ScalarNumber", value: value });
+    state.stack.push(pokaScalarNumberMake(value));
   }
 }
 
