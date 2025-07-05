@@ -65,6 +65,12 @@ function pokaShow(value: PokaValue): string {
     return "[" + value.value.map(pokaShow).join(", ") + "]";
   } else if (value._type === "RecordEntry") {
     return ":" + value.key + " " + pokaShow(value.value);
+  } else if (value._type === "PokaRecord") {
+    const asList = pokaTryToList(value);
+    if (asList._type !== "List") {
+      throw "Unreachable";
+    }
+    return pokaShow(asList);
   } else {
     throw "Unreachable";
   }
@@ -104,6 +110,13 @@ function pokaTryToList(value: PokaValue): PokaValue {
       _type: "List",
       value: value.values.map((v) => pokaScalarStringMake(v)),
     };
+  }
+  if (value._type === "PokaRecord") {
+    const entries: PokaRecordEntry[] = [];
+    for (const [key, val] of Object.entries(value.value)) {
+      entries.push({ _type: "RecordEntry", key, value: val });
+    }
+    return { _type: "List", value: entries };
   }
   return value;
 }
