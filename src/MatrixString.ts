@@ -256,3 +256,24 @@ function pokaMatrixStringColsVectorNumber(
   }
   return pokaMatrixStringMake(a.countRows, b.values.length, values);
 }
+
+function pokaMatrixStringSliceVectorBoolean(
+  a: PokaMatrixString,
+  b: PokaVectorBoolean,
+): PokaMatrixString {
+  if (b.values.length !== a.countRows) {
+    throw new Error("Shape mismatch");
+  }
+  let countRows = 0;
+  const values: string[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    if (b.values[i] === false) {
+      continue;
+    }
+    countRows = countRows + 1;
+    for (let j = 0; j < a.countCols; j++) {
+      values.push(a.values[i * a.countCols + j] as string);
+    }
+  }
+  return pokaMatrixStringMake(countRows, a.countCols, values);
+}
