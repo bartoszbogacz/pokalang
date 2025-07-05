@@ -607,5 +607,6 @@ function main(): void {
 }
 
 const REPL_ENV: { [word: string]: PokaValue } = {};
-
-main();
+if (typeof document !== "undefined") {
+  main();
+}
