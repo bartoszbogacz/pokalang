@@ -6,6 +6,7 @@ const distDir = path.join(__dirname, 'dist');
 const files = [
   'ScalarBoolean.js',
   'ScalarNumber.js',
+  'ScalarString.js',
   'VectorBoolean.js',
   'VectorNumber.js',
   'VectorString.js',

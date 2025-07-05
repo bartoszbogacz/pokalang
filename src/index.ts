@@ -1,9 +1,4 @@
 
-interface PokaScalarString {
-  _type: "ScalarString";
-  value: string;
-}
-
 interface PokaList {
   _type: "List";
   value: PokaValue[];
@@ -83,10 +78,6 @@ function pokaInterpreterShow(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-
-function pokaScalarStringMake(value: string): PokaScalarString {
-  return { _type: "ScalarString", value: value };
-}
 
 function pokaListMake(values: PokaValue[]): PokaList {
   return { _type: "List", value: values };
@@ -254,7 +245,7 @@ function consumeString(state: InterpreterState): void {
   const token = state.line.slice(start, state.pos);
   state.pos++; // Skip closing quote
   const value = token.replace(/\\n/g, "\n");
-  state.stack.push({ _type: "ScalarString", value: value });
+  state.stack.push(pokaScalarStringMake(value));
 }
 
 function peekScope(state: InterpreterState): boolean {
