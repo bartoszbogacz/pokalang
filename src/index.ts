@@ -1,7 +1,3 @@
-interface PokaScalarBoolean {
-  _type: "ScalarBoolean";
-  value: boolean;
-}
 
 interface PokaScalarNumber {
   _type: "ScalarNumber";
@@ -92,9 +88,6 @@ function pokaInterpreterShow(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-function pokaScalarBooleanMake(value: boolean): PokaScalarBoolean {
-  return { _type: "ScalarBoolean", value: value };
-}
 
 function pokaScalarNumberMake(value: number): PokaScalarNumber {
   return { _type: "ScalarNumber", value: value };
