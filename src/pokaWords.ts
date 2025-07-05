@@ -486,6 +486,47 @@ POKA_WORDS4["rotr"] = {
   fun: pokaWordRotr,
 };
 
+function pokaWordWindows(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (b._type !== "ScalarNumber") {
+    throw "Window size must be a ScalarNumber";
+  }
+
+  const av = pokaTryToVector(a);
+
+  if (av._type === "PokaVectorBoolean") {
+    stack.push(pokaVectorBooleanWindows(av, b.value));
+    return;
+  }
+
+  if (av._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberWindows(av, b.value));
+    return;
+  }
+
+  if (av._type === "PokaVectorString") {
+    stack.push(pokaVectorStringWindows(av, b.value));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["windows"] = {
+  doc: [
+    "[1, 2, 3] 2 windows [[1, 2], [2, 3]] equals all",
+    "[True, False, True] 2 windows [[True, False], [False, True]] equals all",
+    '["a", "b", "c"] 2 windows [["a", "b"], ["b", "c"]] equals all',
+  ],
+  fun: pokaWordWindows,
+};
+
 function pokaWordLess(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
