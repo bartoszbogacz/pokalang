@@ -468,6 +468,32 @@ function pokaMatrixNumberRowsVectorBoolean(
   };
 }
 
+function pokaMatrixNumberSliceVectorBoolean(
+  a: PokaMatrixNumber,
+  b: PokaVectorBoolean,
+): PokaMatrixNumber {
+  if (b.values.length !== a.countRows) {
+    throw new Error("Shape mismatch");
+  }
+  let countRows = 0;
+  const values: number[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    if (b.values[i] === false) {
+      continue;
+    }
+    countRows = countRows + 1;
+    for (let j = 0; j < a.countCols; j++) {
+      values.push(a.values[i * a.countCols + j] as number);
+    }
+  }
+  return {
+    _type: "PokaMatrixNumber",
+    countRows: countRows,
+    countCols: a.countCols,
+    values: values,
+  };
+}
+
 function pokaMatrixNumberSqueeze(a: PokaMatrixNumber): PokaVectorNumber {
   if (a.countCols === 1) {
     return {

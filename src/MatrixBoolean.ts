@@ -167,3 +167,29 @@ function pokaMatrixBooleanCount(a: PokaMatrixBoolean): number {
   }
   return acc;
 }
+
+function pokaMatrixBooleanSliceVectorBoolean(
+  a: PokaMatrixBoolean,
+  b: PokaVectorBoolean,
+): PokaMatrixBoolean {
+  if (b.values.length !== a.countRows) {
+    throw new Error("Shape mismatch");
+  }
+  let countRows = 0;
+  const values: boolean[] = [];
+  for (let i = 0; i < a.countRows; i++) {
+    if (b.values[i] === false) {
+      continue;
+    }
+    countRows = countRows + 1;
+    for (let j = 0; j < a.countCols; j++) {
+      values.push(a.values[i * a.countCols + j] as boolean);
+    }
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: countRows,
+    countCols: a.countCols,
+    values: values,
+  };
+}

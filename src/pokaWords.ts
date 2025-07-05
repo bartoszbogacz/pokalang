@@ -660,6 +660,49 @@ POKA_WORDS4["rows"] = {
   fun: pokaWordRows,
 };
 
+function pokaWordSlice(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bv = pokaTryToVector(b);
+
+  if (bv._type !== "PokaVectorBoolean") {
+    throw "Slice mask must be PokaVectorBoolean";
+  }
+
+  if (am._type === "PokaMatrixBoolean") {
+    stack.push(pokaMatrixBooleanSliceVectorBoolean(am, bv));
+    return;
+  }
+
+  if (am._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberSliceVectorBoolean(am, bv));
+    return;
+  }
+
+  if (am._type === "PokaMatrixString") {
+    stack.push(pokaMatrixStringSliceVectorBoolean(am, bv));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["slice"] = {
+  doc: [
+    "[[1, 2], [3, 4], [5, 6]] [True, False, True] slice [[1, 2], [5, 6]] equals all",
+    "[[1, 2, 3], [4, 5, 6]] [False, True] slice [[4, 5, 6]] equals all",
+    "[[True, False], [False, False], [True, True]] [True, False, True] slice [[True, False], [True, True]] equals all",
+    '[["a", "b"], ["c", "d"], ["e", "f"]] [False, True, True] slice [["c", "d"], ["e", "f"]] equals all',
+  ],
+  fun: pokaWordSlice,
+};
+
 function pokaWordSqueeze(stack: PokaValue[]): void {
   const a = stack.pop();
 
