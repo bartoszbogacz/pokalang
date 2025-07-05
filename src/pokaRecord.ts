@@ -88,3 +88,28 @@ function pokaRecordGetMatrixString(
   }
   return { _type: "List", value: rows };
 }
+
+function pokaRecordEntryMakeScalarString(
+  key: PokaScalarString,
+  value: PokaValue,
+): PokaRecordEntry {
+  return { _type: "RecordEntry", key: key.value, value };
+}
+
+function pokaRecordEntryMakeVectorString(
+  keys: PokaVectorString,
+  values: PokaList,
+): PokaRecord {
+  if (keys.values.length !== values.value.length) {
+    throw "Shape mismatch";
+  }
+  const rec: PokaRecord = { _type: "PokaRecord", value: {} };
+  for (let i = 0; i < keys.values.length; i++) {
+    const val = values.value[i];
+    if (val === undefined) {
+      throw "Index out of bounds";
+    }
+    rec.value[keys.values[i] as string] = val;
+  }
+  return rec;
+}

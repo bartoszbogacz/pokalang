@@ -83,6 +83,31 @@ function pokaListMake(values: PokaValue[]): PokaList {
   return { _type: "List", value: values };
 }
 
+function pokaTryToList(value: PokaValue): PokaValue {
+  if (value._type === "List") {
+    return value;
+  }
+  if (value._type === "PokaVectorBoolean") {
+    return {
+      _type: "List",
+      value: value.values.map((v) => pokaScalarBooleanMake(v)),
+    };
+  }
+  if (value._type === "PokaVectorNumber") {
+    return {
+      _type: "List",
+      value: value.values.map((v) => pokaScalarNumberMake(v)),
+    };
+  }
+  if (value._type === "PokaVectorString") {
+    return {
+      _type: "List",
+      value: value.values.map((v) => pokaScalarStringMake(v)),
+    };
+  }
+  return value;
+}
+
 function pokaTryToRecord(value: PokaValue): PokaValue {
   if (value._type !== "List") {
     return value;

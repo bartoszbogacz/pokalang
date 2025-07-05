@@ -1012,6 +1012,40 @@ POKA_WORDS4["mul"] = {
   fun: pokaWordMul,
 };
 
+function pokaWordEntry(stack: PokaValue[]): void {
+  const value = stack.pop();
+  const key = stack.pop();
+
+  if (key === undefined || value === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (key._type === "ScalarString") {
+    stack.push(pokaRecordEntryMakeScalarString(key, value));
+    return;
+  }
+
+  const keysVec = pokaTryToVector(key);
+  if (keysVec._type !== "PokaVectorString") {
+    throw "Keys must be a PokaVectorString";
+  }
+
+  const valuesList = pokaTryToList(value);
+  if (valuesList._type !== "List") {
+    throw "Values must be a List";
+  }
+
+  stack.push(pokaRecordEntryMakeVectorString(keysVec, valuesList));
+}
+
+POKA_WORDS4["entry"] = {
+  doc: [
+    '[] "a" 1 entry set [] :"a" 1 set equals',
+    '"75,47,61,53,29" "," split dup enumerate entry [:"75" 0, :"47" 1, :"61" 2, :"53" 3, :"29" 4] equals',
+  ],
+  fun: pokaWordEntry,
+};
+
 function pokaWordSet(stack: PokaValue[]): void {
   const b = stack.pop();
   if (b === undefined) {
