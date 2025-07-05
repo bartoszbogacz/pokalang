@@ -55,3 +55,11 @@ function pokaVectorStringWindows(
 
   return pokaMatrixStringMake(countRows, size, values);
 }
+
+function pokaVectorStringEnumerate(a: PokaVectorString): PokaVectorNumber {
+  const values: number[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    values.push(i);
+  }
+  return pokaVectorNumberMake(values);
+}
