@@ -72,6 +72,14 @@ function pokaVectorNumberMulVectorNumber(
   return pokaVectorNumberMake(newVals);
 }
 
+function pokaVectorNumberEnumerate(a: PokaVectorNumber): PokaVectorNumber {
+  const values: number[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    values.push(i);
+  }
+  return pokaVectorNumberMake(values);
+}
+
 function pokaVectorNumberWindows(
   a: PokaVectorNumber,
   size: number,

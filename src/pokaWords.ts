@@ -527,6 +527,52 @@ POKA_WORDS4["windows"] = {
   fun: pokaWordWindows,
 };
 
+function pokaWordEnumerate(stack: PokaValue[]): void {
+  const a = stack.pop();
+
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "List") {
+    const values: number[] = [];
+    for (let i = 0; i < a.value.length; i++) {
+      values.push(i);
+    }
+    stack.push(pokaVectorNumberMake(values));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+
+  if (av._type === "PokaVectorBoolean") {
+    stack.push(pokaVectorBooleanEnumerate(av));
+    return;
+  }
+
+  if (av._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberEnumerate(av));
+    return;
+  }
+
+  if (av._type === "PokaVectorString") {
+    stack.push(pokaVectorStringEnumerate(av));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["enumerate"] = {
+  doc: [
+    "[1, 2, 3] enumerate [0, 1, 2] equals all",
+    "[True, False] enumerate [0, 1] equals all",
+    "[] enumerate dup equals count 0 equals",
+    '["a", "b", "c"] enumerate [0, 1, 2] equals all',
+  ],
+  fun: pokaWordEnumerate,
+};
+
 function pokaWordLess(stack: PokaValue[]): void {
   const b = stack.pop();
   const a = stack.pop();
