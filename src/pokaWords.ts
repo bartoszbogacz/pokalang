@@ -44,7 +44,7 @@ function pokaWordEquals(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarBoolean" && b._type === "ScalarBoolean") {
-    stack.push(pokaScalarBooleanMake(a.value === b.value));
+    stack.push(pokaScalarBooleanEqualsScalarBoolean(a, b));
     return;
   }
 
@@ -685,7 +685,7 @@ function pokaWordUnequals(stack: PokaValue[]): void {
   }
 
   if (a._type === "ScalarBoolean" && b._type === "ScalarBoolean") {
-    stack.push(pokaScalarBooleanMake(a.value !== b.value));
+    stack.push(pokaScalarBooleanUnequalsScalarBoolean(a, b));
     return;
   }
 
