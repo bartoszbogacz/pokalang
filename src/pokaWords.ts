@@ -1127,6 +1127,39 @@ POKA_WORDS4["get"] = {
   fun: pokaWordGet,
 };
 
+function pokaGetTry(stack: PokaValue[]): void {
+  const b = stack.pop();
+  if (b === undefined) {
+    throw "Stack underflow";
+  }
+
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const ar = pokaTryToRecord(a);
+
+  if (ar._type !== "PokaRecord") {
+    throw "Record must PokaRecord";
+  }
+
+  const bv = pokaTryToVector(b);
+  if (bv._type !== "PokaVectorString") {
+    throw "Key must be a PokaVectorString";
+  }
+
+  stack.push(pokaRecordGetTryVectorString(ar, bv));
+}
+
+POKA_WORDS4["getTry"] = {
+  doc: [
+    '[:"a" 1] ["b"] getTry [] equals',
+    '[:"a" 1, :"b" 2] ["b", "c"] getTry [2] equals all',
+  ],
+  fun: pokaGetTry,
+};
+
 function pokaWordDel(stack: PokaValue[]): void {
   const b = stack.pop();
   if (b === undefined) {

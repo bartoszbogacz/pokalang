@@ -68,6 +68,20 @@ function pokaRecordGetVectorString(
   return { _type: "List", value: values };
 }
 
+function pokaRecordGetTryVectorString(
+  rec: PokaRecord,
+  keys: PokaVectorString,
+): PokaList {
+  const values: PokaValue[] = [];
+  for (const key of keys.values) {
+    const value = rec.value[key];
+    if (value !== undefined) {
+      values.push(value);
+    }
+  }
+  return { _type: "List", value: values };
+}
+
 function pokaRecordGetMatrixString(
   rec: PokaRecord,
   keys: PokaMatrixString,
