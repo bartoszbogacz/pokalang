@@ -946,6 +946,33 @@ POKA_WORDS4["id"] = {
   fun: pokaWordId,
 };
 
+function pokaWordShow(stack: PokaValue[]): void {
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  stack.push(pokaScalarStringMake(pokaShow(a)));
+}
+
+POKA_WORDS4["show"] = {
+  doc: [
+    'True show "True" equals',
+    '1 show "1" equals',
+    '"a" show "a" equals False equals',
+    '[True, False] [True, True] equals show "[X,.]" equals',
+    '["1", "2"] toNumber show "[1.00, 2.00]" equals',
+    '"a b" " " split show "[a, b]" equals False equals',
+    '[True, False] 2 windows show "[\n  [True, False, ],\n]" equals',
+    '[1, 2] 2 windows show "[\n  [1.00, 2.00, ],\n]" equals',
+    '"a" "(a)" match show "[\n  [a, ],\n]" equals False equals',
+    '[1, 2] show "[1, 2]" equals',
+    ':"a" 1 show ":a 1" equals',
+    '[] :"a" 1 set show "[:a 1]" equals',
+  ],
+  fun: pokaWordShow,
+};
+
 function pokaWordMatch(stack: PokaValue[]): void {
   const arg2 = stack.pop();
   if (arg2 === undefined) {
