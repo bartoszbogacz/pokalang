@@ -1194,3 +1194,48 @@ POKA_WORDS4["del"] = {
   doc: ['[:"a" 1] "a" del [] equals'],
   fun: pokaWordDel,
 };
+
+function pokaWordContains(stack: PokaValue[]): void {
+  const b = stack.pop();
+  if (b === undefined) {
+    throw "Stack underflow";
+  }
+
+  const a = stack.pop();
+  if (a === undefined) {
+    throw "Stack underflow";
+  }
+
+  const ar = pokaTryToRecord(a);
+  if (ar._type !== "PokaRecord") {
+    throw "Record must PokaRecord";
+  }
+
+  if (b._type === "ScalarString") {
+    stack.push(pokaRecordContainsScalarString(ar, b));
+    return;
+  }
+
+  const bv = pokaTryToVector(b);
+  if (bv._type === "PokaVectorString") {
+    stack.push(pokaRecordContainsVectorString(ar, bv));
+    return;
+  }
+
+  const bm = pokaTryToMatrix(b);
+  if (bm._type === "PokaMatrixString") {
+    stack.push(pokaRecordContainsMatrixString(ar, bm));
+    return;
+  }
+
+  throw "Key must be a ScalarString";
+}
+
+POKA_WORDS4["contains"] = {
+  doc: [
+    '[:"a" 1] "a" contains True equals',
+    '[:"a" 1] ["a", "b"] contains [True, False] equals all',
+    '[:"a" 1] [["a", "b"], ["b", "a"]] contains [[True, False], [False, True]] equals all',
+  ],
+  fun: pokaWordContains,
+};

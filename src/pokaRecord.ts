@@ -127,3 +127,37 @@ function pokaRecordEntryMakeVectorString(
   }
   return rec;
 }
+
+function pokaRecordContainsScalarString(
+  rec: PokaRecord,
+  key: PokaScalarString,
+): PokaScalarBoolean {
+  return pokaScalarBooleanMake(rec.value[key.value] !== undefined);
+}
+
+function pokaRecordContainsVectorString(
+  rec: PokaRecord,
+  keys: PokaVectorString,
+): PokaVectorBoolean {
+  const values: boolean[] = [];
+  for (const key of keys.values) {
+    values.push(rec.value[key] !== undefined);
+  }
+  return { _type: "PokaVectorBoolean", values };
+}
+
+function pokaRecordContainsMatrixString(
+  rec: PokaRecord,
+  keys: PokaMatrixString,
+): PokaMatrixBoolean {
+  const values: boolean[] = [];
+  for (const key of keys.values) {
+    values.push(rec.value[key] !== undefined);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: keys.countRows,
+    countCols: keys.countCols,
+    values,
+  };
+}
