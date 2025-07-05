@@ -13,6 +13,7 @@ const files = [
   'MatrixBoolean.js',
   'MatrixNumber.js',
   'MatrixString.js',
+  'pokaList.js',
   'pokaRecord.js',
   'index.js',
   'pokaWords.js',

@@ -102,6 +102,11 @@ function pokaWordEquals(stack: PokaValue[]): void {
     return;
   }
 
+  if (a._type === "List" && b._type === "List") {
+    stack.push(pokaListEqualsPokaList(a, b));
+    return;
+  }
+
   throw "No implementation";
 }
 
@@ -535,11 +540,7 @@ function pokaWordEnumerate(stack: PokaValue[]): void {
   }
 
   if (a._type === "List") {
-    const values: number[] = [];
-    for (let i = 0; i < a.value.length; i++) {
-      values.push(i);
-    }
-    stack.push(pokaVectorNumberMake(values));
+    stack.push(pokaListEnumerate(a));
     return;
   }
 
@@ -902,7 +903,7 @@ function pokaWordSpread(stack: PokaValue[]): void {
   }
 
   if (arg1._type === "List") {
-    for (const elem of arg1.value) {
+    for (const elem of pokaListSpread(arg1)) {
       stack.push(elem);
     }
     return;
