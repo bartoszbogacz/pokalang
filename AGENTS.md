@@ -35,3 +35,9 @@ built-in Javascript types and functions. The near-term goal
 is to make the life easier for the Javascript optimizer and
 the long-term goal is to allow easy translation to WASM where 
 many conveniences, such as lambdas, are not available trivially.
+
+## Final notes
+
+I sometimes forget what already exists. Always first search if
+a poka word or some functionality already exists and can be
+re-used.
