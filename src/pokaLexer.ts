@@ -101,18 +101,19 @@ function pokaLexerConsumeNumber(state: PokaLexerState): void {
 }
 
 function pokaLexerConsumeString(state: PokaLexerState): void {
-  const start = state.pos;
   state.pos++; // opening quote
+  const start = state.pos;
   while (
     state.pos < state.line.length &&
     state.line.charAt(state.pos) !== '"'
   ) {
     state.pos++;
   }
+  const value = state.line.slice(start, state.pos);
   state.pos++; // closing quote
   state.lexemes.push({
     _kind: "String",
-    text: state.line.slice(start, state.pos),
+    text: value,
   });
 }
 
@@ -197,7 +198,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
   [
     '"hi" =a $a',
     [
-      { _kind: "String", text: '"hi"' },
+      { _kind: "String", text: "hi" },
       { _kind: "Symbol", text: "=" },
       { _kind: "Identifier", text: "a" },
       { _kind: "Symbol", text: "$" },
