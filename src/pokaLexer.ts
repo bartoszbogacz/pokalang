@@ -70,6 +70,10 @@ function pokaLexerIsStringStart(state: PokaLexerState): boolean {
   return state.line.charAt(state.pos) === '"';
 }
 
+function pokaLexerIsSymbol(state: PokaLexerState): boolean {
+  return POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos));
+}
+
 function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
   let count = 0;
   while (true) {
@@ -155,6 +159,25 @@ function pokaLexerConsumeForm(state: PokaLexerState): void {
   });
 }
 
+function pokaLexerCheckMissingWhitespace(
+  state: PokaLexerState,
+  consumed: number
+): boolean {
+  if (!pokaLexerIsEol(state) && consumed === 0) {
+    const prev = state.lexemes[state.lexemes.length - 1]!;
+    const nextChar = state.line.charAt(state.pos);
+    if (
+      prev._kind !== "Symbol" &&
+      (!POKA_LEXER_SYMBOLS.includes(nextChar) || nextChar === "$" || nextChar === "=")
+    ) {
+      state.error = "Missing whitespace";
+      state.tail = state.line.slice(state.pos);
+      return true;
+    }
+  }
+  return false;
+}
+
 function pokaLexerLex(line: string): PokaLexerState {
   const state: PokaLexerState = { line, pos: 0, lexemes: [] };
   while (!pokaLexerIsEol(state)) {
@@ -170,7 +193,7 @@ function pokaLexerLex(line: string): PokaLexerState {
       pokaLexerConsumeIdentifier(state);
     } else if (pokaLexerIsForm(state)) {
       pokaLexerConsumeForm(state);
-    } else if (POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos))) {
+    } else if (pokaLexerIsSymbol(state)) {
       pokaLexerConsumeSymbol(state);
     } else {
       state.error = "Unknown token";
@@ -178,17 +201,8 @@ function pokaLexerLex(line: string): PokaLexerState {
       break;
     }
     const consumed = pokaLexerConsumeWhitespace(state);
-    if (!pokaLexerIsEol(state) && consumed === 0) {
-      const prev = state.lexemes[state.lexemes.length - 1]!;
-      const nextChar = state.line.charAt(state.pos);
-      if (
-        prev._kind !== "Symbol" &&
-        (!POKA_LEXER_SYMBOLS.includes(nextChar) || nextChar === "$" || nextChar === "=")
-      ) {
-        state.error = "Missing whitespace";
-        state.tail = state.line.slice(state.pos);
-        break;
-      }
+    if (pokaLexerCheckMissingWhitespace(state, consumed)) {
+      break;
     }
   }
   if (!state.error && !pokaLexerIsEol(state)) {
