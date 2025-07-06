@@ -118,7 +118,7 @@ POKA_WORDS4["equals"] = {
     '"a" "a" equals',
     "[True, False] [True, False] equals all",
     "[False, True] [True, False] equals all False equals",
-    '[:"a" 1] [:"a" 1] equals',
+    '["a" 1 entry] ["a" 1 entry] equals',
   ],
   fun: pokaWordEquals,
 };
@@ -1132,8 +1132,8 @@ POKA_WORDS4["unequals"] = {
     "[1, 2] [1, 3] unequals [False, True] equals all",
     "[True, 1] [True, 1] unequals False equals",
     "[True, 1] [True, 2] unequals True equals",
-    '[:"a" 1] [:"a" 1] unequals False equals',
-    '[:"a" 1] [:"a" 2] unequals True equals',
+    '["a" 1 entry] ["a" 1 entry] unequals False equals',
+    '["a" 1 entry] ["a" 2 entry] unequals True equals',
   ],
   fun: pokaWordUnequals,
 };
@@ -1210,7 +1210,7 @@ POKA_WORDS4["spread"] = {
   doc: [
     "[1, 1] spread equals",
     '"a b" " " split spread "b" equals',
-    '[] :"a" 1 set spread show ":a 1" equals',
+    '[] "a" 1 entry set spread show ":a 1" equals',
   ],
   fun: pokaWordSpread,
 };
@@ -1265,8 +1265,8 @@ POKA_WORDS4["show"] = {
     '[1, 2] 2 windows show "[\n  [1.00, 2.00, ],\n]" equals',
     '"a" "(a)" match show "[\n  [a, ],\n]" equals False equals',
     '[1, 2] show "[1, 2]" equals',
-    ':"a" 1 show ":a 1" equals',
-    '[] :"a" 1 set show "[:a 1]" equals',
+    '"a" 1 entry show ":a 1" equals',
+    '[] "a" 1 entry set show "[:a 1]" equals',
   ],
   fun: pokaWordShow,
 };
@@ -1365,8 +1365,8 @@ function pokaWordEntry(stack: PokaValue[]): void {
 
 POKA_WORDS4["entry"] = {
   doc: [
-    '[] "a" 1 entry set [] :"a" 1 set equals',
-    '"75,47,61,53,29" "," split dup enumerate entry [:"75" 0, :"47" 1, :"61" 2, :"53" 3, :"29" 4] equals',
+    '[] "a" 1 entry set [] "a" 1 entry set equals',
+    '"75,47,61,53,29" "," split dup enumerate entry ["75" 0 entry, "47" 1 entry, "61" 2 entry, "53" 3 entry, "29" 4 entry] equals',
   ],
   fun: pokaWordEntry,
 };
@@ -1402,7 +1402,7 @@ function pokaWordSet(stack: PokaValue[]): void {
 }
 
 POKA_WORDS4["set"] = {
-  doc: ['[] :"a" 1 set "a" get 1 equals'],
+  doc: ['[] "a" 1 entry set "a" get 1 equals'],
   fun: pokaWordSet,
 };
 
@@ -1445,9 +1445,9 @@ function pokaWordGet(stack: PokaValue[]): void {
 
 POKA_WORDS4["get"] = {
   doc: [
-    '[:"a" 1] "a" get 1 equals',
-    '[:"a" 1, :"b" 2, :"c" 3] ["a", "b", "c"] get [1, 2, 3] equals all',
-    '[:"a" 1, :"b" 2, :"c" 3] [["a", "b", "c"], ["c", "b", "a"]] get [[1, 2, 3], [3, 2, 1]] equals all',
+    '["a" 1 entry] "a" get 1 equals',
+    '["a" 1 entry, "b" 2 entry, "c" 3 entry] ["a", "b", "c"] get [1, 2, 3] equals all',
+    '["a" 1 entry, "b" 2 entry, "c" 3 entry] [["a", "b", "c"], ["c", "b", "a"]] get [[1, 2, 3], [3, 2, 1]] equals all',
   ],
   fun: pokaWordGet,
 };
@@ -1479,8 +1479,8 @@ function pokaGetTry(stack: PokaValue[]): void {
 
 POKA_WORDS4["getTry"] = {
   doc: [
-    '[:"a" 1] ["b"] getTry [] equals',
-    '[:"a" 1, :"b" 2] ["b", "c"] getTry [2] equals all',
+    '["a" 1 entry] ["b"] getTry [] equals',
+    '["a" 1 entry, "b" 2 entry] ["b", "c"] getTry [2] equals all',
   ],
   fun: pokaGetTry,
 };
@@ -1516,7 +1516,7 @@ function pokaWordDel(stack: PokaValue[]): void {
 }
 
 POKA_WORDS4["del"] = {
-  doc: ['[:"a" 1] "a" del [] equals'],
+  doc: ['["a" 1 entry] "a" del [] equals'],
   fun: pokaWordDel,
 };
 
@@ -1558,9 +1558,9 @@ function pokaWordContains(stack: PokaValue[]): void {
 
 POKA_WORDS4["contains"] = {
   doc: [
-    '[:"a" 1] "a" contains True equals',
-    '[:"a" 1] ["a", "b"] contains [True, False] equals all',
-    '[:"a" 1] [["a", "b"], ["b", "a"]] contains [[True, False], [False, True]] equals all',
+    '["a" 1 entry] "a" contains True equals',
+    '["a" 1 entry] ["a", "b"] contains [True, False] equals all',
+    '["a" 1 entry] [["a", "b"], ["b", "a"]] contains [[True, False], [False, True]] equals all',
   ],
   fun: pokaWordContains,
 };

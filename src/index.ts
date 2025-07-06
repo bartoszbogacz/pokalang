@@ -417,78 +417,6 @@ function consumeIdentifer(state: InterpreterState): void {
   }
 }
 
-function peekRecordEntry(state: InterpreterState): boolean {
-  const c = state.line.charAt(state.pos);
-  return c === ":";
-}
-
-function consumeRecordEntry(state: InterpreterState): void {
-  if (peekRecordEntry(state)) {
-    state.pos++;
-  } else {
-    throw "Expected Key";
-  }
-
-  /*
-  const start = state.pos;
-
-  while (true) {
-    const c = state.line.charAt(state.pos);
-    if (
-      (c >= "a" && c <= "z") ||
-      (c >= "A" && c <= "Z") ||
-      (c >= "0" && c <= "9")
-    ) {
-      state.pos++;
-    } else {
-      break;
-    }
-  }
-
-  if (start === state.pos) {
-    throw "Expected Key";
-  }
-
-  const token = state.line.slice(start, state.pos);
-  */
-
-  // const origStack1 = state.stack;
-  // state.stack = origStack1.slice();
-
-  consumeExpression(state);
-
-  const key = state.stack.pop();
-  if (key === undefined) {
-    throw "Stack underflow";
-  }
-  if (key._type !== "ScalarString") {
-    throw "Entry key must be string";
-  }
-
-  // state.stack = origStack1;
-
-  /*
-  if (peekWhitespace(state)) {
-    consumeWhitespace(state);
-  } else {
-    throw "Expected Whitespace";
-  }
-  */
-
-  // const origStack2 = state.stack;
-  // state.stack = origStack2.slice();
-
-  consumeExpression(state);
-
-  const value = state.stack.pop();
-  if (value === undefined) {
-    throw "Stack underflow";
-  }
-
-  // state.stack = origStack2;
-
-  state.stack.push({ _type: "RecordEntry", key: key.value, value: value });
-}
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {
   for (let i = 0; i < literal.length; i++) {
@@ -535,8 +463,6 @@ function consumeExpression(state: InterpreterState): void {
     consumeScope(state);
   } else if (peekList(state)) {
     consumeList(state);
-  } else if (peekRecordEntry(state)) {
-    consumeRecordEntry(state);
   } else {
     throw "Expected expression";
   }
