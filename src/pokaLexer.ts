@@ -44,11 +44,13 @@ function pokaLexerIsDigit(c: string): boolean {
   return c >= "0" && c <= "9";
 }
 
-function pokaLexerIsLower(c: string): boolean {
+function pokaLexerIsIdentifier(state: PokaLexerState): boolean {
+  const c = state.line.charAt(state.pos);
   return c >= "a" && c <= "z";
 }
 
-function pokaLexerIsUpper(c: string): boolean {
+function pokaLexerIsForm(state: PokaLexerState): boolean {
+  const c = state.line.charAt(state.pos);
   return c >= "A" && c <= "Z";
 }
 
@@ -68,10 +70,18 @@ function pokaLexerIsStringStart(state: PokaLexerState): boolean {
   return state.line.charAt(state.pos) === '"';
 }
 
-function pokaLexerConsumeWhitespace(state: PokaLexerState): void {
-  while (state.line.charAt(state.pos) === " ") {
-    state.pos++;
+function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
+  let count = 0;
+  while (true) {
+    const c = state.line.charAt(state.pos);
+    if (c === " " || c === "\n" || c === "\t") {
+      state.pos++;
+      count++;
+    } else {
+      break;
+    }
   }
+  return count;
 }
 
 function pokaLexerConsumeSymbol(state: PokaLexerState): void {
@@ -121,8 +131,8 @@ function pokaLexerConsumeIdentifier(state: PokaLexerState): void {
   const start = state.pos;
   state.pos++;
   while (
-    pokaLexerIsLower(state.line.charAt(state.pos)) ||
-    pokaLexerIsUpper(state.line.charAt(state.pos)) ||
+    pokaLexerIsIdentifier(state) ||
+    pokaLexerIsForm(state) ||
     pokaLexerIsDigit(state.line.charAt(state.pos))
   ) {
     state.pos++;
@@ -136,7 +146,7 @@ function pokaLexerConsumeIdentifier(state: PokaLexerState): void {
 function pokaLexerConsumeForm(state: PokaLexerState): void {
   const start = state.pos;
   state.pos++;
-  while (pokaLexerIsUpper(state.line.charAt(state.pos))) {
+  while (pokaLexerIsForm(state)) {
     state.pos++;
   }
   state.lexemes.push({
@@ -152,23 +162,34 @@ function pokaLexerLex(line: string): PokaLexerState {
     if (pokaLexerIsEol(state)) {
       break;
     }
-    const c = state.line.charAt(state.pos);
     if (pokaLexerIsNumberStart(state)) {
       pokaLexerConsumeNumber(state);
     } else if (pokaLexerIsStringStart(state)) {
       pokaLexerConsumeString(state);
-    } else if (pokaLexerIsLower(c)) {
+    } else if (pokaLexerIsIdentifier(state)) {
       pokaLexerConsumeIdentifier(state);
-    } else if (pokaLexerIsUpper(c)) {
+    } else if (pokaLexerIsForm(state)) {
       pokaLexerConsumeForm(state);
-    } else if (POKA_LEXER_SYMBOLS.includes(c)) {
+    } else if (POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos))) {
       pokaLexerConsumeSymbol(state);
     } else {
       state.error = "Unknown token";
       state.tail = state.line.slice(state.pos);
       break;
     }
-    pokaLexerConsumeWhitespace(state);
+    const consumed = pokaLexerConsumeWhitespace(state);
+    if (!pokaLexerIsEol(state) && consumed === 0) {
+      const prev = state.lexemes[state.lexemes.length - 1]!;
+      const nextChar = state.line.charAt(state.pos);
+      if (
+        prev._kind !== "Symbol" &&
+        (!POKA_LEXER_SYMBOLS.includes(nextChar) || nextChar === "$" || nextChar === "=")
+      ) {
+        state.error = "Missing whitespace";
+        state.tail = state.line.slice(state.pos);
+        break;
+      }
+    }
   }
   if (!state.error && !pokaLexerIsEol(state)) {
     state.tail = state.line.slice(state.pos);
@@ -221,6 +242,40 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
       { _kind: "Identifier", text: "mul" },
     ],
   ],
+  [
+    "1   2   add",
+    [
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
+      { _kind: "Identifier", text: "add" },
+    ],
+  ],
+  [
+    "1\n 2 add",
+    [
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
+      { _kind: "Identifier", text: "add" },
+    ],
+  ],
+  [
+    "1\t\n 2\tadd",
+    [
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
+      { _kind: "Identifier", text: "add" },
+    ],
+  ],
+];
+
+const POKA_LEXER_NEGATIVE_TESTS: string[] = [
+  "1add",
+  "1 2add",
+  "FORx EACH",
+  "-1.5mul",
+  "1.5$a",
+  '"hi"=a',
+  '"hi"$a',
 ];
 
 function pokaLexerTestsRun(): string {
@@ -241,6 +296,18 @@ function pokaLexerTestsRun(): string {
       }
       if (!ok) {
         throw "Unexpected lexemes: " + JSON.stringify(state.lexemes);
+      }
+      result.push("OK   | " + text.replace("\n", "\\n"));
+    } catch (exc) {
+      result.push("FAIL | " + text.replace("\n", "\\n"));
+      result.push(" EXC | " + exc);
+    }
+  }
+  for (const text of POKA_LEXER_NEGATIVE_TESTS) {
+    try {
+      const state = pokaLexerLex(text);
+      if (state.error === undefined && state.tail === undefined) {
+        throw "Unexpected success";
       }
       result.push("OK   | " + text.replace("\n", "\\n"));
     } catch (exc) {
