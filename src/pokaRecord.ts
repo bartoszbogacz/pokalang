@@ -42,6 +42,14 @@ function pokaRecordEqualsPokaRecord(
   return pokaScalarBooleanMake(true);
 }
 
+function pokaRecordUnequalsPokaRecord(
+  a: PokaRecord,
+  b: PokaRecord,
+): PokaScalarBoolean {
+  const eq = pokaRecordEqualsPokaRecord(a, b);
+  return pokaScalarBooleanMake(!eq.value);
+}
+
 function pokaRecordGetScalarString(
   rec: PokaRecord,
   key: PokaScalarString,
