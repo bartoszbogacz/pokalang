@@ -9,6 +9,7 @@ const POKA_TESTS = [
 
 function pokaTestsRun(): string {
   const result: string[] = [];
+  result.push(...pokaLexerTestsRun().split("\n"));
   for (const expr of POKA_TESTS) {
     try {
       const state = pokaInterpreterMake(expr, {});
