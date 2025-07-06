@@ -1109,8 +1109,10 @@ function pokaWordSpread(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  if (arg1._type === "List") {
-    for (const elem of pokaListSpread(arg1)) {
+  const asList = pokaTryToList(arg1);
+
+  if (asList._type === "List") {
+    for (const elem of pokaListSpread(asList)) {
       stack.push(elem);
     }
     return;
@@ -1120,7 +1122,11 @@ function pokaWordSpread(stack: PokaValue[]): void {
 }
 
 POKA_WORDS4["spread"] = {
-  doc: ["[1, 1] spread equals"],
+  doc: [
+    "[1, 1] spread equals",
+    '"a b" " " split spread "b" equals',
+    '[] :"a" 1 set spread show ":a 1" equals',
+  ],
   fun: pokaWordSpread,
 };
 
