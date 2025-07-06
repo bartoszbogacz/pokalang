@@ -286,39 +286,6 @@ function consumeString(state: InterpreterState): void {
   state.stack.push(pokaScalarStringMake(value));
 }
 
-function peekScope(state: InterpreterState): boolean {
-  return peekLiteral(state, "{");
-}
-
-function consumeScope(state: InterpreterState): void {
-  const values: PokaValue[] = [];
-  const origStack = state.stack;
-
-  consumeLiteral(state, "{");
-  while (!peekLiteral(state, "}") && !peekEOL(state)) {
-    state.stack = origStack.slice();
-    while (!peekLiteral(state, "}") && !peekEOL(state)) {
-      if (peekLiteral(state, ",")) {
-        consumeLiteral(state, ",");
-        break;
-      }
-      consumeExpression(state);
-    }
-    const value = state.stack.pop();
-    if (value === undefined) {
-      throw "Stack empty in fork expression";
-    } else {
-      values.push(value);
-    }
-  }
-  consumeLiteral(state, "}");
-
-  state.stack = origStack;
-
-  for (const value of values) {
-    state.stack.push(value);
-  }
-}
 
 function peekList(state: InterpreterState): boolean {
   return peekLiteral(state, "[");
@@ -459,8 +426,6 @@ function consumeExpression(state: InterpreterState): void {
     consumeNumber(state);
   } else if (peekString(state)) {
     consumeString(state);
-  } else if (peekScope(state)) {
-    consumeScope(state);
   } else if (peekList(state)) {
     consumeList(state);
   } else {

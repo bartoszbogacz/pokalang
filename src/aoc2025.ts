@@ -37,7 +37,7 @@ const AOC2025: {
     input_name: "aoc2025day3a",
     answer: 161,
     program: [
-      '$aoc2025day3a "mul\\((\\d+),(\\d+)\\)" match {0 cols toNumber, 1 cols toNumber} mul sum',
+      '$aoc2025day3a "mul\\((\\d+),(\\d+)\\)" match [0 cols toNumber, 1 cols toNumber] spread mul sum',
     ],
   },
   day4a: {
