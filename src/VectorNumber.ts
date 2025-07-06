@@ -155,3 +155,51 @@ function pokaVectorNumberWindows(
 
   return pokaMatrixNumberMake(countRows, size, values);
 }
+
+function pokaVectorNumberSliceScalarNumber(
+  a: PokaVectorNumber,
+  b: PokaScalarNumber,
+): PokaScalarNumber {
+  let index = Math.trunc(b.value);
+  if (index < 0) {
+    index = a.values.length + index;
+  }
+  if (index < 0 || index >= a.values.length) {
+    throw new Error("Index out of range");
+  }
+  return pokaScalarNumberMake(a.values[index] as number);
+}
+
+function pokaVectorNumberSliceVectorNumber(
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorNumber {
+  const values: number[] = [];
+  for (let i = 0; i < b.values.length; i++) {
+    let index = Math.trunc(b.values[i] as number);
+    if (index < 0) {
+      index = a.values.length + index;
+    }
+    if (index < 0 || index >= a.values.length) {
+      throw new Error("Index out of range");
+    }
+    values.push(a.values[index] as number);
+  }
+  return pokaVectorNumberMake(values);
+}
+
+function pokaVectorNumberSliceVectorBoolean(
+  a: PokaVectorNumber,
+  b: PokaVectorBoolean,
+): PokaVectorNumber {
+  if (a.values.length !== b.values.length) {
+    throw new Error("Shape mismatch");
+  }
+  const values: number[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    if (b.values[i]) {
+      values.push(a.values[i] as number);
+    }
+  }
+  return pokaVectorNumberMake(values);
+}
