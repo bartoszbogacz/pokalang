@@ -72,6 +72,20 @@ function pokaVectorNumberMulVectorNumber(
   return pokaVectorNumberMake(newVals);
 }
 
+function pokaVectorNumberGreaterVectorNumber(
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorBoolean {
+  if (a.values.length !== b.values.length) {
+    throw new Error("Shapes do not match.");
+  }
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push((a.values[i] as number) < (b.values[i] as number));
+  }
+  return { _type: "PokaVectorBoolean", values: r };
+}
+
 function pokaVectorNumberEnumerate(a: PokaVectorNumber): PokaVectorNumber {
   const values: number[] = [];
   for (let i = 0; i < a.values.length; i++) {
