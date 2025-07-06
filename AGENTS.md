@@ -36,8 +36,7 @@ is to make the life easier for the Javascript optimizer and
 the long-term goal is to allow easy translation to WASM where 
 many conveniences, such as lambdas, are not available trivially.
 
-## Final notes
+## Testing
 
-I sometimes forget what already exists. Always first search if
-a poka word or some functionality already exists and can be
-re-used.
+- Run `npx tsc` and ensure the return code is 0.
+- Run `node test` and ensure the return code is 0.
