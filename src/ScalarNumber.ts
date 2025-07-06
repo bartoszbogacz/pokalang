@@ -45,3 +45,10 @@ function pokaScalarNumberUnequalsScalarNumber(
 ): PokaScalarBoolean {
   return pokaScalarBooleanMake(a.value !== b.value);
 }
+
+function pokaScalarNumberGreaterScalarNumber(
+  a: PokaScalarNumber,
+  b: PokaScalarNumber,
+): PokaScalarBoolean {
+  return pokaScalarBooleanMake(a.value < b.value);
+}

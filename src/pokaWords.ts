@@ -607,6 +607,47 @@ POKA_WORDS4["less"] = {
   fun: pokaWordLess,
 };
 
+function pokaWordGreater(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberGreaterScalarNumber(a, b));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberGreaterVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberGreaterMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["greater"] = {
+  doc: [
+    "1 2 greater True equals",
+    "[1, 2] [2, 3] greater all",
+    "[[1, 2], [3, 4]] [[5, 6], [7, 8]] greater all",
+  ],
+  fun: pokaWordGreater,
+};
+
 function pokaWordEqualsRows(stack: PokaValue[]): void {
   const a = stack.pop();
 
