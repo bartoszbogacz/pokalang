@@ -183,6 +183,25 @@ function pokaMatrixStringEqualsMatrixString(
   };
 }
 
+function pokaMatrixStringUnequalsMatrixString(
+  a: PokaMatrixString,
+  b: PokaMatrixString,
+): PokaMatrixBoolean {
+  if (a.countRows !== b.countRows || a.countCols !== b.countCols) {
+    throw "Shape mismatch";
+  }
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push(a.values[i] !== b.values[i]);
+  }
+  return {
+    _type: "PokaMatrixBoolean",
+    countRows: a.countRows,
+    countCols: a.countCols,
+    values: r,
+  };
+}
+
 function pokaMatrixStringToNumber(a: PokaMatrixString): PokaMatrixNumber {
   return pokaMatrixNumberMake(
     a.countRows,

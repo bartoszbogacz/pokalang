@@ -18,6 +18,17 @@ function pokaVectorNumberEqualsVectorNumber(
   return { _type: "PokaVectorBoolean", values: r };
 }
 
+function pokaVectorNumberUnequalsVectorNumber(
+  a: PokaVectorNumber,
+  b: PokaVectorNumber,
+): PokaVectorBoolean {
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push(a.values[i] !== b.values[i]);
+  }
+  return { _type: "PokaVectorBoolean", values: r };
+}
+
 function pokaVectorNumberSubVectorNumber(
   a: PokaVectorNumber,
   b: PokaVectorNumber,

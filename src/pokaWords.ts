@@ -1066,25 +1066,23 @@ function pokaWordUnequals(stack: PokaValue[]): void {
     return;
   }
 
-  /*
-    const av = pokaTryToVector(a);
-    const bv = pokaTryToVector(b);
-  
-    if (av._type === "PokaVectorBoolean" && bv._type === "PokaVectorBoolean") {
-      stack.push(pokaVectorBooleanUnequalsVectorBoolean(av, bv));
-      return;
-    }
-  
-    if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
-      stack.push(pokaVectorNumberUnequalsVectorNumber(av, bv));
-      return;
-    }
-  
-    if (av._type === "PokaVectorString" && bv._type === "PokaVectorString") {
-      stack.push(pokaVectorStringUnequalsVectorString(av, bv));
-      return;
-    }
-    */
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorBoolean" && bv._type === "PokaVectorBoolean") {
+    stack.push(pokaVectorBooleanUnequalsVectorBoolean(av, bv));
+    return;
+  }
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberUnequalsVectorNumber(av, bv));
+    return;
+  }
+
+  if (av._type === "PokaVectorString" && bv._type === "PokaVectorString") {
+    stack.push(pokaVectorStringUnequalsVectorString(av, bv));
+    return;
+  }
 
   const am = pokaTryToMatrix(a);
 
@@ -1095,32 +1093,47 @@ function pokaWordUnequals(stack: PokaValue[]): void {
 
   const bm = pokaTryToMatrix(b);
 
-  /*
-    if (am._type === "PokaMatrixBoolean" && bm._type === "PokaMatrixBoolean") {
-      stack.push(pokaMatrixBooleanUnequalsMatrixBoolean(am, bm));
-      return;
-    }
-    */
+  if (am._type === "PokaMatrixBoolean" && bm._type === "PokaMatrixBoolean") {
+    stack.push(pokaMatrixBooleanUnequalsMatrixBoolean(am, bm));
+    return;
+  }
 
   if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
     stack.push(pokaMatrixNumberUnequalsMatrixNumber(am, bm));
     return;
   }
 
-  /*
-    if (am._type === "PokaMatrixString" && bm._type === "PokaMatrixString") {
-      stack.push(pokaMatrixStringUnequalsMatrixString(am, bm));
-      return;
-    }
-    */
+  if (am._type === "PokaMatrixString" && bm._type === "PokaMatrixString") {
+    stack.push(pokaMatrixStringUnequalsMatrixString(am, bm));
+    return;
+  }
+
+  const ar = pokaTryToRecord(a);
+  const br = pokaTryToRecord(b);
+
+  if (ar._type === "PokaRecord" && br._type === "PokaRecord") {
+    stack.push(pokaRecordUnequalsPokaRecord(ar, br));
+    return;
+  }
+
+  if (a._type === "List" && b._type === "List") {
+    stack.push(pokaListUnequalsPokaList(a, b));
+    return;
+  }
 
   throw "No implementation";
 }
 
 POKA_WORDS4["unequals"] = {
   doc: [
+    "1 2 unequals True equals",
     "[[1, 2]] [[2, 2]] unequals [[True, False]] equals all",
     "[[1, 2]] 2 unequals [[True, False]] equals all",
+    "[1, 2] [1, 3] unequals [False, True] equals all",
+    "[True, 1] [True, 1] unequals False equals",
+    "[True, 1] [True, 2] unequals True equals",
+    '[:"a" 1] [:"a" 1] unequals False equals',
+    '[:"a" 1] [:"a" 2] unequals True equals',
   ],
   fun: pokaWordUnequals,
 };

@@ -28,6 +28,20 @@ function pokaVectorStringEqualsVectorString(
   return { _type: "PokaVectorBoolean", values: r };
 }
 
+function pokaVectorStringUnequalsVectorString(
+  a: PokaVectorString,
+  b: PokaVectorString,
+): PokaVectorBoolean {
+  if (a.values.length !== b.values.length) {
+    throw "Shape mismatch";
+  }
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push(a.values[i] !== b.values[i]);
+  }
+  return { _type: "PokaVectorBoolean", values: r };
+}
+
 function pokaVectorStringShow(a: PokaVectorString): string {
   return "[" + a.values.map((x) => '"' + x + '"').join(", ") + "]";
 }

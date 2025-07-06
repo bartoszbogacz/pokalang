@@ -32,6 +32,11 @@ function pokaListEqualsPokaList(a: PokaList, b: PokaList): PokaScalarBoolean {
   return pokaScalarBooleanMake(true);
 }
 
+function pokaListUnequalsPokaList(a: PokaList, b: PokaList): PokaScalarBoolean {
+  const eq = pokaListEqualsPokaList(a, b);
+  return pokaScalarBooleanMake(!eq.value);
+}
+
 function pokaListEnumerate(a: PokaList): PokaVectorNumber {
   const values: number[] = [];
   for (let i = 0; i < a.value.length; i++) {

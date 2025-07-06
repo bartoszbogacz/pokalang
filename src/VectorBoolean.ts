@@ -26,6 +26,17 @@ function pokaVectorBooleanEqualsVectorBoolean(
   return pokaVectorBooleanMake(r);
 }
 
+function pokaVectorBooleanUnequalsVectorBoolean(
+  a: PokaVectorBoolean,
+  b: PokaVectorBoolean,
+): PokaVectorBoolean {
+  const r: boolean[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    r.push(a.values[i] !== b.values[i]);
+  }
+  return pokaVectorBooleanMake(r);
+}
+
 function pokaVectorBooleanAndVectorBoolean(
   a: PokaVectorBoolean,
   b: PokaVectorBoolean,
