@@ -9,18 +9,13 @@ interface PokaLexemeString {
 }
 
 
-interface PokaLexemeWordIdentifier {
-  _kind: "WordIdentifier";
+interface PokaLexemePlainIdentifier {
+  _kind: "PlainIdentifier";
   text: string;
 }
 
-interface PokaLexemeReadIdentifier {
-  _kind: "ReadIdentifier";
-  text: string;
-}
-
-interface PokaLexemeWriteIdentifier {
-  _kind: "WriteIdentifier";
+interface PokaLexemeSigilIdentifier {
+  _kind: "SigilIdentifier";
   text: string;
 }
 
@@ -39,9 +34,8 @@ const POKA_LEXER_SYMBOLS = "[]{}(),";
 type PokaLexeme =
   | PokaLexemeNumber
   | PokaLexemeString
-  | PokaLexemeWordIdentifier
-  | PokaLexemeReadIdentifier
-  | PokaLexemeWriteIdentifier
+  | PokaLexemePlainIdentifier
+  | PokaLexemeSigilIdentifier
   | PokaLexemeForm
   | PokaLexemeSymbol;
 
@@ -57,17 +51,14 @@ function pokaLexerIsDigit(c: string): boolean {
   return c >= "0" && c <= "9";
 }
 
-function pokaLexerIsWordIdentifier(state: PokaLexerState): boolean {
+function pokaLexerIsPlainIdentifier(state: PokaLexerState): boolean {
   const c = state.line.charAt(state.pos);
   return c >= "a" && c <= "z";
 }
 
-function pokaLexerIsReadIdentifierStart(state: PokaLexerState): boolean {
-  return state.line.charAt(state.pos) === "$";
-}
-
-function pokaLexerIsWriteIdentifierStart(state: PokaLexerState): boolean {
-  return state.line.charAt(state.pos) === "=";
+function pokaLexerIsSigilIdentifierStart(state: PokaLexerState): boolean {
+  const c = state.line.charAt(state.pos);
+  return c === "$" || c === "=";
 }
 
 function pokaLexerIsForm(state: PokaLexerState): boolean {
@@ -154,50 +145,34 @@ function pokaLexerConsumeString(state: PokaLexerState): void {
   });
 }
 
-function pokaLexerConsumeWordIdentifier(state: PokaLexerState): void {
+function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
   const start = state.pos;
   state.pos++;
   while (
-    pokaLexerIsWordIdentifier(state) ||
+    pokaLexerIsPlainIdentifier(state) ||
     pokaLexerIsForm(state) ||
     pokaLexerIsDigit(state.line.charAt(state.pos))
   ) {
     state.pos++;
   }
   state.lexemes.push({
-    _kind: "WordIdentifier",
+    _kind: "PlainIdentifier",
     text: state.line.slice(start, state.pos),
   });
 }
 
-function pokaLexerConsumeReadIdentifier(state: PokaLexerState): void {
+function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
   const start = state.pos;
-  state.pos++; // consume '$'
+  state.pos++; // consume sigil
   while (
-    pokaLexerIsWordIdentifier(state) ||
+    pokaLexerIsPlainIdentifier(state) ||
     pokaLexerIsForm(state) ||
     pokaLexerIsDigit(state.line.charAt(state.pos))
   ) {
     state.pos++;
   }
   state.lexemes.push({
-    _kind: "ReadIdentifier",
-    text: state.line.slice(start, state.pos),
-  });
-}
-
-function pokaLexerConsumeWriteIdentifier(state: PokaLexerState): void {
-  const start = state.pos;
-  state.pos++; // consume '='
-  while (
-    pokaLexerIsWordIdentifier(state) ||
-    pokaLexerIsForm(state) ||
-    pokaLexerIsDigit(state.line.charAt(state.pos))
-  ) {
-    state.pos++;
-  }
-  state.lexemes.push({
-    _kind: "WriteIdentifier",
+    _kind: "SigilIdentifier",
     text: state.line.slice(start, state.pos),
   });
 }
@@ -243,12 +218,10 @@ function pokaLexerLex(line: string): PokaLexerState {
       pokaLexerConsumeNumber(state);
     } else if (pokaLexerIsStringStart(state)) {
       pokaLexerConsumeString(state);
-    } else if (pokaLexerIsReadIdentifierStart(state)) {
-      pokaLexerConsumeReadIdentifier(state);
-    } else if (pokaLexerIsWriteIdentifierStart(state)) {
-      pokaLexerConsumeWriteIdentifier(state);
-    } else if (pokaLexerIsWordIdentifier(state)) {
-      pokaLexerConsumeWordIdentifier(state);
+    } else if (pokaLexerIsSigilIdentifierStart(state)) {
+      pokaLexerConsumeSigilIdentifier(state);
+    } else if (pokaLexerIsPlainIdentifier(state)) {
+      pokaLexerConsumePlainIdentifier(state);
     } else if (pokaLexerIsForm(state)) {
       pokaLexerConsumeForm(state);
     } else if (pokaLexerIsSymbol(state)) {
@@ -275,7 +248,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "WordIdentifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
@@ -292,15 +265,15 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     '"hi" =a $a',
     [
       { _kind: "String", text: "hi" },
-      { _kind: "WriteIdentifier", text: "=a" },
-      { _kind: "ReadIdentifier", text: "$a" },
+      { _kind: "SigilIdentifier", text: "=a" },
+      { _kind: "SigilIdentifier", text: "$a" },
     ],
   ],
   [
     "FOR x EACH",
     [
       { _kind: "Form", text: "FOR" },
-      { _kind: "WordIdentifier", text: "x" },
+      { _kind: "PlainIdentifier", text: "x" },
       { _kind: "Form", text: "EACH" },
     ],
   ],
@@ -309,7 +282,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", text: "-1.5" },
       { _kind: "Number", text: "3.2" },
-      { _kind: "WordIdentifier", text: "mul" },
+      { _kind: "PlainIdentifier", text: "mul" },
     ],
   ],
   [
@@ -317,7 +290,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "WordIdentifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
@@ -325,7 +298,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "WordIdentifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
@@ -333,7 +306,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "WordIdentifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
 ];
