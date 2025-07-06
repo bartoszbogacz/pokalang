@@ -641,11 +641,134 @@ function pokaWordGreater(stack: PokaValue[]): void {
 
 POKA_WORDS4["greater"] = {
   doc: [
-    "1 2 greater True equals",
-    "[1, 2] [2, 3] greater all",
-    "[[1, 2], [3, 4]] [[5, 6], [7, 8]] greater all",
+    "2 1 greater True equals",
+    "[2, 3] [1, 2] greater all",
+    "[[5, 6], [7, 8]] [[1, 2], [3, 4]] greater all",
   ],
   fun: pokaWordGreater,
+};
+
+function pokaWordGreaterEquals(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberGreaterEqualsScalarNumber(a, b));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberGreaterEqualsVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberGreaterEqualsMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["greaterEquals"] = {
+  doc: [
+    "2 2 greaterEquals True equals",
+    "[2, 3] [2, 2] greaterEquals all",
+    "[[1]] [[1]] greaterEquals all",
+  ],
+  fun: pokaWordGreaterEquals,
+};
+
+function pokaWordLesser(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberLesserScalarNumber(a, b));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberLesserVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberLesserMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["lesser"] = {
+  doc: [
+    "1 2 lesser True equals",
+    "[1, 2] [2, 3] lesser all",
+    "[[1]] [[5]] lesser all",
+  ],
+  fun: pokaWordLesser,
+};
+
+function pokaWordLesserEquals(stack: PokaValue[]): void {
+  const b = stack.pop();
+  const a = stack.pop();
+
+  if (a === undefined || b === undefined) {
+    throw "Stack underflow";
+  }
+
+  if (a._type === "ScalarNumber" && b._type === "ScalarNumber") {
+    stack.push(pokaScalarNumberLesserEqualsScalarNumber(a, b));
+    return;
+  }
+
+  const av = pokaTryToVector(a);
+  const bv = pokaTryToVector(b);
+
+  if (av._type === "PokaVectorNumber" && bv._type === "PokaVectorNumber") {
+    stack.push(pokaVectorNumberLesserEqualsVectorNumber(av, bv));
+    return;
+  }
+
+  const am = pokaTryToMatrix(a);
+  const bm = pokaTryToMatrix(b);
+
+  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+    stack.push(pokaMatrixNumberLesserEqualsMatrixNumber(am, bm));
+    return;
+  }
+
+  throw "No implementation";
+}
+
+POKA_WORDS4["lesserEquals"] = {
+  doc: [
+    "1 1 lesserEquals True equals",
+    "[1, 2] [1, 2] lesserEquals all",
+    "[[1]] [[1]] lesserEquals all",
+  ],
+  fun: pokaWordLesserEquals,
 };
 
 function pokaWordEqualsRows(stack: PokaValue[]): void {
