@@ -832,26 +832,93 @@ function pokaWordSlice(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
+  if (a._type === "List") {
+    if (b._type === "ScalarNumber") {
+      stack.push(pokaListSliceScalarNumber(a, b));
+      return;
+    }
+
+    const bv = pokaTryToVector(b);
+
+    if (bv._type === "PokaVectorNumber") {
+      stack.push(pokaListSliceVectorNumber(a, bv));
+      return;
+    }
+
+    if (bv._type === "PokaVectorBoolean") {
+      stack.push(pokaListSliceVectorBoolean(a, bv));
+      return;
+    }
+  }
+
+  const av = pokaTryToVector(a);
+
+  if (av._type === "PokaVectorBoolean") {
+    if (b._type === "ScalarNumber") {
+      stack.push(pokaVectorBooleanSliceScalarNumber(av, b));
+      return;
+    }
+    const bv = pokaTryToVector(b);
+    if (bv._type === "PokaVectorNumber") {
+      stack.push(pokaVectorBooleanSliceVectorNumber(av, bv));
+      return;
+    }
+    if (bv._type === "PokaVectorBoolean") {
+      stack.push(pokaVectorBooleanSliceVectorBoolean(av, bv));
+      return;
+    }
+  }
+
+  if (av._type === "PokaVectorNumber") {
+    if (b._type === "ScalarNumber") {
+      stack.push(pokaVectorNumberSliceScalarNumber(av, b));
+      return;
+    }
+    const bv = pokaTryToVector(b);
+    if (bv._type === "PokaVectorNumber") {
+      stack.push(pokaVectorNumberSliceVectorNumber(av, bv));
+      return;
+    }
+    if (bv._type === "PokaVectorBoolean") {
+      stack.push(pokaVectorNumberSliceVectorBoolean(av, bv));
+      return;
+    }
+  }
+
+  if (av._type === "PokaVectorString") {
+    if (b._type === "ScalarNumber") {
+      stack.push(pokaVectorStringSliceScalarNumber(av, b));
+      return;
+    }
+    const bv = pokaTryToVector(b);
+    if (bv._type === "PokaVectorNumber") {
+      stack.push(pokaVectorStringSliceVectorNumber(av, bv));
+      return;
+    }
+    if (bv._type === "PokaVectorBoolean") {
+      stack.push(pokaVectorStringSliceVectorBoolean(av, bv));
+      return;
+    }
+  }
+
   const am = pokaTryToMatrix(a);
   const bv = pokaTryToVector(b);
 
-  if (bv._type !== "PokaVectorBoolean") {
-    throw "Slice mask must be PokaVectorBoolean";
-  }
+  if (bv._type === "PokaVectorBoolean") {
+    if (am._type === "PokaMatrixBoolean") {
+      stack.push(pokaMatrixBooleanSliceVectorBoolean(am, bv));
+      return;
+    }
 
-  if (am._type === "PokaMatrixBoolean") {
-    stack.push(pokaMatrixBooleanSliceVectorBoolean(am, bv));
-    return;
-  }
+    if (am._type === "PokaMatrixNumber") {
+      stack.push(pokaMatrixNumberSliceVectorBoolean(am, bv));
+      return;
+    }
 
-  if (am._type === "PokaMatrixNumber") {
-    stack.push(pokaMatrixNumberSliceVectorBoolean(am, bv));
-    return;
-  }
-
-  if (am._type === "PokaMatrixString") {
-    stack.push(pokaMatrixStringSliceVectorBoolean(am, bv));
-    return;
+    if (am._type === "PokaMatrixString") {
+      stack.push(pokaMatrixStringSliceVectorBoolean(am, bv));
+      return;
+    }
   }
 
   throw "No implementation";
@@ -862,7 +929,12 @@ POKA_WORDS4["slice"] = {
     "[[1, 2], [3, 4], [5, 6]] [True, False, True] slice [[1, 2], [5, 6]] equals all",
     "[[1, 2, 3], [4, 5, 6]] [False, True] slice [[4, 5, 6]] equals all",
     "[[True, False], [False, False], [True, True]] [True, False, True] slice [[True, False], [True, True]] equals all",
-    '[["a", "b"], ["c", "d"], ["e", "f"]] [False, True, True] slice [["c", "d"], ["e", "f"]] equals all',
+    '["a", "b", "c"] [0, 2] slice ["a", "c"] equals all',
+    '[1, 2] 0 slice 1 equals',
+    '[1, 2] [1, 0] slice [2, 1] equals all',
+    '[1, 2, 3] [True, False, True] slice [1, 3] equals all',
+    '[ ["a"], [2, 3], [4, 5, 6] ] 2 slice [4, 5, 6] equals all',
+    '[True, False] 1 slice False equals',
   ],
   fun: pokaWordSlice,
 };

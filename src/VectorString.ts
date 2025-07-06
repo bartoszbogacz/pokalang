@@ -63,3 +63,51 @@ function pokaVectorStringEnumerate(a: PokaVectorString): PokaVectorNumber {
   }
   return pokaVectorNumberMake(values);
 }
+
+function pokaVectorStringSliceScalarNumber(
+  a: PokaVectorString,
+  b: PokaScalarNumber,
+): PokaScalarString {
+  let index = Math.trunc(b.value);
+  if (index < 0) {
+    index = a.values.length + index;
+  }
+  if (index < 0 || index >= a.values.length) {
+    throw new Error("Index out of range");
+  }
+  return pokaScalarStringMake(a.values[index] as string);
+}
+
+function pokaVectorStringSliceVectorNumber(
+  a: PokaVectorString,
+  b: PokaVectorNumber,
+): PokaVectorString {
+  const values: string[] = [];
+  for (let i = 0; i < b.values.length; i++) {
+    let index = Math.trunc(b.values[i] as number);
+    if (index < 0) {
+      index = a.values.length + index;
+    }
+    if (index < 0 || index >= a.values.length) {
+      throw new Error("Index out of range");
+    }
+    values.push(a.values[index] as string);
+  }
+  return pokaVectorStringMake(values);
+}
+
+function pokaVectorStringSliceVectorBoolean(
+  a: PokaVectorString,
+  b: PokaVectorBoolean,
+): PokaVectorString {
+  if (a.values.length !== b.values.length) {
+    throw new Error("Shape mismatch");
+  }
+  const values: string[] = [];
+  for (let i = 0; i < a.values.length; i++) {
+    if (b.values[i]) {
+      values.push(a.values[i] as string);
+    }
+  }
+  return pokaVectorStringMake(values);
+}

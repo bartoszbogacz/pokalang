@@ -43,3 +43,60 @@ function pokaListEnumerate(a: PokaList): PokaVectorNumber {
 function pokaListSpread(a: PokaList): PokaValue[] {
   return a.value.slice();
 }
+
+function pokaListSliceScalarNumber(a: PokaList, b: PokaScalarNumber): PokaValue {
+  let index = Math.trunc(b.value);
+  if (index < 0) {
+    index = a.value.length + index;
+  }
+  if (index < 0 || index >= a.value.length) {
+    throw new Error("Index out of range");
+  }
+  const result = a.value[index];
+  if (result === undefined) {
+    throw new Error("Index out of bounds");
+  }
+  return result;
+}
+
+function pokaListSliceVectorNumber(
+  a: PokaList,
+  b: PokaVectorNumber,
+): PokaList {
+  const values: PokaValue[] = [];
+  for (let i = 0; i < b.values.length; i++) {
+    let index = Math.trunc(b.values[i] as number);
+    if (index < 0) {
+      index = a.value.length + index;
+    }
+    if (index < 0 || index >= a.value.length) {
+      throw new Error("Index out of range");
+    }
+    const elem = a.value[index];
+    if (elem === undefined) {
+      throw new Error("Index out of bounds");
+    }
+    values.push(elem);
+  }
+  return { _type: "List", value: values };
+}
+
+function pokaListSliceVectorBoolean(
+  a: PokaList,
+  b: PokaVectorBoolean,
+): PokaList {
+  if (b.values.length !== a.value.length) {
+    throw new Error("Shape mismatch");
+  }
+  const values: PokaValue[] = [];
+  for (let i = 0; i < a.value.length; i++) {
+    if (b.values[i]) {
+      const elem = a.value[i];
+      if (elem === undefined) {
+        throw new Error("Index out of bounds");
+      }
+      values.push(elem);
+    }
+  }
+  return { _type: "List", value: values };
+}
