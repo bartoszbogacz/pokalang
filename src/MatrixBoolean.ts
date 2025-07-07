@@ -65,6 +65,29 @@ function pokaVectorBooleanCat(values: PokaVectorBoolean[]): PokaMatrixBoolean {
   };
 }
 
+function pokaMatrixBooleanFrom(value: PokaValue): PokaMatrixBoolean | null {
+  if (value._type === "PokaMatrixBoolean") {
+    return value;
+  }
+  if (value._type !== "List") {
+    return null;
+  }
+  if (value.value.length === 0) {
+    return null;
+  }
+
+  const vectors: PokaVectorBoolean[] = [];
+  for (const val of value.value) {
+    const coerced = val._type === "List" ? pokaTryToVector(val) : val;
+    if (coerced._type !== "PokaVectorBoolean") {
+      return null;
+    }
+    vectors.push(coerced);
+  }
+
+  return pokaVectorBooleanCat(vectors);
+}
+
 function pokaMatrixBooleanEqualsRows(a: PokaMatrixBoolean): PokaMatrixBoolean {
   if (a.countCols === 0) {
     throw new Error("No columns");

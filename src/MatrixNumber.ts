@@ -257,6 +257,29 @@ function pokaVectorNumberCat(values: PokaVectorNumber[]): PokaMatrixNumber {
   };
 }
 
+function pokaMatrixNumberFrom(value: PokaValue): PokaMatrixNumber | null {
+  if (value._type === "PokaMatrixNumber") {
+    return value;
+  }
+  if (value._type !== "List") {
+    return null;
+  }
+  if (value.value.length === 0) {
+    return null;
+  }
+
+  const vectors: PokaVectorNumber[] = [];
+  for (const val of value.value) {
+    const coerced = val._type === "List" ? pokaTryToVector(val) : val;
+    if (coerced._type !== "PokaVectorNumber") {
+      return null;
+    }
+    vectors.push(coerced);
+  }
+
+  return pokaVectorNumberCat(vectors);
+}
+
 function pokaMatrixNumberEqualsMatrixNumber(
   a: PokaMatrixNumber,
   b: PokaMatrixNumber,
