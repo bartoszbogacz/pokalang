@@ -1194,9 +1194,9 @@ function pokaWordSpread(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const asList = pokaTryToList(arg1);
+  const asList = pokaListTryFrom(arg1);
 
-  if (asList._type === "List") {
+  if (asList !== null) {
     for (const elem of pokaListSpread(asList)) {
       stack.push(elem);
     }
@@ -1355,8 +1355,8 @@ function pokaWordEntry(stack: PokaValue[]): void {
     throw "Keys must be a PokaVectorString";
   }
 
-  const valuesList = pokaTryToList(value);
-  if (valuesList._type !== "List") {
+  const valuesList = pokaListTryFrom(value);
+  if (valuesList === null) {
     throw "Values must be a List";
   }
 

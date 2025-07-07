@@ -66,8 +66,8 @@ function pokaShow(value: PokaValue): string {
   } else if (value._type === "RecordEntry") {
     return ":" + value.key + " " + pokaShow(value.value);
   } else if (value._type === "PokaRecord") {
-    const asList = pokaTryToList(value);
-    if (asList._type !== "List") {
+    const asList = pokaListTryFrom(value);
+    if (asList === null) {
       throw "Unreachable";
     }
     return pokaShow(asList);
@@ -89,37 +89,6 @@ function pokaListMake(values: PokaValue[]): PokaList {
   return { _type: "List", value: values };
 }
 
-function pokaTryToList(value: PokaValue): PokaValue {
-  if (value._type === "List") {
-    return value;
-  }
-  if (value._type === "PokaVectorBoolean") {
-    return {
-      _type: "List",
-      value: value.values.map((v) => pokaScalarBooleanMake(v)),
-    };
-  }
-  if (value._type === "PokaVectorNumber") {
-    return {
-      _type: "List",
-      value: value.values.map((v) => pokaScalarNumberMake(v)),
-    };
-  }
-  if (value._type === "PokaVectorString") {
-    return {
-      _type: "List",
-      value: value.values.map((v) => pokaScalarStringMake(v)),
-    };
-  }
-  if (value._type === "PokaRecord") {
-    const entries: PokaRecordEntry[] = [];
-    for (const [key, val] of Object.entries(value.value)) {
-      entries.push({ _type: "RecordEntry", key, value: val });
-    }
-    return { _type: "List", value: entries };
-  }
-  return value;
-}
 
 function pokaTryToRecord(value: PokaValue): PokaValue {
   if (value._type !== "List") {
