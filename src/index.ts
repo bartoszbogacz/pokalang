@@ -121,26 +121,6 @@ function pokaTryToList(value: PokaValue): PokaValue {
   return value;
 }
 
-function pokaTryToRecord(value: PokaValue): PokaValue {
-  if (value._type !== "List") {
-    return value;
-  }
-
-  const result: PokaRecord = {
-    _type: "PokaRecord",
-    value: {},
-  };
-
-  for (const val of value.value) {
-    if (val._type !== "RecordEntry") {
-      return value;
-    }
-
-    result.value[val.key] = val.value;
-  }
-
-  return result;
-}
 
 function pokaTryToVector(value: PokaValue): PokaValue {
   if (value._type !== "List") {

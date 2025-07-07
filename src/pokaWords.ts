@@ -94,10 +94,10 @@ function pokaWordEquals(stack: PokaValue[]): void {
     return;
   }
 
-  const ar = pokaTryToRecord(a);
-  const br = pokaTryToRecord(b);
+  const ar = pokaRecordTryFrom(a);
+  const br = pokaRecordTryFrom(b);
 
-  if (ar._type === "PokaRecord" && br._type === "PokaRecord") {
+  if (ar !== null && br !== null) {
     stack.push(pokaRecordEqualsPokaRecord(ar, br));
     return;
   }
@@ -1108,10 +1108,10 @@ function pokaWordUnequals(stack: PokaValue[]): void {
     return;
   }
 
-  const ar = pokaTryToRecord(a);
-  const br = pokaTryToRecord(b);
+  const ar = pokaRecordTryFrom(a);
+  const br = pokaRecordTryFrom(b);
 
-  if (ar._type === "PokaRecord" && br._type === "PokaRecord") {
+  if (ar !== null && br !== null) {
     stack.push(pokaRecordUnequalsPokaRecord(ar, br));
     return;
   }
@@ -1385,9 +1385,9 @@ function pokaWordSet(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const ar = pokaTryToRecord(a);
+  const ar = pokaRecordTryFrom(a);
 
-  if (ar._type !== "PokaRecord") {
+  if (ar === null) {
     throw "Record must PokaRecord";
   }
 
@@ -1417,9 +1417,9 @@ function pokaWordGet(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const ar = pokaTryToRecord(a);
+  const ar = pokaRecordTryFrom(a);
 
-  if (ar._type !== "PokaRecord") {
+  if (ar === null) {
     throw "Record must PokaRecord";
   }
 
@@ -1463,9 +1463,9 @@ function pokaGetTry(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const ar = pokaTryToRecord(a);
+  const ar = pokaRecordTryFrom(a);
 
-  if (ar._type !== "PokaRecord") {
+  if (ar === null) {
     throw "Record must PokaRecord";
   }
 
@@ -1499,9 +1499,9 @@ function pokaWordDel(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const ar = pokaTryToRecord(a);
+  const ar = pokaRecordTryFrom(a);
 
-  if (ar._type !== "PokaRecord") {
+  if (ar === null) {
     throw "Record must PokaRecord";
   }
 
@@ -1531,8 +1531,8 @@ function pokaWordContains(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const ar = pokaTryToRecord(a);
-  if (ar._type !== "PokaRecord") {
+  const ar = pokaRecordTryFrom(a);
+  if (ar === null) {
     throw "Record must PokaRecord";
   }
 
