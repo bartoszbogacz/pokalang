@@ -39,6 +39,25 @@ function pokaMatrixBooleanShow(a: PokaMatrixBoolean): string {
   return result.join("");
 }
 
+function pokaMatrixBooleanFrom(value: PokaValue): PokaMatrixBoolean | null {
+  if (value._type === "PokaMatrixBoolean") {
+    return value;
+  }
+  if (value._type !== "List" || value.value.length === 0) {
+    return null;
+  }
+
+  const rows: PokaVectorBoolean[] = [];
+  for (const val of value.value) {
+    const vec = val._type === "List" ? pokaTryToVector(val) : val;
+    if (vec._type !== "PokaVectorBoolean") {
+      return null;
+    }
+    rows.push(vec);
+  }
+  return pokaVectorBooleanCat(rows);
+}
+
 function pokaVectorBooleanCat(values: PokaVectorBoolean[]): PokaMatrixBoolean {
   const first = values[0];
   if (first === undefined) {

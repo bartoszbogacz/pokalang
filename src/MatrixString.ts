@@ -226,6 +226,25 @@ function pokaMatrixStringShow(a: PokaMatrixString): string {
   return result.join("");
 }
 
+function pokaMatrixStringFrom(value: PokaValue): PokaMatrixString | null {
+  if (value._type === "PokaMatrixString") {
+    return value;
+  }
+  if (value._type !== "List" || value.value.length === 0) {
+    return null;
+  }
+
+  const rows: PokaVectorString[] = [];
+  for (const val of value.value) {
+    const vec = val._type === "List" ? pokaTryToVector(val) : val;
+    if (vec._type !== "PokaVectorString") {
+      return null;
+    }
+    rows.push(vec);
+  }
+  return pokaVectorStringCat(rows);
+}
+
 function pokaMatrixStringMatch(
   text: string,
   pattern: string,
