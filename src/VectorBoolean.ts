@@ -7,6 +7,25 @@ function pokaVectorBooleanMake(values: boolean[]): PokaVectorBoolean {
   return { _type: "PokaVectorBoolean", values: values };
 }
 
+function pokaVectorBooleanFrom(value: PokaValue): PokaVectorBoolean | null {
+  if (value._type === "PokaVectorBoolean") {
+    return value;
+  }
+  if (value._type !== "List" || value.value.length === 0) {
+    return null;
+  }
+
+  const values: boolean[] = [];
+  for (const val of value.value) {
+    if (val._type !== "ScalarBoolean") {
+      return null;
+    }
+    values.push(val.value);
+  }
+
+  return pokaVectorBooleanMake(values);
+}
+
 function pokaVectorBooleanAll(a: PokaVectorBoolean): boolean {
   return a.values.reduce((a, b) => a && b);
 }

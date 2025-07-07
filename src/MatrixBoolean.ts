@@ -49,8 +49,8 @@ function pokaMatrixBooleanFrom(value: PokaValue): PokaMatrixBoolean | null {
 
   const rows: PokaVectorBoolean[] = [];
   for (const val of value.value) {
-    const vec = val._type === "List" ? pokaTryToVector(val) : val;
-    if (vec._type !== "PokaVectorBoolean") {
+    const vec = pokaVectorBooleanFrom(val);
+    if (vec === null) {
       return null;
     }
     rows.push(vec);

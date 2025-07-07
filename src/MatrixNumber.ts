@@ -365,8 +365,8 @@ function pokaMatrixNumberFrom(value: PokaValue): PokaMatrixNumber | null {
 
   const rows: PokaVectorNumber[] = [];
   for (const val of value.value) {
-    const vec = val._type === "List" ? pokaTryToVector(val) : val;
-    if (vec._type !== "PokaVectorNumber") {
+    const vec = pokaVectorNumberFrom(val);
+    if (vec === null) {
       return null;
     }
     rows.push(vec);

@@ -7,6 +7,25 @@ function pokaVectorNumberMake(values: number[]): PokaVectorNumber {
   return { _type: "PokaVectorNumber", values: values };
 }
 
+function pokaVectorNumberFrom(value: PokaValue): PokaVectorNumber | null {
+  if (value._type === "PokaVectorNumber") {
+    return value;
+  }
+  if (value._type !== "List" || value.value.length === 0) {
+    return null;
+  }
+
+  const values: number[] = [];
+  for (const val of value.value) {
+    if (val._type !== "ScalarNumber") {
+      return null;
+    }
+    values.push(val.value);
+  }
+
+  return pokaVectorNumberMake(values);
+}
+
 function pokaVectorNumberEqualsVectorNumber(
   a: PokaVectorNumber,
   b: PokaVectorNumber,

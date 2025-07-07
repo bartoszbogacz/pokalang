@@ -7,6 +7,25 @@ function pokaVectorStringMake(values: string[]): PokaVectorString {
   return { _type: "PokaVectorString", values: values };
 }
 
+function pokaVectorStringFrom(value: PokaValue): PokaVectorString | null {
+  if (value._type === "PokaVectorString") {
+    return value;
+  }
+  if (value._type !== "List" || value.value.length === 0) {
+    return null;
+  }
+
+  const values: string[] = [];
+  for (const val of value.value) {
+    if (val._type !== "ScalarString") {
+      return null;
+    }
+    values.push(val.value);
+  }
+
+  return pokaVectorStringMake(values);
+}
+
 function pokaScalarStringSplitScalarString(
   value: string,
   separator: string,
