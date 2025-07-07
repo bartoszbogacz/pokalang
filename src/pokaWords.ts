@@ -843,100 +843,89 @@ function pokaWordSlice(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  if (a._type === "List") {
-    if (b._type === "ScalarNumber") {
-      stack.push(pokaListSliceScalarNumber(a, b));
-      return;
-    }
-
-    const bvN = pokaVectorNumberFrom(b);
-    if (bvN !== null) {
-      stack.push(pokaListSliceVectorNumber(a, bvN));
-      return;
-    }
-
-    const bvB = pokaVectorBooleanFrom(b);
-    if (bvB !== null) {
-      stack.push(pokaListSliceVectorBoolean(a, bvB));
-      return;
-    }
-  }
-
   const avB = pokaVectorBooleanFrom(a);
   const avN = pokaVectorNumberFrom(a);
   const avS = pokaVectorStringFrom(a);
-
-  if (avB !== null) {
-    if (b._type === "ScalarNumber") {
-      stack.push(pokaVectorBooleanSliceScalarNumber(avB, b));
-      return;
-    }
-    const bvN = pokaVectorNumberFrom(b);
-    if (bvN !== null) {
-      stack.push(pokaVectorBooleanSliceVectorNumber(avB, bvN));
-      return;
-    }
-    const bvB = pokaVectorBooleanFrom(b);
-    if (bvB !== null) {
-      stack.push(pokaVectorBooleanSliceVectorBoolean(avB, bvB));
-      return;
-    }
-  }
-
-  if (avN !== null) {
-    if (b._type === "ScalarNumber") {
-      stack.push(pokaVectorNumberSliceScalarNumber(avN, b));
-      return;
-    }
-    const bvN = pokaVectorNumberFrom(b);
-    if (bvN !== null) {
-      stack.push(pokaVectorNumberSliceVectorNumber(avN, bvN));
-      return;
-    }
-    const bvB = pokaVectorBooleanFrom(b);
-    if (bvB !== null) {
-      stack.push(pokaVectorNumberSliceVectorBoolean(avN, bvB));
-      return;
-    }
-  }
-
-  if (avS !== null) {
-    if (b._type === "ScalarNumber") {
-      stack.push(pokaVectorStringSliceScalarNumber(avS, b));
-      return;
-    }
-    const bvN = pokaVectorNumberFrom(b);
-    if (bvN !== null) {
-      stack.push(pokaVectorStringSliceVectorNumber(avS, bvN));
-      return;
-    }
-    const bvB = pokaVectorBooleanFrom(b);
-    if (bvB !== null) {
-      stack.push(pokaVectorStringSliceVectorBoolean(avS, bvB));
-      return;
-    }
-  }
-
   const amB = pokaMatrixBooleanFrom(a);
   const amN = pokaMatrixNumberFrom(a);
   const amS = pokaMatrixStringFrom(a);
-  const bvB2 = pokaVectorBooleanFrom(b);
 
-  if (bvB2 !== null) {
-    if (amB !== null) {
-      stack.push(pokaMatrixBooleanSliceVectorBoolean(amB, bvB2));
-      return;
-    }
+  const bvN = pokaVectorNumberFrom(b);
+  const bvB = pokaVectorBooleanFrom(b);
 
-    if (amN !== null) {
-      stack.push(pokaMatrixNumberSliceVectorBoolean(amN, bvB2));
-      return;
-    }
+  if (a._type === "List" && b._type === "ScalarNumber") {
+    stack.push(pokaListSliceScalarNumber(a, b));
+    return;
+  }
 
-    if (amS !== null) {
-      stack.push(pokaMatrixStringSliceVectorBoolean(amS, bvB2));
-      return;
-    }
+  if (a._type === "List" && bvN !== null) {
+    stack.push(pokaListSliceVectorNumber(a, bvN));
+    return;
+  }
+
+  if (a._type === "List" && bvB !== null) {
+    stack.push(pokaListSliceVectorBoolean(a, bvB));
+    return;
+  }
+
+  if (avB !== null && b._type === "ScalarNumber") {
+    stack.push(pokaVectorBooleanSliceScalarNumber(avB, b));
+    return;
+  }
+
+  if (avB !== null && bvN !== null) {
+    stack.push(pokaVectorBooleanSliceVectorNumber(avB, bvN));
+    return;
+  }
+
+  if (avB !== null && bvB !== null) {
+    stack.push(pokaVectorBooleanSliceVectorBoolean(avB, bvB));
+    return;
+  }
+
+  if (avN !== null && b._type === "ScalarNumber") {
+    stack.push(pokaVectorNumberSliceScalarNumber(avN, b));
+    return;
+  }
+
+  if (avN !== null && bvN !== null) {
+    stack.push(pokaVectorNumberSliceVectorNumber(avN, bvN));
+    return;
+  }
+
+  if (avN !== null && bvB !== null) {
+    stack.push(pokaVectorNumberSliceVectorBoolean(avN, bvB));
+    return;
+  }
+
+  if (avS !== null && b._type === "ScalarNumber") {
+    stack.push(pokaVectorStringSliceScalarNumber(avS, b));
+    return;
+  }
+
+  if (avS !== null && bvN !== null) {
+    stack.push(pokaVectorStringSliceVectorNumber(avS, bvN));
+    return;
+  }
+
+  if (avS !== null && bvB !== null) {
+    stack.push(pokaVectorStringSliceVectorBoolean(avS, bvB));
+    return;
+  }
+
+  if (bvB !== null && amB !== null) {
+    stack.push(pokaMatrixBooleanSliceVectorBoolean(amB, bvB));
+    return;
+  }
+
+  if (bvB !== null && amN !== null) {
+    stack.push(pokaMatrixNumberSliceVectorBoolean(amN, bvB));
+    return;
+  }
+
+  if (bvB !== null && amS !== null) {
+    stack.push(pokaMatrixStringSliceVectorBoolean(amS, bvB));
+    return;
   }
 
   throw "No implementation";
