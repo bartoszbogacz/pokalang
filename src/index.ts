@@ -128,7 +128,6 @@ function pokaTryToVector(value: PokaValue): PokaValue {
   }
 }
 
-
 function peekNumber(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
   return c === "-" || (c >= "0" && c <= "9");
