@@ -1,4 +1,3 @@
-
 interface PokaList {
   _type: "List";
   value: PokaValue[];
@@ -83,8 +82,6 @@ function pokaInterpreterShow(state: InterpreterState): string {
   }
   return state.error + "\n" + result.join("\n");
 }
-
-
 
 function pokaTryToVector(value: PokaValue): PokaValue {
   if (value._type !== "List") {
@@ -230,7 +227,6 @@ function consumeString(state: InterpreterState): void {
   state.stack.push(pokaScalarStringMake(value));
 }
 
-
 function peekList(state: InterpreterState): boolean {
   return peekLiteral(state, "[");
 }
@@ -327,7 +323,6 @@ function consumeIdentifer(state: InterpreterState): void {
     word.fun(state.stack);
   }
 }
-
 
 function peekLiteral(state: InterpreterState, literal: string): boolean {
   for (let i = 0; i < literal.length; i++) {

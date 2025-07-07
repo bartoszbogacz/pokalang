@@ -20,4 +20,3 @@ function pokaScalarBooleanUnequalsScalarBoolean(
 ): PokaScalarBoolean {
   return pokaScalarBooleanMake(a.value !== b.value);
 }
-
