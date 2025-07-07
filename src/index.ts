@@ -85,11 +85,6 @@ function pokaInterpreterShow(state: InterpreterState): string {
 }
 
 
-function pokaListMake(values: PokaValue[]): PokaList {
-  return { _type: "List", value: values };
-}
-
-
 
 function pokaTryToVector(value: PokaValue): PokaValue {
   if (value._type !== "List") {

@@ -3,34 +3,35 @@ interface PokaList {
   value: PokaValue[];
 }
 
+function pokaListMake(values: PokaValue[]): PokaList {
+  return { _type: "List", value: values };
+}
+
 function pokaListTryFrom(value: PokaValue): PokaList | null {
   if (value._type === "List") {
     return value;
   }
   if (value._type === "PokaVectorBoolean") {
-    return {
-      _type: "List",
-      value: value.values.map((v) => pokaScalarBooleanMake(v)),
-    };
+    return pokaListMake(
+      value.values.map((v) => pokaScalarBooleanMake(v)),
+    );
   }
   if (value._type === "PokaVectorNumber") {
-    return {
-      _type: "List",
-      value: value.values.map((v) => pokaScalarNumberMake(v)),
-    };
+    return pokaListMake(
+      value.values.map((v) => pokaScalarNumberMake(v)),
+    );
   }
   if (value._type === "PokaVectorString") {
-    return {
-      _type: "List",
-      value: value.values.map((v) => pokaScalarStringMake(v)),
-    };
+    return pokaListMake(
+      value.values.map((v) => pokaScalarStringMake(v)),
+    );
   }
   if (value._type === "PokaRecord") {
     const entries: PokaRecordEntry[] = [];
     for (const [key, val] of Object.entries(value.value)) {
       entries.push({ _type: "RecordEntry", key, value: val });
     }
-    return { _type: "List", value: entries };
+    return pokaListMake(entries);
   }
   return null;
 }
@@ -115,7 +116,7 @@ function pokaListSliceVectorNumber(
     }
     values.push(elem);
   }
-  return { _type: "List", value: values };
+  return pokaListMake(values);
 }
 
 function pokaListSliceVectorBoolean(
@@ -135,5 +136,5 @@ function pokaListSliceVectorBoolean(
       values.push(elem);
     }
   }
-  return { _type: "List", value: values };
+  return pokaListMake(values);
 }

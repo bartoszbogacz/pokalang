@@ -73,7 +73,7 @@ function pokaRecordGetVectorString(
     }
     values.push(value);
   }
-  return { _type: "List", value: values };
+  return pokaListMake(values);
 }
 
 function pokaRecordGetTryVectorString(
@@ -87,7 +87,7 @@ function pokaRecordGetTryVectorString(
       values.push(value);
     }
   }
-  return { _type: "List", value: values };
+  return pokaListMake(values);
 }
 
 function pokaRecordGetMatrixString(
@@ -106,9 +106,9 @@ function pokaRecordGetMatrixString(
       }
       rowVals.push(value);
     }
-    rows.push({ _type: "List", value: rowVals });
+    rows.push(pokaListMake(rowVals));
   }
-  return { _type: "List", value: rows };
+  return pokaListMake(rows);
 }
 
 function pokaRecordEntryMakeScalarString(
