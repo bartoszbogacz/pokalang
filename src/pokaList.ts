@@ -3,6 +3,38 @@ interface PokaList {
   value: PokaValue[];
 }
 
+function pokaListTryFrom(value: PokaValue): PokaList | null {
+  if (value._type === "List") {
+    return value;
+  }
+  if (value._type === "PokaVectorBoolean") {
+    return {
+      _type: "List",
+      value: value.values.map((v) => pokaScalarBooleanMake(v)),
+    };
+  }
+  if (value._type === "PokaVectorNumber") {
+    return {
+      _type: "List",
+      value: value.values.map((v) => pokaScalarNumberMake(v)),
+    };
+  }
+  if (value._type === "PokaVectorString") {
+    return {
+      _type: "List",
+      value: value.values.map((v) => pokaScalarStringMake(v)),
+    };
+  }
+  if (value._type === "PokaRecord") {
+    const entries: PokaRecordEntry[] = [];
+    for (const [key, val] of Object.entries(value.value)) {
+      entries.push({ _type: "RecordEntry", key, value: val });
+    }
+    return { _type: "List", value: entries };
+  }
+  return null;
+}
+
 function pokaListEqualsPokaList(a: PokaList, b: PokaList): PokaScalarBoolean {
   if (a.value.length !== b.value.length) {
     return pokaScalarBooleanMake(false);
