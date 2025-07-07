@@ -83,51 +83,6 @@ function pokaInterpreterShow(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-function pokaTryToVector(value: PokaValue): PokaValue {
-  if (value._type !== "List") {
-    return value;
-  }
-  if (value.value.length === 0) {
-    // FIXME
-    return value;
-  }
-
-  const valuesScalarBoolean: boolean[] = [];
-  const valuesScalarNumber: number[] = [];
-  const valuesScalarString: string[] = [];
-
-  for (const val of value.value) {
-    if (val._type === "ScalarBoolean") {
-      valuesScalarBoolean.push(val.value);
-    } else if (val._type === "ScalarNumber") {
-      valuesScalarNumber.push(val.value);
-    } else if (val._type === "ScalarString") {
-      valuesScalarString.push(val.value);
-    } else {
-      return value;
-    }
-  }
-
-  if (valuesScalarBoolean.length === value.value.length) {
-    return {
-      _type: "PokaVectorBoolean",
-      values: valuesScalarBoolean,
-    };
-  } else if (valuesScalarNumber.length === value.value.length) {
-    return {
-      _type: "PokaVectorNumber",
-      values: valuesScalarNumber,
-    };
-  } else if (valuesScalarString.length === value.value.length) {
-    return {
-      _type: "PokaVectorString",
-      values: valuesScalarString,
-    };
-  } else {
-    return value;
-  }
-}
-
 function peekNumber(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
   return c === "-" || (c >= "0" && c <= "9");

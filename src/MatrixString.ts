@@ -236,8 +236,8 @@ function pokaMatrixStringFrom(value: PokaValue): PokaMatrixString | null {
 
   const rows: PokaVectorString[] = [];
   for (const val of value.value) {
-    const vec = val._type === "List" ? pokaTryToVector(val) : val;
-    if (vec._type !== "PokaVectorString") {
+    const vec = pokaVectorStringFrom(val);
+    if (vec === null) {
       return null;
     }
     rows.push(vec);
