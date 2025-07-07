@@ -14,9 +14,9 @@ function pokaWordAll(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixBooleanFrom(a);
 
-  if (am._type === "PokaMatrixBoolean") {
+  if (am !== null) {
     stack.push(pokaScalarBooleanMake(pokaMatrixBooleanAll(am)));
     return;
   }
@@ -76,21 +76,24 @@ function pokaWordEquals(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
-
-  if (am._type === "PokaMatrixBoolean" && bm._type === "PokaMatrixBoolean") {
-    stack.push(pokaMatrixBooleanEqualsMatrixBoolean(am, bm));
+  const amB = pokaMatrixBooleanFrom(a);
+  const bmB = pokaMatrixBooleanFrom(b);
+  if (amB !== null && bmB !== null) {
+    stack.push(pokaMatrixBooleanEqualsMatrixBoolean(amB, bmB));
     return;
   }
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
-    stack.push(pokaMatrixNumberEqualsMatrixNumber(am, bm));
+  const amN = pokaMatrixNumberFrom(a);
+  const bmN = pokaMatrixNumberFrom(b);
+  if (amN !== null && bmN !== null) {
+    stack.push(pokaMatrixNumberEqualsMatrixNumber(amN, bmN));
     return;
   }
 
-  if (am._type === "PokaMatrixString" && bm._type === "PokaMatrixString") {
-    stack.push(pokaMatrixStringEqualsMatrixString(am, bm));
+  const amS = pokaMatrixStringFrom(a);
+  const bmS = pokaMatrixStringFrom(b);
+  if (amS !== null && bmS !== null) {
+    stack.push(pokaMatrixStringEqualsMatrixString(amS, bmS));
     return;
   }
 
@@ -144,10 +147,10 @@ function pokaWordAdd(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberAddMatrixNumber(am, bm));
     return;
   }
@@ -185,10 +188,10 @@ function pokaWordSub(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberSubMatrixNumber(am, bm));
     return;
   }
@@ -219,9 +222,9 @@ function pokaWordSum(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber") {
+  if (am !== null) {
     stack.push(pokaScalarNumberMake(pokaMatrixNumberSum(am)));
     return;
   }
@@ -253,9 +256,9 @@ function pokaWordAbs(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber") {
+  if (am !== null) {
     stack.push(pokaMatrixNumberAbs(am));
     return;
   }
@@ -279,9 +282,9 @@ function pokaWordSortRows(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber") {
+  if (am !== null) {
     stack.push(pokaMatrixNumberSortRows(am));
     return;
   }
@@ -301,9 +304,9 @@ function pokaWordSortCols(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber") {
+  if (am !== null) {
     stack.push(pokaMatrixNumberSortCols(am));
     return;
   }
@@ -326,9 +329,9 @@ function pokaWordTranspose(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber") {
+  if (am !== null) {
     stack.push(pokaMatrixNumberTranspose(am));
     return;
   }
@@ -352,27 +355,28 @@ function pokaWordCols(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const amNumber = pokaMatrixNumberFrom(a);
+  const amString = pokaMatrixStringFrom(a);
 
-  if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaMatrixNumberColScalarNumber(am, b.value));
+  if (amNumber !== null && b._type === "ScalarNumber") {
+    stack.push(pokaMatrixNumberColScalarNumber(amNumber, b.value));
     return;
   }
 
-  if (am._type === "PokaMatrixString" && b._type === "ScalarNumber") {
-    stack.push(pokaMatrixStringColScalarNumber(am, b.value));
+  if (amString !== null && b._type === "ScalarNumber") {
+    stack.push(pokaMatrixStringColScalarNumber(amString, b.value));
     return;
   }
 
   const bv = pokaTryToVector(b);
 
-  if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorNumber") {
-    stack.push(pokaMatrixNumberColsVectorNumber(am, bv));
+  if (amNumber !== null && bv._type === "PokaVectorNumber") {
+    stack.push(pokaMatrixNumberColsVectorNumber(amNumber, bv));
     return;
   }
 
-  if (am._type === "PokaMatrixString" && bv._type === "PokaVectorNumber") {
-    stack.push(pokaMatrixStringColsVectorNumber(am, bv));
+  if (amString !== null && bv._type === "PokaVectorNumber") {
+    stack.push(pokaMatrixStringColsVectorNumber(amString, bv));
     return;
   }
 
@@ -407,9 +411,9 @@ function pokaWordToNumber(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixStringFrom(a);
 
-  if (am._type === "PokaMatrixString") {
+  if (am !== null) {
     stack.push(pokaMatrixStringToNumber(am));
     return;
   }
@@ -466,16 +470,16 @@ function pokaWordRotr(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
+  if (am !== null && b._type === "ScalarNumber") {
     stack.push(pokaMatrixNumberRotrScalarNumber(am, b.value));
     return;
   }
 
   const bv = pokaTryToVector(b);
 
-  if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorNumber") {
+  if (am !== null && bv._type === "PokaVectorNumber") {
     stack.push(pokaMatrixNumberRotrVectorNumber(am, bv));
     return;
   }
@@ -582,16 +586,16 @@ function pokaWordLess(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
 
-  if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
+  if (am !== null && b._type === "ScalarNumber") {
     stack.push(pokaMatrixNumberLessScalarNumber(am, b.value));
     return;
   }
 
-  const bm = pokaTryToMatrix(b);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberLessMatrixNumber(am, bm));
     return;
   }
@@ -628,10 +632,10 @@ function pokaWordGreater(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberGreaterMatrixNumber(am, bm));
     return;
   }
@@ -669,10 +673,10 @@ function pokaWordGreaterEquals(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberGreaterEqualsMatrixNumber(am, bm));
     return;
   }
@@ -710,10 +714,10 @@ function pokaWordLesser(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberLesserMatrixNumber(am, bm));
     return;
   }
@@ -751,10 +755,10 @@ function pokaWordLesserEquals(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberLesserEqualsMatrixNumber(am, bm));
     return;
   }
@@ -778,15 +782,15 @@ function pokaWordEqualsRows(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
-
-  if (am._type === "PokaMatrixBoolean") {
-    stack.push(pokaMatrixBooleanEqualsRows(am));
+  const amB = pokaMatrixBooleanFrom(a);
+  if (amB !== null) {
+    stack.push(pokaMatrixBooleanEqualsRows(amB));
     return;
   }
 
-  if (am._type === "PokaMatrixNumber") {
-    stack.push(pokaMatrixNumberEqualsRows(am));
+  const amN = pokaMatrixNumberFrom(a);
+  if (amN !== null) {
+    stack.push(pokaMatrixNumberEqualsRows(amN));
     return;
   }
 
@@ -808,10 +812,10 @@ function pokaWordRows(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixNumberFrom(a);
   const bv = pokaTryToVector(b);
 
-  if (am._type === "PokaMatrixNumber" && bv._type === "PokaVectorBoolean") {
+  if (am !== null && bv._type === "PokaVectorBoolean") {
     stack.push(pokaMatrixNumberRowsVectorBoolean(am, bv));
     return;
   }
@@ -901,22 +905,24 @@ function pokaWordSlice(stack: PokaValue[]): void {
     }
   }
 
-  const am = pokaTryToMatrix(a);
+  const amB = pokaMatrixBooleanFrom(a);
+  const amN = pokaMatrixNumberFrom(a);
+  const amS = pokaMatrixStringFrom(a);
   const bv = pokaTryToVector(b);
 
   if (bv._type === "PokaVectorBoolean") {
-    if (am._type === "PokaMatrixBoolean") {
-      stack.push(pokaMatrixBooleanSliceVectorBoolean(am, bv));
+    if (amB !== null) {
+      stack.push(pokaMatrixBooleanSliceVectorBoolean(amB, bv));
       return;
     }
 
-    if (am._type === "PokaMatrixNumber") {
-      stack.push(pokaMatrixNumberSliceVectorBoolean(am, bv));
+    if (amN !== null) {
+      stack.push(pokaMatrixNumberSliceVectorBoolean(amN, bv));
       return;
     }
 
-    if (am._type === "PokaMatrixString") {
-      stack.push(pokaMatrixStringSliceVectorBoolean(am, bv));
+    if (amS !== null) {
+      stack.push(pokaMatrixStringSliceVectorBoolean(amS, bv));
       return;
     }
   }
@@ -946,15 +952,15 @@ function pokaWordSqueeze(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
-
-  if (am._type === "PokaMatrixNumber") {
-    stack.push(pokaMatrixNumberSqueeze(am));
+  const amN = pokaMatrixNumberFrom(a);
+  if (amN !== null) {
+    stack.push(pokaMatrixNumberSqueeze(amN));
     return;
   }
 
-  if (am._type === "PokaMatrixBoolean") {
-    stack.push(pokaMatrixBooleanSqueeze(am));
+  const amB = pokaMatrixBooleanFrom(a);
+  if (amB !== null) {
+    stack.push(pokaMatrixBooleanSqueeze(amB));
     return;
   }
 
@@ -1002,9 +1008,9 @@ function pokaWordAllRows(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixBooleanFrom(a);
 
-  if (am._type === "PokaMatrixBoolean") {
+  if (am !== null) {
     stack.push(pokaMatrixBooleanAllRows(am));
     return;
   }
@@ -1026,9 +1032,9 @@ function pokaWordAnyRows(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixBooleanFrom(a);
 
-  if (am._type === "PokaMatrixBoolean") {
+  if (am !== null) {
     stack.push(pokaMatrixBooleanAnyRows(am));
     return;
   }
@@ -1084,27 +1090,30 @@ function pokaWordUnequals(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-
-  if (am._type === "PokaMatrixNumber" && b._type === "ScalarNumber") {
-    stack.push(pokaMatrixNumberUnequalsScalarNumber(am, b.value));
+  const amN = pokaMatrixNumberFrom(a);
+  if (amN !== null && b._type === "ScalarNumber") {
+    stack.push(pokaMatrixNumberUnequalsScalarNumber(amN, b.value));
     return;
   }
 
-  const bm = pokaTryToMatrix(b);
+  const bmB = pokaMatrixBooleanFrom(b);
+  const bmN = pokaMatrixNumberFrom(b);
+  const bmS = pokaMatrixStringFrom(b);
+  const amB = pokaMatrixBooleanFrom(a);
+  const amS = pokaMatrixStringFrom(a);
 
-  if (am._type === "PokaMatrixBoolean" && bm._type === "PokaMatrixBoolean") {
-    stack.push(pokaMatrixBooleanUnequalsMatrixBoolean(am, bm));
+  if (amB !== null && bmB !== null) {
+    stack.push(pokaMatrixBooleanUnequalsMatrixBoolean(amB, bmB));
     return;
   }
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
-    stack.push(pokaMatrixNumberUnequalsMatrixNumber(am, bm));
+  if (amN !== null && bmN !== null) {
+    stack.push(pokaMatrixNumberUnequalsMatrixNumber(amN, bmN));
     return;
   }
 
-  if (am._type === "PokaMatrixString" && bm._type === "PokaMatrixString") {
-    stack.push(pokaMatrixStringUnequalsMatrixString(am, bm));
+  if (amS !== null && bmS !== null) {
+    stack.push(pokaMatrixStringUnequalsMatrixString(amS, bmS));
     return;
   }
 
@@ -1152,9 +1161,9 @@ function pokaWordCount(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
+  const am = pokaMatrixBooleanFrom(a);
 
-  if (am._type === "PokaMatrixBoolean") {
+  if (am !== null) {
     stack.push(pokaScalarNumberMake(pokaMatrixBooleanCount(am)));
     return;
   }
@@ -1317,10 +1326,10 @@ function pokaWordMul(stack: PokaValue[]): void {
     return;
   }
 
-  const am = pokaTryToMatrix(a);
-  const bm = pokaTryToMatrix(b);
+  const am = pokaMatrixNumberFrom(a);
+  const bm = pokaMatrixNumberFrom(b);
 
-  if (am._type === "PokaMatrixNumber" && bm._type === "PokaMatrixNumber") {
+  if (am !== null && bm !== null) {
     stack.push(pokaMatrixNumberMulMatrixNumber(am, bm));
     return;
   }
@@ -1434,8 +1443,8 @@ function pokaWordGet(stack: PokaValue[]): void {
     return;
   }
 
-  const bm = pokaTryToMatrix(b);
-  if (bm._type === "PokaMatrixString") {
+  const bm = pokaMatrixStringFrom(b);
+  if (bm !== null) {
     stack.push(pokaRecordGetMatrixString(ar, bm));
     return;
   }
@@ -1547,8 +1556,8 @@ function pokaWordContains(stack: PokaValue[]): void {
     return;
   }
 
-  const bm = pokaTryToMatrix(b);
-  if (bm._type === "PokaMatrixString") {
+  const bm = pokaMatrixStringFrom(b);
+  if (bm !== null) {
     stack.push(pokaRecordContainsMatrixString(ar, bm));
     return;
   }

@@ -355,6 +355,25 @@ function pokaMatrixNumberShow(a: PokaMatrixNumber): string {
   return result.join("");
 }
 
+function pokaMatrixNumberFrom(value: PokaValue): PokaMatrixNumber | null {
+  if (value._type === "PokaMatrixNumber") {
+    return value;
+  }
+  if (value._type !== "List" || value.value.length === 0) {
+    return null;
+  }
+
+  const rows: PokaVectorNumber[] = [];
+  for (const val of value.value) {
+    const vec = val._type === "List" ? pokaTryToVector(val) : val;
+    if (vec._type !== "PokaVectorNumber") {
+      return null;
+    }
+    rows.push(vec);
+  }
+  return pokaVectorNumberCat(rows);
+}
+
 function pokaMatrixNumberRotrScalarNumber(
   a: PokaMatrixNumber,
   b: number,

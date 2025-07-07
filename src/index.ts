@@ -128,44 +128,6 @@ function pokaTryToVector(value: PokaValue): PokaValue {
   }
 }
 
-function pokaTryToMatrix(value: PokaValue): PokaValue {
-  if (value._type !== "List") {
-    return value;
-  }
-  if (value.value.length === 0) {
-    // FIXME
-    return value;
-  }
-
-  const valuesVectorBoolean: PokaVectorBoolean[] = [];
-  const valuesVectorNumber: PokaVectorNumber[] = [];
-  const valuesVectorString: PokaVectorString[] = [];
-
-  for (const val of value.value) {
-    const coerced: PokaValue =
-      val._type === "List" ? pokaTryToVector(val) : val;
-
-    if (coerced._type === "PokaVectorBoolean") {
-      valuesVectorBoolean.push(coerced);
-    } else if (coerced._type === "PokaVectorNumber") {
-      valuesVectorNumber.push(coerced);
-    } else if (coerced._type === "PokaVectorString") {
-      valuesVectorString.push(coerced);
-    } else {
-      return value;
-    }
-  }
-
-  if (valuesVectorBoolean.length === value.value.length) {
-    return pokaVectorBooleanCat(valuesVectorBoolean);
-  } else if (valuesVectorNumber.length === value.value.length) {
-    return pokaVectorNumberCat(valuesVectorNumber);
-  } else if (valuesVectorString.length === value.value.length) {
-    return pokaVectorStringCat(valuesVectorString);
-  } else {
-    return value;
-  }
-}
 
 function peekNumber(state: InterpreterState): boolean {
   const c = state.line.charAt(state.pos);
