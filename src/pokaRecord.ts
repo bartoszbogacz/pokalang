@@ -169,3 +169,27 @@ function pokaRecordContainsMatrixString(
     values,
   };
 }
+
+function pokaRecordTryFrom(value: PokaValue): PokaRecord | null {
+  if (value._type === "PokaRecord") {
+    return value;
+  }
+  if (value._type !== "List") {
+    return null;
+  }
+
+  const result: PokaRecord = {
+    _type: "PokaRecord",
+    value: {},
+  };
+
+  for (const val of value.value) {
+    if (val._type !== "RecordEntry") {
+      return null;
+    }
+
+    result.value[val.key] = val.value;
+  }
+
+  return result;
+}
