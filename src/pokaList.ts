@@ -12,19 +12,13 @@ function pokaListTryFrom(value: PokaValue): PokaList | null {
     return value;
   }
   if (value._type === "PokaVectorBoolean") {
-    return pokaListMake(
-      value.values.map((v) => pokaScalarBooleanMake(v)),
-    );
+    return pokaListMake(value.values.map((v) => pokaScalarBooleanMake(v)));
   }
   if (value._type === "PokaVectorNumber") {
-    return pokaListMake(
-      value.values.map((v) => pokaScalarNumberMake(v)),
-    );
+    return pokaListMake(value.values.map((v) => pokaScalarNumberMake(v)));
   }
   if (value._type === "PokaVectorString") {
-    return pokaListMake(
-      value.values.map((v) => pokaScalarStringMake(v)),
-    );
+    return pokaListMake(value.values.map((v) => pokaScalarStringMake(v)));
   }
   if (value._type === "PokaRecord") {
     const entries: PokaRecordEntry[] = [];
@@ -82,7 +76,10 @@ function pokaListSpread(a: PokaList): PokaValue[] {
   return a.value.slice();
 }
 
-function pokaListSliceScalarNumber(a: PokaList, b: PokaScalarNumber): PokaValue {
+function pokaListSliceScalarNumber(
+  a: PokaList,
+  b: PokaScalarNumber,
+): PokaValue {
   let index = Math.trunc(b.value);
   if (index < 0) {
     index = a.value.length + index;
@@ -97,10 +94,7 @@ function pokaListSliceScalarNumber(a: PokaList, b: PokaScalarNumber): PokaValue 
   return result;
 }
 
-function pokaListSliceVectorNumber(
-  a: PokaList,
-  b: PokaVectorNumber,
-): PokaList {
+function pokaListSliceVectorNumber(a: PokaList, b: PokaVectorNumber): PokaList {
   const values: PokaValue[] = [];
   for (let i = 0; i < b.values.length; i++) {
     let index = Math.trunc(b.values[i] as number);

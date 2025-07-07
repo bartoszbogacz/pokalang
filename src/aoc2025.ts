@@ -75,14 +75,14 @@ const AOC2025: {
     input_name: "aoc2025day4a",
     answer: 143,
     program: [
-      '143',
+      "143",
       // '$aoc2025day4a "\n\n" split spread =a =b
-      // $b "\n" split "|" split =k 
+      // $b "\n" split "|" split =k
       // $v $k contains allRows squeeze $k swap slice =i2
       // $a "\n" split FOR {
       //   "," split dup enumerate entry =v
       //   $v $i2 get [0 cols, 1 cols] spread lesser all'
       // }
-    ]
-  }
+    ],
+  },
 };

@@ -1,4 +1,3 @@
-
 function pokaTestsShow(): void {
   const elem = document.getElementById("poka_test_results");
   if (elem === null) {

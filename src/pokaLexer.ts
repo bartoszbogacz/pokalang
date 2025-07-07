@@ -8,7 +8,6 @@ interface PokaLexemeString {
   text: string;
 }
 
-
 interface PokaLexemePlainIdentifier {
   _kind: "PlainIdentifier";
   text: string;
@@ -82,7 +81,6 @@ function pokaLexerIsStringStart(state: PokaLexerState): boolean {
   return state.line.charAt(state.pos) === '"';
 }
 
-
 function pokaLexerIsSymbol(state: PokaLexerState): boolean {
   return POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos));
 }
@@ -106,7 +104,6 @@ function pokaLexerConsumeSymbol(state: PokaLexerState): void {
   state.lexemes.push({ _kind: "Symbol", text: c });
   state.pos++;
 }
-
 
 function pokaLexerConsumeNumber(state: PokaLexerState): void {
   const start = state.pos;
@@ -191,7 +188,7 @@ function pokaLexerConsumeForm(state: PokaLexerState): void {
 
 function pokaLexerCheckMissingWhitespace(
   state: PokaLexerState,
-  consumed: number
+  consumed: number,
 ): boolean {
   if (!pokaLexerIsEol(state) && consumed === 0) {
     const prev = state.lexemes[state.lexemes.length - 1]!;
@@ -326,7 +323,8 @@ function pokaLexerTestsRun(): string {
   for (const [text, expected] of POKA_LEXER_TESTS) {
     try {
       const state = pokaLexerLex(text);
-      let ok = state.error === undefined && state.lexemes.length === expected.length;
+      let ok =
+        state.error === undefined && state.lexemes.length === expected.length;
       if (ok) {
         for (let i = 0; i < expected.length; i++) {
           const got = state.lexemes[i]!;
