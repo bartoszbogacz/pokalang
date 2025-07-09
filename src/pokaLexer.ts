@@ -1,6 +1,6 @@
 interface PokaLexemeNumber {
   _kind: "Number";
-  text: string;
+  value: number;
 }
 
 interface PokaLexemeString {
@@ -119,9 +119,16 @@ function pokaLexerConsumeNumber(state: PokaLexerState): void {
       state.pos++;
     }
   }
+  const text = state.line.slice(start, state.pos);
+  const value = parseFloat(text);
+  if (Number.isNaN(value)) {
+    state.error = "Invalid number";
+    state.tail = state.line.slice(start);
+    return;
+  }
   state.lexemes.push({
     _kind: "Number",
-    text: state.line.slice(start, state.pos),
+    value,
   });
 }
 
@@ -243,8 +250,8 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
   [
     "1 2 add",
     [
-      { _kind: "Number", text: "1" },
-      { _kind: "Number", text: "2" },
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
@@ -252,9 +259,9 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     "[1, 2]",
     [
       { _kind: "Symbol", text: "[" },
-      { _kind: "Number", text: "1" },
+      { _kind: "Number", value: 1 },
       { _kind: "Symbol", text: "," },
-      { _kind: "Number", text: "2" },
+      { _kind: "Number", value: 2 },
       { _kind: "Symbol", text: "]" },
     ],
   ],
@@ -277,32 +284,32 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
   [
     "-1.5 3.2 mul",
     [
-      { _kind: "Number", text: "-1.5" },
-      { _kind: "Number", text: "3.2" },
+      { _kind: "Number", value: -1.5 },
+      { _kind: "Number", value: 3.2 },
       { _kind: "PlainIdentifier", text: "mul" },
     ],
   ],
   [
     "1   2   add",
     [
-      { _kind: "Number", text: "1" },
-      { _kind: "Number", text: "2" },
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
     "1\n 2 add",
     [
-      { _kind: "Number", text: "1" },
-      { _kind: "Number", text: "2" },
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
     "1\t\n 2\tadd",
     [
-      { _kind: "Number", text: "1" },
-      { _kind: "Number", text: "2" },
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
@@ -329,9 +336,22 @@ function pokaLexerTestsRun(): string {
         for (let i = 0; i < expected.length; i++) {
           const got = state.lexemes[i]!;
           const exp = expected[i]!;
-          if (got._kind !== exp._kind || got.text !== exp.text) {
+          if (got._kind !== exp._kind) {
             ok = false;
             break;
+          }
+          if (got._kind === "Number") {
+            const g = got as PokaLexemeNumber;
+            const e = exp as PokaLexemeNumber;
+            if (g.value !== e.value) {
+              ok = false;
+              break;
+            }
+          } else {
+            if ((got as any).text !== (exp as any).text) {
+              ok = false;
+              break;
+            }
           }
         }
       }
