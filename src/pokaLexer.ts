@@ -23,14 +23,24 @@ interface PokaLexemeSymbol {
   text: string;
 }
 
-const POKA_LEXER_SYMBOLS = "[]{}(),";
+interface PokaLexemeListStart {
+  _kind: "ListStart";
+}
+
+interface PokaLexemeListEnd {
+  _kind: "ListEnd";
+}
+
+const POKA_LEXER_SYMBOLS = "{}(),";
 
 type PokaLexeme =
   | PokaLexemeNumber
   | PokaLexemeString
   | PokaLexemeIdentifier
   | PokaLexemeForm
-  | PokaLexemeSymbol;
+  | PokaLexemeSymbol
+  | PokaLexemeListStart
+  | PokaLexemeListEnd;
 
 interface PokaLexerState {
   line: string;
@@ -79,6 +89,14 @@ function pokaLexerIsSymbol(state: PokaLexerState): boolean {
   return POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos));
 }
 
+function pokaLexerIsListStart(state: PokaLexerState): boolean {
+  return state.line.charAt(state.pos) === "[";
+}
+
+function pokaLexerIsListEnd(state: PokaLexerState): boolean {
+  return state.line.charAt(state.pos) === "]";
+}
+
 function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
   let count = 0;
   while (true) {
@@ -96,6 +114,16 @@ function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
 function pokaLexerConsumeSymbol(state: PokaLexerState): void {
   const c = state.line.charAt(state.pos);
   state.lexemes.push({ _kind: "Symbol", text: c });
+  state.pos++;
+}
+
+function pokaLexerConsumeListStart(state: PokaLexerState): void {
+  state.lexemes.push({ _kind: "ListStart" });
+  state.pos++;
+}
+
+function pokaLexerConsumeListEnd(state: PokaLexerState): void {
+  state.lexemes.push({ _kind: "ListEnd" });
   state.pos++;
 }
 
@@ -195,8 +223,14 @@ function pokaLexerCheckMissingWhitespace(
     const prev = state.lexemes[state.lexemes.length - 1]!;
     const nextChar = state.line.charAt(state.pos);
     const prevJoinable =
-      prev._kind === "Symbol" && POKA_LEXER_SYMBOLS.includes(prev.text);
-    if (!prevJoinable && !POKA_LEXER_SYMBOLS.includes(nextChar)) {
+      (prev._kind === "Symbol" && POKA_LEXER_SYMBOLS.includes(prev.text)) ||
+      prev._kind === "ListStart" ||
+      prev._kind === "ListEnd";
+    const nextJoinable =
+      POKA_LEXER_SYMBOLS.includes(nextChar) ||
+      nextChar === "[" ||
+      nextChar === "]";
+    if (!prevJoinable && !nextJoinable) {
       state.error = "Missing whitespace";
       state.tail = state.line.slice(state.pos);
       return true;
@@ -222,6 +256,10 @@ function pokaLexerLex(line: string): PokaLexerState {
       pokaLexerConsumePlainIdentifier(state);
     } else if (pokaLexerIsForm(state)) {
       pokaLexerConsumeForm(state);
+    } else if (pokaLexerIsListStart(state)) {
+      pokaLexerConsumeListStart(state);
+    } else if (pokaLexerIsListEnd(state)) {
+      pokaLexerConsumeListEnd(state);
     } else if (pokaLexerIsSymbol(state)) {
       pokaLexerConsumeSymbol(state);
     } else {
@@ -252,11 +290,11 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
   [
     "[1, 2]",
     [
-      { _kind: "Symbol", text: "[" },
+      { _kind: "ListStart" },
       { _kind: "Number", value: 1 },
       { _kind: "Symbol", text: "," },
       { _kind: "Number", value: 2 },
-      { _kind: "Symbol", text: "]" },
+      { _kind: "ListEnd" },
     ],
   ],
   [
