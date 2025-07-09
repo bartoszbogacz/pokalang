@@ -8,8 +8,13 @@ interface PokaLexemeString {
   text: string;
 }
 
-interface PokaLexemeIdentifier {
-  _kind: "Identifier";
+interface PokaLexemePlainIdentifier {
+  _kind: "PlainIdentifier";
+  text: string;
+}
+
+interface PokaLexemeSigilIdentifier {
+  _kind: "SigilIdentifier";
   text: string;
 }
 
@@ -36,7 +41,8 @@ const POKA_LEXER_SYMBOLS = "{}(),";
 type PokaLexeme =
   | PokaLexemeNumber
   | PokaLexemeString
-  | PokaLexemeIdentifier
+  | PokaLexemePlainIdentifier
+  | PokaLexemeSigilIdentifier
   | PokaLexemeForm
   | PokaLexemeSymbol
   | PokaLexemeListStart
@@ -182,7 +188,7 @@ function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
     state.pos++;
   }
   state.lexemes.push({
-    _kind: "Identifier",
+    _kind: "PlainIdentifier",
     text: state.line.slice(start, state.pos),
   });
 }
@@ -198,7 +204,7 @@ function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
     state.pos++;
   }
   state.lexemes.push({
-    _kind: "Identifier",
+    _kind: "SigilIdentifier",
     text: state.line.slice(start, state.pos),
   });
 }
@@ -284,7 +290,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", value: 1 },
       { _kind: "Number", value: 2 },
-      { _kind: "Identifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
@@ -301,15 +307,15 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     '"hi" =a $a',
     [
       { _kind: "String", text: "hi" },
-      { _kind: "Identifier", text: "=a" },
-      { _kind: "Identifier", text: "$a" },
+      { _kind: "SigilIdentifier", text: "=a" },
+      { _kind: "SigilIdentifier", text: "$a" },
     ],
   ],
   [
     "FOR x EACH",
     [
       { _kind: "Form", text: "FOR" },
-      { _kind: "Identifier", text: "x" },
+      { _kind: "PlainIdentifier", text: "x" },
       { _kind: "Form", text: "EACH" },
     ],
   ],
@@ -318,7 +324,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", value: -1.5 },
       { _kind: "Number", value: 3.2 },
-      { _kind: "Identifier", text: "mul" },
+      { _kind: "PlainIdentifier", text: "mul" },
     ],
   ],
   [
@@ -326,7 +332,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", value: 1 },
       { _kind: "Number", value: 2 },
-      { _kind: "Identifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
@@ -334,7 +340,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", value: 1 },
       { _kind: "Number", value: 2 },
-      { _kind: "Identifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
   [
@@ -342,7 +348,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "Number", value: 1 },
       { _kind: "Number", value: 2 },
-      { _kind: "Identifier", text: "add" },
+      { _kind: "PlainIdentifier", text: "add" },
     ],
   ],
 ];
