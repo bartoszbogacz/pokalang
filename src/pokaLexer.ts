@@ -60,7 +60,7 @@ function pokaLexerIsDigit(c: string): boolean {
   return c >= "0" && c <= "9";
 }
 
-function pokaLexerIsPlainIdentifier(state: PokaLexerState): boolean {
+function pokaLexerIsPlainIdentifierStart(state: PokaLexerState): boolean {
   const c = state.line.charAt(state.pos);
   return c >= "a" && c <= "z";
 }
@@ -180,12 +180,17 @@ function pokaLexerConsumeString(state: PokaLexerState): void {
 function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
   const start = state.pos;
   state.pos++;
-  while (
-    pokaLexerIsPlainIdentifier(state) ||
-    pokaLexerIsForm(state) ||
-    pokaLexerIsDigit(state.line.charAt(state.pos))
-  ) {
-    state.pos++;
+  while (true) {
+    const c = state.line.charAt(state.pos);
+    if (
+      (c >= "a" && c <= "z") ||
+      (c >= "A" && c <= "Z") ||
+      (c >= "0" && c <= "9")
+    ) {
+      state.pos++;
+    } else {
+      break;
+    }
   }
   state.lexemes.push({
     _kind: "PlainIdentifier",
@@ -196,12 +201,17 @@ function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
 function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
   const start = state.pos;
   state.pos++; // consume sigil
-  while (
-    pokaLexerIsPlainIdentifier(state) ||
-    pokaLexerIsForm(state) ||
-    pokaLexerIsDigit(state.line.charAt(state.pos))
-  ) {
-    state.pos++;
+  while (true) {
+    const c = state.line.charAt(state.pos);
+    if (
+      (c >= "a" && c <= "z") ||
+      (c >= "A" && c <= "Z") ||
+      (c >= "0" && c <= "9")
+    ) {
+      state.pos++;
+    } else {
+      break;
+    }
   }
   state.lexemes.push({
     _kind: "SigilIdentifier",
@@ -212,8 +222,13 @@ function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
 function pokaLexerConsumeForm(state: PokaLexerState): void {
   const start = state.pos;
   state.pos++;
-  while (pokaLexerIsForm(state)) {
-    state.pos++;
+  while (true) {
+    const c = state.line.charAt(state.pos);
+    if (c >= "A" && c <= "Z") {
+      state.pos++;
+    } else {
+      break;
+    }
   }
   state.lexemes.push({
     _kind: "Form",
@@ -258,7 +273,7 @@ function pokaLexerLex(line: string): PokaLexerState {
       pokaLexerConsumeString(state);
     } else if (pokaLexerIsSigilIdentifierStart(state)) {
       pokaLexerConsumeSigilIdentifier(state);
-    } else if (pokaLexerIsPlainIdentifier(state)) {
+    } else if (pokaLexerIsPlainIdentifierStart(state)) {
       pokaLexerConsumePlainIdentifier(state);
     } else if (pokaLexerIsForm(state)) {
       pokaLexerConsumeForm(state);
