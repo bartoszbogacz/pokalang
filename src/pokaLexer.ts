@@ -61,6 +61,11 @@ interface PokaLexerState {
   tail?: string;
 }
 
+interface PokaLexerCursor {
+  lexemes: PokaLexeme[];
+  pos: number;
+}
+
 function pokaLexerIsDigit(c: string): boolean {
   return c >= "0" && c <= "9";
 }
@@ -315,6 +320,26 @@ function pokaLexerLex(line: string): PokaLexerState {
     state.tail = state.line.slice(state.pos);
   }
   return state;
+}
+
+function pokaLexerPeek(cursor: PokaLexerCursor): PokaLexeme {
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Unexpected end of input";
+  }
+  return lex;
+}
+
+function pokaLexerPop(
+  cursor: PokaLexerCursor,
+  kind?: PokaLexeme["_kind"],
+): PokaLexeme {
+  const lex = pokaLexerPeek(cursor);
+  if (kind !== undefined && lex._kind !== kind) {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
 }
 
 const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
