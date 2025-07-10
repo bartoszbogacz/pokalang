@@ -28,6 +28,10 @@ interface PokaLexemeSymbol {
   text: string;
 }
 
+interface PokaLexemeComma {
+  _kind: "Comma";
+}
+
 interface PokaLexemeListStart {
   _kind: "ListStart";
 }
@@ -36,7 +40,7 @@ interface PokaLexemeListEnd {
   _kind: "ListEnd";
 }
 
-const POKA_LEXER_SYMBOLS = "{}(),";
+const POKA_LEXER_SYMBOLS = "{}()";
 
 type PokaLexeme =
   | PokaLexemeNumber
@@ -44,6 +48,7 @@ type PokaLexeme =
   | PokaLexemePlainIdentifier
   | PokaLexemeSigilIdentifier
   | PokaLexemeForm
+  | PokaLexemeComma
   | PokaLexemeSymbol
   | PokaLexemeListStart
   | PokaLexemeListEnd;
@@ -95,6 +100,10 @@ function pokaLexerIsSymbol(state: PokaLexerState): boolean {
   return POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos));
 }
 
+function pokaLexerIsComma(state: PokaLexerState): boolean {
+  return state.line.charAt(state.pos) === ",";
+}
+
 function pokaLexerIsListStart(state: PokaLexerState): boolean {
   return state.line.charAt(state.pos) === "[";
 }
@@ -120,6 +129,11 @@ function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
 function pokaLexerConsumeSymbol(state: PokaLexerState): void {
   const c = state.line.charAt(state.pos);
   state.lexemes.push({ _kind: "Symbol", text: c });
+  state.pos++;
+}
+
+function pokaLexerConsumeComma(state: PokaLexerState): void {
+  state.lexemes.push({ _kind: "Comma" });
   state.pos++;
 }
 
@@ -244,10 +258,12 @@ function pokaLexerCheckMissingWhitespace(
     const prev = state.lexemes[state.lexemes.length - 1]!;
     const nextChar = state.line.charAt(state.pos);
     const prevJoinable =
+      prev._kind === "Comma" ||
       (prev._kind === "Symbol" && POKA_LEXER_SYMBOLS.includes(prev.text)) ||
       prev._kind === "ListStart" ||
       prev._kind === "ListEnd";
     const nextJoinable =
+      nextChar === "," ||
       POKA_LEXER_SYMBOLS.includes(nextChar) ||
       nextChar === "[" ||
       nextChar === "]";
@@ -281,6 +297,8 @@ function pokaLexerLex(line: string): PokaLexerState {
       pokaLexerConsumeListStart(state);
     } else if (pokaLexerIsListEnd(state)) {
       pokaLexerConsumeListEnd(state);
+    } else if (pokaLexerIsComma(state)) {
+      pokaLexerConsumeComma(state);
     } else if (pokaLexerIsSymbol(state)) {
       pokaLexerConsumeSymbol(state);
     } else {
@@ -313,7 +331,7 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     [
       { _kind: "ListStart" },
       { _kind: "Number", value: 1 },
-      { _kind: "Symbol", text: "," },
+      { _kind: "Comma" },
       { _kind: "Number", value: 2 },
       { _kind: "ListEnd" },
     ],
