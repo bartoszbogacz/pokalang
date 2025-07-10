@@ -29,7 +29,7 @@ type PokaValue =
   | PokaRecord;
 
 interface InterpreterState {
-  line: string;
+  lexemes: PokaLexeme[];
   pos: number;
   stack: PokaValue[];
   error: string;
@@ -83,80 +83,19 @@ function pokaInterpreterShow(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-function peekNumber(state: InterpreterState): boolean {
-  const c = state.line.charAt(state.pos);
-  return c === "-" || (c >= "0" && c <= "9");
-}
-
-function consumeNumber(state: InterpreterState): void {
-  const start = state.pos;
-  while (true) {
-    const c = state.line.charAt(state.pos);
-    if (c === "-" || (c >= "0" && c <= "9")) {
-      state.pos++;
-    } else {
-      break;
-    }
-  }
-  if (state.line.charAt(state.pos) === ".") {
-    state.pos++;
-    while (true) {
-      const c = state.line.charAt(state.pos);
-      if (c >= "0" && c <= "9") {
-        state.pos++;
-      } else {
-        break;
-      }
-    }
-  }
-  if (start === state.pos) {
-    throw "Expected number";
-  }
-  const token = state.line.slice(start, state.pos);
-  const value = parseFloat(token);
-  if (isNaN(value)) {
-    throw "`" + token + "` is not a number.";
-  } else {
-    state.stack.push(pokaScalarNumberMake(value));
-  }
-}
-
-function peekString(state: InterpreterState): boolean {
-  return state.line.charAt(state.pos) === '"';
-}
-
-function consumeString(state: InterpreterState): void {
-  if (state.line.charAt(state.pos) !== '"') {
-    throw "Expected starting quote for string";
-  }
-  state.pos++;
-  const start = state.pos;
-  while (state.line.charAt(state.pos) !== '"') {
-    if (state.pos >= state.line.length) {
-      throw "Unterminated string";
-    }
-    state.pos++;
-  }
-  const token = state.line.slice(start, state.pos);
-  state.pos++; // Skip closing quote
-  const value = token.replace(/\\n/g, "\n");
-  state.stack.push(pokaScalarStringMake(value));
-}
-
-function peekList(state: InterpreterState): boolean {
-  return peekLiteral(state, "[");
+function peekEOL(state: InterpreterState): boolean {
+  return state.pos >= state.lexemes.length;
 }
 
 function consumeList(state: InterpreterState): void {
   const values: PokaValue[] = [];
   const origStack = state.stack;
-
-  consumeLiteral(state, "[");
-  while (!peekLiteral(state, "]") && !peekEOL(state)) {
+  pokaLexerPop(state, "ListStart");
+  while (!peekEOL(state) && pokaLexerPeek(state)._kind !== "ListEnd") {
     state.stack = origStack.slice();
-    while (!peekLiteral(state, "]") && !peekEOL(state)) {
-      if (peekLiteral(state, ",")) {
-        consumeLiteral(state, ",");
+    while (!peekEOL(state) && pokaLexerPeek(state)._kind !== "ListEnd") {
+      if (pokaLexerPeek(state)._kind === "Comma") {
+        pokaLexerPop(state, "Comma");
         break;
       }
       consumeExpression(state);
@@ -164,140 +103,77 @@ function consumeList(state: InterpreterState): void {
     const value = state.stack.pop();
     if (value === undefined) {
       throw "Stack empty in fork expression";
-    } else {
-      values.push(value);
     }
+    values.push(value);
   }
-  consumeLiteral(state, "]");
-
+  pokaLexerPop(state, "ListEnd");
   state.stack = origStack;
-
   state.stack.push(pokaListMake(values));
 }
 
-function peekIdentifier(state: InterpreterState): boolean {
-  const c = state.line.charAt(state.pos);
-  return (
-    c === "$" || c === "=" || (c >= "a" && c <= "z") || (c >= "A" && c <= "Z")
-  );
-}
-
-function consumeIdentifer(state: InterpreterState): void {
-  const start = state.pos;
-
-  if (peekIdentifier(state)) {
-    state.pos++;
-  } else {
-    throw "Expected identifier";
-  }
-
-  while (true) {
-    const c = state.line.charAt(state.pos);
-    if (
-      (c >= "a" && c <= "z") ||
-      (c >= "A" && c <= "Z") ||
-      (c >= "0" && c <= "9")
-    ) {
-      state.pos++;
-    } else {
-      break;
-    }
-  }
-
-  if (start === state.pos) {
-    throw "Expected identifier";
-  }
-
-  const token = state.line.slice(start, state.pos);
-
-  // Variables may only be literals, never expressions.
-  // That allows discovery of all input dependencies
-  // and outputs of a function by simple lexical analysis.
-  // Thus variables and their environment must remain
-  // "second-class".
-  if (token.startsWith("$")) {
-    const variableName = token.slice(1, token.length);
-    const value = state.env[variableName];
-    if (value === undefined) {
-      throw "No such variable: " + variableName;
-    }
-    state.stack.push(value);
-  } else if (token.startsWith("=")) {
-    const variableName = token.slice(1, token.length);
-    const value = state.stack.pop();
-    if (value === undefined) {
-      throw "Stack underflow";
-    }
-    state.env[variableName] = value;
-  } else {
-    const word = POKA_WORDS4[token];
-
-    if (word === undefined) {
-      throw "No such function: " + token;
-    }
-
-    word.fun(state.stack);
-  }
-}
-
-function peekLiteral(state: InterpreterState, literal: string): boolean {
-  for (let i = 0; i < literal.length; i++) {
-    const c = state.line.charAt(state.pos + i);
-    if (c !== literal.charAt(i)) {
-      return false;
-    }
-  }
-  return true;
-}
-
-function consumeLiteral(state: InterpreterState, literal: string): void {
-  for (let i = 0; i < literal.length; i++) {
-    const c = state.line.charAt(state.pos++);
-    if (c !== literal.charAt(i)) {
-      throw "Expected: " + literal;
-    }
-  }
-}
-
-function peekWhitespace(state: InterpreterState): boolean {
-  return state.line.charAt(state.pos) === " ";
-}
-
-function consumeWhitespace(state: InterpreterState): void {
-  while (state.line.charAt(state.pos) === " ") {
-    state.pos++;
-  }
-}
-
-function peekEOL(state: InterpreterState): boolean {
-  return state.pos >= state.line.length;
-}
-
 function consumeExpression(state: InterpreterState): void {
-  consumeWhitespace(state);
-  if (peekIdentifier(state)) {
-    consumeIdentifer(state);
-  } else if (peekNumber(state)) {
-    consumeNumber(state);
-  } else if (peekString(state)) {
-    consumeString(state);
-  } else if (peekList(state)) {
-    consumeList(state);
-  } else {
+  if (peekEOL(state)) {
     throw "Expected expression";
   }
-  consumeWhitespace(state);
+  const token = pokaLexerPeek(state);
+  if (token._kind === "Number") {
+    pokaLexerPop(state, "Number");
+    state.stack.push(pokaScalarNumberMake(token.value));
+    return;
+  }
+  if (token._kind === "String") {
+    pokaLexerPop(state, "String");
+    state.stack.push(pokaScalarStringMake(token.text));
+    return;
+  }
+  if (token._kind === "SigilIdentifier") {
+    pokaLexerPop(state, "SigilIdentifier");
+    if (token.text.startsWith("$")) {
+      const variableName = token.text.slice(1);
+      const value = state.env[variableName];
+      if (value === undefined) {
+        throw "No such variable: " + variableName;
+      }
+      state.stack.push(value);
+      return;
+    }
+    if (token.text.startsWith("=")) {
+      const variableName = token.text.slice(1);
+      const value = state.stack.pop();
+      if (value === undefined) {
+        throw "Stack underflow";
+      }
+      state.env[variableName] = value;
+      return;
+    }
+    throw "Invalid sigil";
+  }
+  if (token._kind === "PlainIdentifier") {
+    pokaLexerPop(state, "PlainIdentifier");
+    const word = POKA_WORDS4[token.text];
+    if (word === undefined) {
+      throw "No such function: " + token.text;
+    }
+    word.fun(state.stack);
+    return;
+  }
+  if (token._kind === "ListStart") {
+    consumeList(state);
+    return;
+  }
+  throw "Expected expression";
 }
 
 function pokaInterpreterMake(
   line: string,
   environment: { [word: string]: PokaValue },
 ): InterpreterState {
+  const lex = pokaLexerLex(line);
   const state: InterpreterState = {
-    line: line,
+    lexemes: lex.lexemes,
     pos: 0,
     stack: [],
-    error: "",
+    error: lex.error ? lex.error : "",
     env: {},
   };
 
@@ -309,7 +185,10 @@ function pokaInterpreterMake(
 }
 
 function pokaInterpreterEvaluate(state: InterpreterState): void {
-  let error: string = "";
+  if (state.error !== "") {
+    return;
+  }
+  let error = "";
   try {
     while (!peekEOL(state)) {
       consumeExpression(state);
@@ -317,7 +196,6 @@ function pokaInterpreterEvaluate(state: InterpreterState): void {
   } catch (exc) {
     error = "" + exc;
   }
-
   state.error = error;
 }
 
