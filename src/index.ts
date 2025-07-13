@@ -111,50 +111,67 @@ function consumeList(state: InterpreterState): void {
   state.stack.push(pokaListMake(values));
 }
 
+function consumeNumber(state: InterpreterState): void {
+  const token = pokaLexerPopNumber(state);
+  state.stack.push(pokaScalarNumberMake(token.value));
+}
+
+function consumeString(state: InterpreterState): void {
+  const token = pokaLexerPopString(state);
+  state.stack.push(pokaScalarStringMake(token.text));
+}
+
+function consumeSigilIdentifier(state: InterpreterState): void {
+  const token = pokaLexerPopSigilIdentifier(state);
+  if (token.sigil === "$") {
+    const variableName = token.value;
+    const value = state.env[variableName];
+    if (value === undefined) {
+      throw "No such variable: " + variableName;
+    }
+    state.stack.push(value);
+    return;
+  }
+  if (token.sigil === "=") {
+    const variableName = token.value;
+    const value = state.stack.pop();
+    if (value === undefined) {
+      throw "Stack underflow";
+    }
+    state.env[variableName] = value;
+    return;
+  }
+  throw "Invalid sigil";
+}
+
+function consumePlainIdentifier(state: InterpreterState): void {
+  const token = pokaLexerPopPlainIdentifer(state);
+  const word = POKA_WORDS4[token.text];
+  if (word === undefined) {
+    throw "No such function: " + token.text;
+  }
+  word.fun(state.stack);
+}
+
 function consumeExpression(state: InterpreterState): void {
   if (peekEOL(state)) {
     throw "Expected expression";
   }
   const token = pokaLexerPeek(state);
   if (token._kind === "Number") {
-    pokaLexerPopNumber(state);
-    state.stack.push(pokaScalarNumberMake(token.value));
+    consumeNumber(state);
     return;
   }
   if (token._kind === "String") {
-    pokaLexerPopString(state);
-    state.stack.push(pokaScalarStringMake(token.text));
+    consumeString(state);
     return;
   }
   if (token._kind === "SigilIdentifier") {
-    pokaLexerPopSigilIdentifier(state);
-    if (token.sigil === "$") {
-      const variableName = token.value;
-      const value = state.env[variableName];
-      if (value === undefined) {
-        throw "No such variable: " + variableName;
-      }
-      state.stack.push(value);
-      return;
-    }
-    if (token.sigil === "=") {
-      const variableName = token.value;
-      const value = state.stack.pop();
-      if (value === undefined) {
-        throw "Stack underflow";
-      }
-      state.env[variableName] = value;
-      return;
-    }
-    throw "Invalid sigil";
+    consumeSigilIdentifier(state);
+    return;
   }
   if (token._kind === "PlainIdentifier") {
-    pokaLexerPopPlainIdentifer(state);
-    const word = POKA_WORDS4[token.text];
-    if (word === undefined) {
-      throw "No such function: " + token.text;
-    }
-    word.fun(state.stack);
+    consumePlainIdentifier(state);
     return;
   }
   if (token._kind === "ListStart") {
