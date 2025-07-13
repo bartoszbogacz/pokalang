@@ -1,3 +1,14 @@
+interface PokaRecordEntry {
+  _type: "RecordEntry";
+  key: string;
+  value: PokaValue;
+}
+
+interface PokaRecord {
+  _type: "PokaRecord";
+  value: { [key: string]: PokaValue };
+}
+
 function pokaRecordEqualsPokaRecord(
   a: PokaRecord,
   b: PokaRecord,

@@ -1,19 +1,3 @@
-interface PokaList {
-  _type: "List";
-  value: PokaValue[];
-}
-
-interface PokaRecordEntry {
-  _type: "RecordEntry";
-  key: string;
-  value: PokaValue;
-}
-
-interface PokaRecord {
-  _type: "PokaRecord";
-  value: { [key: string]: PokaValue };
-}
-
 type PokaValue =
   | PokaScalarBoolean
   | PokaScalarNumber
