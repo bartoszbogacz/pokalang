@@ -154,31 +154,20 @@ function consumePlainIdentifier(state: InterpreterState): void {
 }
 
 function consumeExpression(state: InterpreterState): void {
-  if (peekEOL(state)) {
-    throw "Expected expression";
-  }
   const token = pokaLexerPeek(state);
   if (token._kind === "Number") {
     consumeNumber(state);
-    return;
-  }
-  if (token._kind === "String") {
+  } else if (token._kind === "String") {
     consumeString(state);
-    return;
-  }
-  if (token._kind === "SigilIdentifier") {
+  } else if (token._kind === "SigilIdentifier") {
     consumeSigilIdentifier(state);
-    return;
-  }
-  if (token._kind === "PlainIdentifier") {
+  } else if (token._kind === "PlainIdentifier") {
     consumePlainIdentifier(state);
-    return;
-  }
-  if (token._kind === "ListStart") {
+  } else if (token._kind === "ListStart") {
     consumeList(state);
-    return;
+  } else {
+    throw "Unexpected token: `" + pokaLexerShowLexeme(token) + "`";
   }
-  throw "Expected expression";
 }
 
 function pokaInterpreterMake(

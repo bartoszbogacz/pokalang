@@ -409,6 +409,29 @@ function pokaLexerPopListEnd(cursor: PokaLexerCursor): PokaLexemeListEnd {
   return lex;
 }
 
+function pokaLexerShowLexeme(lex: PokaLexeme): string {
+  switch (lex._kind) {
+    case "Number":
+      return lex.value.toString();
+    case "String":
+      return '"' + lex.text + '"';
+    case "PlainIdentifier":
+      return lex.text;
+    case "SigilIdentifier":
+      return lex.sigil + lex.value;
+    case "Form":
+      return lex.text;
+    case "Comma":
+      return ",";
+    case "Symbol":
+      return lex.text;
+    case "ListStart":
+      return "[";
+    case "ListEnd":
+      return "]";
+  }
+}
+
 const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
   [
     "1 2 add",
