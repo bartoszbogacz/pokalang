@@ -128,8 +128,8 @@ function consumeExpression(state: InterpreterState): void {
   }
   if (token._kind === "SigilIdentifier") {
     pokaLexerPop(state, "SigilIdentifier");
-    if (token.text.startsWith("$")) {
-      const variableName = token.text.slice(1);
+    if (token.sigil === "$") {
+      const variableName = token.value;
       const value = state.env[variableName];
       if (value === undefined) {
         throw "No such variable: " + variableName;
@@ -137,8 +137,8 @@ function consumeExpression(state: InterpreterState): void {
       state.stack.push(value);
       return;
     }
-    if (token.text.startsWith("=")) {
-      const variableName = token.text.slice(1);
+    if (token.sigil === "=") {
+      const variableName = token.value;
       const value = state.stack.pop();
       if (value === undefined) {
         throw "Stack underflow";

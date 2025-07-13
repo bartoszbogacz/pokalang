@@ -15,7 +15,8 @@ interface PokaLexemePlainIdentifier {
 
 interface PokaLexemeSigilIdentifier {
   _kind: "SigilIdentifier";
-  text: string;
+  sigil: string;
+  value: string;
 }
 
 interface PokaLexemeForm {
@@ -218,8 +219,9 @@ function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
 }
 
 function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
-  const start = state.pos;
+  const sigil = state.line.charAt(state.pos);
   state.pos++; // consume sigil
+  const start = state.pos;
   while (true) {
     const c = state.line.charAt(state.pos);
     if (
@@ -234,7 +236,8 @@ function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
   }
   state.lexemes.push({
     _kind: "SigilIdentifier",
-    text: state.line.slice(start, state.pos),
+    sigil,
+    value: state.line.slice(start, state.pos),
   });
 }
 
@@ -365,8 +368,8 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
     '"hi" =a $a',
     [
       { _kind: "String", text: "hi" },
-      { _kind: "SigilIdentifier", text: "=a" },
-      { _kind: "SigilIdentifier", text: "$a" },
+      { _kind: "SigilIdentifier", sigil: "=", value: "a" },
+      { _kind: "SigilIdentifier", sigil: "$", value: "a" },
     ],
   ],
   [
@@ -440,6 +443,13 @@ function pokaLexerTestsRun(): string {
             const g = got as PokaLexemeNumber;
             const e = exp as PokaLexemeNumber;
             if (g.value !== e.value) {
+              ok = false;
+              break;
+            }
+          } else if (got._kind === "SigilIdentifier") {
+            const g = got as PokaLexemeSigilIdentifier;
+            const e = exp as PokaLexemeSigilIdentifier;
+            if (g.sigil !== e.sigil || g.value !== e.value) {
               ok = false;
               break;
             }
