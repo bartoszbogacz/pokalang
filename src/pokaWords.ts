@@ -29,8 +29,8 @@ POKA_WORDS4["all"] = {
     "[true, true] all true equals",
     "[false, false] all false equals",
     "[true, false] all false equals",
-    "[[true, true] [true, true]] all true equals",
-    "[[true, false] [false, true]] all false equals",
+    "[[true, true], [true, true]] all true equals",
+    "[[true, false], [false, true]] all false equals",
   ],
   fun: pokaWordAll,
 };
