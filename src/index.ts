@@ -41,44 +41,27 @@ interface PokaWord4 {
   fun: (stack: PokaValue[]) => void;
 }
 
-function pokaShow(value: PokaValue): string {
-  if (value._type === "ScalarBoolean") {
-    return value.value ? "True" : "False";
-  } else if (value._type === "ScalarNumber") {
-    return value.value.toString();
-  } else if (value._type === "ScalarString") {
-    return '"' + value.value + '"';
-  } else if (value._type === "PokaVectorBoolean") {
-    return pokaVectorBooleanShow(value);
-  } else if (value._type === "PokaVectorNumber") {
-    return pokaVectorNumberShow(value);
-  } else if (value._type === "PokaVectorString") {
-    return pokaVectorStringShow(value);
-  } else if (value._type === "PokaMatrixBoolean") {
-    return pokaMatrixBooleanShow(value);
-  } else if (value._type === "PokaMatrixNumber") {
-    return pokaMatrixNumberShow(value);
-  } else if (value._type === "PokaMatrixString") {
-    return pokaMatrixStringShow(value);
-  } else if (value._type === "List") {
-    return "[" + value.value.map(pokaShow).join(", ") + "]";
-  } else if (value._type === "RecordEntry") {
-    return ":" + value.key + " " + pokaShow(value.value);
-  } else if (value._type === "PokaRecord") {
-    const asList = pokaListTryFrom(value);
-    if (asList === null) {
-      throw "Unreachable";
-    }
-    return pokaShow(asList);
-  } else {
-    throw "Unreachable";
+function pokaCallWordString(
+  fun: (stack: PokaValue[]) => void,
+  args: PokaValue[],
+): string {
+  const stack = args.slice();
+  fun(stack);
+  const result = stack.pop();
+  if (result === undefined) {
+    throw "Stack underflow";
   }
+  if (result._type !== "ScalarString") {
+    throw "Unexpected return type: " + result._type;
+  }
+  return result.value;
 }
 
 function pokaInterpreterShow(state: InterpreterState): string {
   const result: string[] = [];
   for (const value of state.stack.slice().reverse()) {
-    result.push(pokaShow(value));
+    const text = pokaCallWordString(pokaWordShow, [value]);
+    result.push(text);
   }
   return state.error + "\n" + result.join("\n");
 }
