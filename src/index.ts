@@ -83,17 +83,13 @@ function pokaInterpreterShow(state: InterpreterState): string {
   return state.error + "\n" + result.join("\n");
 }
 
-function peekEOL(state: InterpreterState): boolean {
-  return state.pos >= state.lexemes.length;
-}
-
 function consumeList(state: InterpreterState): void {
   const values: PokaValue[] = [];
   const origStack = state.stack;
   pokaLexerPopListStart(state);
-  while (!peekEOL(state) && pokaLexerPeek(state)._kind !== "ListEnd") {
+  while (pokaLexerPeek(state)._kind !== "ListEnd") {
     state.stack = origStack.slice();
-    while (!peekEOL(state) && pokaLexerPeek(state)._kind !== "ListEnd") {
+    while (pokaLexerPeek(state)._kind !== "ListEnd") {
       if (pokaLexerPeek(state)._kind === "Comma") {
         pokaLexerPopComma(state);
         break;
@@ -154,7 +150,7 @@ function consumePlainIdentifier(state: InterpreterState): void {
 }
 
 function consumeExpression(state: InterpreterState): void {
-  if (peekEOL(state)) {
+  if (pokaLexerPeekEOL(state)) {
     throw "Expected expression";
   }
   const token = pokaLexerPeek(state);
@@ -207,7 +203,7 @@ function pokaInterpreterEvaluate(state: InterpreterState): void {
   }
   let error = "";
   try {
-    while (!peekEOL(state)) {
+    while (!pokaLexerPeekEOL(state)) {
       consumeExpression(state);
     }
   } catch (exc) {

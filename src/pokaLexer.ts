@@ -333,6 +333,10 @@ function pokaLexerPeek(cursor: PokaLexerCursor): PokaLexeme {
   return lex;
 }
 
+function pokaLexerPeekEOL(cursor: PokaLexerCursor): boolean {
+  return cursor.pos >= cursor.lexemes.length;
+}
+
 function pokaLexerPopNumber(cursor: PokaLexerCursor): PokaLexemeNumber {
   const lex = pokaLexerPeek(cursor);
   if (lex._kind !== "Number") {
