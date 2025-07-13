@@ -333,12 +333,76 @@ function pokaLexerPeek(cursor: PokaLexerCursor): PokaLexeme {
   return lex;
 }
 
-function pokaLexerPop(
-  cursor: PokaLexerCursor,
-  kind?: PokaLexeme["_kind"],
-): PokaLexeme {
+function pokaLexerPopNumber(cursor: PokaLexerCursor): PokaLexemeNumber {
   const lex = pokaLexerPeek(cursor);
-  if (kind !== undefined && lex._kind !== kind) {
+  if (lex._kind !== "Number") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopString(cursor: PokaLexerCursor): PokaLexemeString {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "String") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopPlainIdentifer(
+  cursor: PokaLexerCursor,
+): PokaLexemePlainIdentifier {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "PlainIdentifier") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopSigilIdentifier(
+  cursor: PokaLexerCursor,
+): PokaLexemeSigilIdentifier {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "SigilIdentifier") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopForm(cursor: PokaLexerCursor): PokaLexemeForm {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "Form") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopComma(cursor: PokaLexerCursor): PokaLexemeComma {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "Comma") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopListStart(cursor: PokaLexerCursor): PokaLexemeListStart {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "ListStart") {
+    throw "Unexpected token";
+  }
+  cursor.pos++;
+  return lex;
+}
+
+function pokaLexerPopListEnd(cursor: PokaLexerCursor): PokaLexemeListEnd {
+  const lex = pokaLexerPeek(cursor);
+  if (lex._kind !== "ListEnd") {
     throw "Unexpected token";
   }
   cursor.pos++;
