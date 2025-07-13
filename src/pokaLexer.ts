@@ -193,7 +193,7 @@ function pokaLexerConsumeString(state: PokaLexerState): void {
   state.pos++; // closing quote
   state.lexemes.push({
     _kind: "String",
-    text: value,
+    text: value.replace(/\\n/g, "\n"),
   });
 }
 
