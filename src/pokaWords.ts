@@ -1320,7 +1320,47 @@ function pokaWordShow(stack: PokaValue[]): void {
     throw "Stack underflow";
   }
 
-  stack.push(pokaScalarStringMake(pokaShow(a)));
+  let result: string;
+  if (a._type === "ScalarBoolean") {
+    result = a.value ? "True" : "False";
+  } else if (a._type === "ScalarNumber") {
+    result = a.value.toString();
+  } else if (a._type === "ScalarString") {
+    result = '"' + a.value + '"';
+  } else if (a._type === "PokaVectorBoolean") {
+    result = pokaVectorBooleanShow(a);
+  } else if (a._type === "PokaVectorNumber") {
+    result = pokaVectorNumberShow(a);
+  } else if (a._type === "PokaVectorString") {
+    result = pokaVectorStringShow(a);
+  } else if (a._type === "PokaMatrixBoolean") {
+    result = pokaMatrixBooleanShow(a);
+  } else if (a._type === "PokaMatrixNumber") {
+    result = pokaMatrixNumberShow(a);
+  } else if (a._type === "PokaMatrixString") {
+    result = pokaMatrixStringShow(a);
+  } else if (a._type === "List") {
+    const strings: string[] = [];
+    for (const v of a.value) {
+      const text = pokaCallWordString(pokaWordShow, [v]);
+      strings.push(text);
+    }
+    result = "[" + strings.join(", ") + "]";
+  } else if (a._type === "RecordEntry") {
+    const text = pokaCallWordString(pokaWordShow, [a.value]);
+    result = ":" + a.key + " " + text;
+  } else if (a._type === "PokaRecord") {
+    const asList = pokaListTryFrom(a);
+    if (asList === null) {
+      throw "Unreachable";
+    }
+    const text = pokaCallWordString(pokaWordShow, [asList]);
+    result = text;
+  } else {
+    throw "Unreachable";
+  }
+
+  stack.push(pokaScalarStringMake(result));
 }
 
 POKA_WORDS4["show"] = {

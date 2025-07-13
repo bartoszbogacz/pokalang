@@ -19,7 +19,8 @@ function pokaTestsRun(): string {
         throw "Stack exhausted";
       }
       if (top._type !== "ScalarBoolean") {
-        throw "Test has non-boolean result: " + pokaShow(top);
+        const text = pokaCallWordString(pokaWordShow, [top]);
+        throw "Test has non-boolean result: " + text;
       }
       if (top.value !== true) {
         throw "Test failed";
@@ -45,7 +46,8 @@ function pokaDocTests4Run(): string {
           throw "Stack exhausted";
         }
         if (top._type !== "ScalarBoolean") {
-          throw "Test has non-boolean result: " + pokaShow(top);
+          const text = pokaCallWordString(pokaWordShow, [top]);
+          throw "Test has non-boolean result: " + text;
         }
         if (top.value !== true) {
           throw "Test failed";
@@ -75,7 +77,8 @@ function pokaTestsAocRun(): string {
           throw "Stack exhausted";
         }
         if (top._type !== "ScalarNumber") {
-          throw "Test has non ScalarNumber result: " + pokaShow(top);
+          const text = pokaCallWordString(pokaWordShow, [top]);
+          throw "Test has non ScalarNumber result: " + text;
         }
         if (top.value !== day.answer) {
           throw "Test failed";
