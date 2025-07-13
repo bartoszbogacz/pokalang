@@ -90,12 +90,12 @@ function peekEOL(state: InterpreterState): boolean {
 function consumeList(state: InterpreterState): void {
   const values: PokaValue[] = [];
   const origStack = state.stack;
-  pokaLexerPop(state, "ListStart");
+  pokaLexerPopListStart(state);
   while (!peekEOL(state) && pokaLexerPeek(state)._kind !== "ListEnd") {
     state.stack = origStack.slice();
     while (!peekEOL(state) && pokaLexerPeek(state)._kind !== "ListEnd") {
       if (pokaLexerPeek(state)._kind === "Comma") {
-        pokaLexerPop(state, "Comma");
+        pokaLexerPopComma(state);
         break;
       }
       consumeExpression(state);
@@ -106,7 +106,7 @@ function consumeList(state: InterpreterState): void {
     }
     values.push(value);
   }
-  pokaLexerPop(state, "ListEnd");
+  pokaLexerPopListEnd(state);
   state.stack = origStack;
   state.stack.push(pokaListMake(values));
 }
@@ -117,17 +117,17 @@ function consumeExpression(state: InterpreterState): void {
   }
   const token = pokaLexerPeek(state);
   if (token._kind === "Number") {
-    pokaLexerPop(state, "Number");
+    pokaLexerPopNumber(state);
     state.stack.push(pokaScalarNumberMake(token.value));
     return;
   }
   if (token._kind === "String") {
-    pokaLexerPop(state, "String");
+    pokaLexerPopString(state);
     state.stack.push(pokaScalarStringMake(token.text));
     return;
   }
   if (token._kind === "SigilIdentifier") {
-    pokaLexerPop(state, "SigilIdentifier");
+    pokaLexerPopSigilIdentifier(state);
     if (token.sigil === "$") {
       const variableName = token.value;
       const value = state.env[variableName];
@@ -149,7 +149,7 @@ function consumeExpression(state: InterpreterState): void {
     throw "Invalid sigil";
   }
   if (token._kind === "PlainIdentifier") {
-    pokaLexerPop(state, "PlainIdentifier");
+    pokaLexerPopPlainIdentifer(state);
     const word = POKA_WORDS4[token.text];
     if (word === undefined) {
       throw "No such function: " + token.text;
