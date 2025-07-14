@@ -92,9 +92,7 @@ function consumeSigilIdentifier(state: InterpreterState): void {
       throw "No such variable: " + variableName;
     }
     state.stack.push(value);
-    return;
-  }
-  if (token.sigil === "=") {
+  } else if (token.sigil === "=") {
     const variableName = token.value;
     const value = state.stack.pop();
     if (value === undefined) {
@@ -102,8 +100,9 @@ function consumeSigilIdentifier(state: InterpreterState): void {
     }
     state.env[variableName] = value;
     return;
+  } else {
+    throw "Invalid sigil";
   }
-  throw "Invalid sigil";
 }
 
 function consumePlainIdentifier(state: InterpreterState): void {
