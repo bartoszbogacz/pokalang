@@ -314,18 +314,24 @@ function pokaLexerPeekEOL(cursor: PokaLexerCursor): boolean {
 }
 
 function pokaLexerPopNumber(cursor: PokaLexerCursor): PokaLexemeNumber {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: Number Got: End of input.";
+  }
   if (lex._kind !== "Number") {
-    throw "Unexpected token";
+    throw "Expected: Number Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
 }
 
 function pokaLexerPopString(cursor: PokaLexerCursor): PokaLexemeString {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: String Got: End of input.";
+  }
   if (lex._kind !== "String") {
-    throw "Unexpected token";
+    throw "Expected: String Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
@@ -334,9 +340,12 @@ function pokaLexerPopString(cursor: PokaLexerCursor): PokaLexemeString {
 function pokaLexerPopPlainIdentifer(
   cursor: PokaLexerCursor,
 ): PokaLexemePlainIdentifier {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: PlainIdentifier Got: End of input.";
+  }
   if (lex._kind !== "PlainIdentifier") {
-    throw "Unexpected token";
+    throw "Expected: PlainIdentifier Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
@@ -345,45 +354,60 @@ function pokaLexerPopPlainIdentifer(
 function pokaLexerPopSigilIdentifier(
   cursor: PokaLexerCursor,
 ): PokaLexemeSigilIdentifier {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: SigilIdentifier Got: End of input.";
+  }
   if (lex._kind !== "SigilIdentifier") {
-    throw "Unexpected token";
+    throw "Expected: SigilIdentifier Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
 }
 
 function pokaLexerPopForm(cursor: PokaLexerCursor): PokaLexemeForm {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: Form Got: End of input.";
+  }
   if (lex._kind !== "Form") {
-    throw "Unexpected token";
+    throw "Expected: Form Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
 }
 
 function pokaLexerPopComma(cursor: PokaLexerCursor): PokaLexemeComma {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: Comma Got: End of input.";
+  }
   if (lex._kind !== "Comma") {
-    throw "Unexpected token";
+    throw "Expected: Comma Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
 }
 
 function pokaLexerPopListStart(cursor: PokaLexerCursor): PokaLexemeListStart {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: ListStart Got: End of input.";
+  }
   if (lex._kind !== "ListStart") {
-    throw "Unexpected token";
+    throw "Expected: ListStart Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
 }
 
 function pokaLexerPopListEnd(cursor: PokaLexerCursor): PokaLexemeListEnd {
-  const lex = pokaLexerPeek(cursor);
+  const lex = cursor.lexemes[cursor.pos];
+  if (lex === undefined) {
+    throw "Expected: ListEnd Got: End of input.";
+  }
   if (lex._kind !== "ListEnd") {
-    throw "Unexpected token";
+    throw "Expected: ListEnd Got: " + pokaLexerShowLexeme(lex);
   }
   cursor.pos++;
   return lex;
