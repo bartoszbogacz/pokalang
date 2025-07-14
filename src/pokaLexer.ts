@@ -24,11 +24,6 @@ interface PokaLexemeForm {
   text: string;
 }
 
-interface PokaLexemeSymbol {
-  _kind: "Symbol";
-  text: string;
-}
-
 interface PokaLexemeComma {
   _kind: "Comma";
 }
@@ -41,8 +36,6 @@ interface PokaLexemeListEnd {
   _kind: "ListEnd";
 }
 
-const POKA_LEXER_SYMBOLS = "{}()";
-
 type PokaLexeme =
   | PokaLexemeNumber
   | PokaLexemeString
@@ -50,7 +43,6 @@ type PokaLexeme =
   | PokaLexemeSigilIdentifier
   | PokaLexemeForm
   | PokaLexemeComma
-  | PokaLexemeSymbol
   | PokaLexemeListStart
   | PokaLexemeListEnd;
 
@@ -102,10 +94,6 @@ function pokaLexerIsStringStart(state: PokaLexerState): boolean {
   return state.line.charAt(state.pos) === '"';
 }
 
-function pokaLexerIsSymbol(state: PokaLexerState): boolean {
-  return POKA_LEXER_SYMBOLS.includes(state.line.charAt(state.pos));
-}
-
 function pokaLexerIsComma(state: PokaLexerState): boolean {
   return state.line.charAt(state.pos) === ",";
 }
@@ -130,12 +118,6 @@ function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
     }
   }
   return count;
-}
-
-function pokaLexerConsumeSymbol(state: PokaLexerState): void {
-  const c = state.line.charAt(state.pos);
-  state.lexemes.push({ _kind: "Symbol", text: c });
-  state.pos++;
 }
 
 function pokaLexerConsumeComma(state: PokaLexerState): void {
@@ -267,14 +249,10 @@ function pokaLexerCheckMissingWhitespace(
     const nextChar = state.line.charAt(state.pos);
     const prevJoinable =
       prev._kind === "Comma" ||
-      (prev._kind === "Symbol" && POKA_LEXER_SYMBOLS.includes(prev.text)) ||
       prev._kind === "ListStart" ||
       prev._kind === "ListEnd";
     const nextJoinable =
-      nextChar === "," ||
-      POKA_LEXER_SYMBOLS.includes(nextChar) ||
-      nextChar === "[" ||
-      nextChar === "]";
+      nextChar === "," || nextChar === "[" || nextChar === "]";
     if (!prevJoinable && !nextJoinable) {
       state.error = "Missing whitespace";
       state.tail = state.line.slice(state.pos);
@@ -307,8 +285,6 @@ function pokaLexerLex(line: string): PokaLexerState {
       pokaLexerConsumeListEnd(state);
     } else if (pokaLexerIsComma(state)) {
       pokaLexerConsumeComma(state);
-    } else if (pokaLexerIsSymbol(state)) {
-      pokaLexerConsumeSymbol(state);
     } else {
       state.error = "Unknown token";
       state.tail = state.line.slice(state.pos);
@@ -427,8 +403,6 @@ function pokaLexerShowLexeme(lex: PokaLexeme): string {
       return lex.text;
     case "Comma":
       return ",";
-    case "Symbol":
-      return lex.text;
     case "ListStart":
       return "[";
     case "ListEnd":
