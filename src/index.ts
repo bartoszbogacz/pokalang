@@ -137,7 +137,7 @@ function pokaInterpreterMake(
   line: string,
   environment: { [word: string]: PokaValue },
 ): InterpreterState {
-  const lex = pokaLexerLex(line);
+  const lex = pokaLex(line);
   const state: InterpreterState = {
     lexemes: lex.lexemes,
     pos: 0,

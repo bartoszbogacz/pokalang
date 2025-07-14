@@ -51,7 +51,6 @@ interface PokaLexerState {
   pos: number;
   lexemes: PokaLexeme[];
   error?: string;
-  tail?: string;
 }
 
 interface PokaLexerCursor {
@@ -152,9 +151,7 @@ function pokaLexerConsumeNumber(state: PokaLexerState): void {
   const text = state.line.slice(start, state.pos);
   const value = parseFloat(text);
   if (Number.isNaN(value)) {
-    state.error = "Invalid number";
-    state.tail = state.line.slice(start);
-    return;
+    throw "Invalid number: " + text;
   }
   state.lexemes.push({
     _kind: "Number",
@@ -240,30 +237,7 @@ function pokaLexerConsumeForm(state: PokaLexerState): void {
   });
 }
 
-function pokaLexerCheckMissingWhitespace(
-  state: PokaLexerState,
-  consumed: number,
-): boolean {
-  if (!pokaLexerIsEol(state) && consumed === 0) {
-    const prev = state.lexemes[state.lexemes.length - 1]!;
-    const nextChar = state.line.charAt(state.pos);
-    const prevJoinable =
-      prev._kind === "Comma" ||
-      prev._kind === "ListStart" ||
-      prev._kind === "ListEnd";
-    const nextJoinable =
-      nextChar === "," || nextChar === "[" || nextChar === "]";
-    if (!prevJoinable && !nextJoinable) {
-      state.error = "Missing whitespace";
-      state.tail = state.line.slice(state.pos);
-      return true;
-    }
-  }
-  return false;
-}
-
-function pokaLexerLex(line: string): PokaLexerState {
-  const state: PokaLexerState = { line, pos: 0, lexemes: [] };
+function pokaLexerConsume(state: PokaLexerState): void {
   while (!pokaLexerIsEol(state)) {
     pokaLexerConsumeWhitespace(state);
     if (pokaLexerIsEol(state)) {
@@ -286,17 +260,21 @@ function pokaLexerLex(line: string): PokaLexerState {
     } else if (pokaLexerIsComma(state)) {
       pokaLexerConsumeComma(state);
     } else {
-      state.error = "Unknown token";
-      state.tail = state.line.slice(state.pos);
-      break;
-    }
-    const consumed = pokaLexerConsumeWhitespace(state);
-    if (pokaLexerCheckMissingWhitespace(state, consumed)) {
-      break;
+      throw "Unknown token";
     }
   }
-  if (!state.error && !pokaLexerIsEol(state)) {
-    state.tail = state.line.slice(state.pos);
+}
+
+function pokaLex(line: string): PokaLexerState {
+  let state: PokaLexerState = {
+    line: line,
+    pos: 0,
+    lexemes: []
+  };
+  try {
+    pokaLexerConsume(state);
+  } catch (exc) {
+    state.error = "" + exc;
   }
   return state;
 }
@@ -503,21 +481,11 @@ const POKA_LEXER_TESTS: [string, PokaLexeme[]][] = [
   ],
 ];
 
-const POKA_LEXER_NEGATIVE_TESTS: string[] = [
-  "1add",
-  "1 2add",
-  "FORx EACH",
-  "-1.5mul",
-  "1.5$a",
-  '"hi"=a',
-  '"hi"$a',
-];
-
 function pokaLexerTestsRun(): string {
   const result: string[] = [];
   for (const [text, expected] of POKA_LEXER_TESTS) {
     try {
-      const state = pokaLexerLex(text);
+      const state = pokaLex(text);
       let ok =
         state.error === undefined && state.lexemes.length === expected.length;
       if (ok) {
@@ -552,18 +520,6 @@ function pokaLexerTestsRun(): string {
       }
       if (!ok) {
         throw "Unexpected lexemes: " + JSON.stringify(state.lexemes);
-      }
-      result.push("OK   | " + text.replace("\n", "\\n"));
-    } catch (exc) {
-      result.push("FAIL | " + text.replace("\n", "\\n"));
-      result.push(" EXC | " + exc);
-    }
-  }
-  for (const text of POKA_LEXER_NEGATIVE_TESTS) {
-    try {
-      const state = pokaLexerLex(text);
-      if (state.error === undefined && state.tail === undefined) {
-        throw "Unexpected success";
       }
       result.push("OK   | " + text.replace("\n", "\\n"));
     } catch (exc) {
