@@ -483,75 +483,78 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
   },
 ];
 
-function pokaLexerRunTests(): string {
-  const result: string[] = [];
-  try {
-    for (const test of POKA_LEXER_TEST_CASES) {
-      const state = pokaLex(test.text);
-      if (state.error !== undefined) {
-        throw "pokaLexerRunTests: " + state.error;
-      }
-      for (const expected of test.lexemes) {
-        const got = pokaLexerPeek(state);
-        if (
-          expected._kind === "Number" &&
-          got._kind === "Number" &&
-          expected.value === got.value
-        ) {
-          pokaLexerPopNumber(state);
-        } else if (
-          expected._kind === "String" &&
-          got._kind === "String" &&
-          expected.text === got.text
-        ) {
-          pokaLexerPopString(state);
-        } else if (
-          expected._kind === "PlainIdentifier" &&
-          got._kind === "PlainIdentifier" &&
-          expected.text === got.text
-        ) {
-          pokaLexerPopPlainIdentifer(state);
-        } else if (
-          expected._kind === "SigilIdentifier" &&
-          got._kind === "SigilIdentifier" &&
-          expected.sigil === got.sigil &&
-          expected.value === got.value
-        ) {
-          pokaLexerPopSigilIdentifier(state);
-        } else if (
-          expected._kind === "Form" &&
-          got._kind === "Form" &&
-          expected.text === got.text
-        ) {
-          pokaLexerPopForm(state);
-        } else if (expected._kind === "Comma" && got._kind === "Comma") {
-          pokaLexerPopComma(state);
-        } else if (
-          expected._kind === "ListStart" &&
-          got._kind === "ListStart"
-        ) {
-          pokaLexerPopListStart(state);
-        } else if (expected._kind === "ListEnd" && got._kind === "ListEnd") {
-          pokaLexerPopListEnd(state);
-        } else {
-          throw (
-            "pokaLexerRunTests: Expected: " +
-            pokaLexerShowLexeme(expected) +
-            " Got: " +
-            pokaLexerShowLexeme(got)
-          );
-        }
-      }
-      if (!pokaLexerPeekEOL(state)) {
-        throw (
-          "pokaLexerRunTests: Expected EOL Got: " +
-          pokaLexerShowLexeme(pokaLexerPeek(state))
-        );
-      }
-    }
-    result.push("pokaLexerRunTests: OK");
-  } catch (exc) {
-    result.push(String(exc));
+function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
+  const state = pokaLex(testCase.text);
+  if (state.error !== undefined) {
+    throw "pokaLexerRunTests: " + state.error;
   }
-  return result.join("\n");
+  for (const expected of testCase.lexemes) {
+    const got = pokaLexerPeek(state);
+    if (
+      expected._kind === "Number" &&
+      got._kind === "Number" &&
+      expected.value === got.value
+    ) {
+      pokaLexerPopNumber(state);
+    } else if (
+      expected._kind === "String" &&
+      got._kind === "String" &&
+      expected.text === got.text
+    ) {
+      pokaLexerPopString(state);
+    } else if (
+      expected._kind === "PlainIdentifier" &&
+      got._kind === "PlainIdentifier" &&
+      expected.text === got.text
+    ) {
+      pokaLexerPopPlainIdentifer(state);
+    } else if (
+      expected._kind === "SigilIdentifier" &&
+      got._kind === "SigilIdentifier" &&
+      expected.sigil === got.sigil &&
+      expected.value === got.value
+    ) {
+      pokaLexerPopSigilIdentifier(state);
+    } else if (
+      expected._kind === "Form" &&
+      got._kind === "Form" &&
+      expected.text === got.text
+    ) {
+      pokaLexerPopForm(state);
+    } else if (expected._kind === "Comma" && got._kind === "Comma") {
+      pokaLexerPopComma(state);
+    } else if (expected._kind === "ListStart" && got._kind === "ListStart") {
+      pokaLexerPopListStart(state);
+    } else if (expected._kind === "ListEnd" && got._kind === "ListEnd") {
+      pokaLexerPopListEnd(state);
+    } else {
+      throw (
+        "pokaLexerRunTests: Expected: " +
+        pokaLexerShowLexeme(expected) +
+        " Got: " +
+        pokaLexerShowLexeme(got)
+      );
+    }
+  }
+  if (!pokaLexerPeekEOL(state)) {
+    throw (
+      "pokaLexerRunTests: Expected EOL Got: " +
+      pokaLexerShowLexeme(pokaLexerPeek(state))
+    );
+  }
+}
+
+function pokaLexerRunTests(): string[] {
+  const result: string[] = [];
+
+  for (const testCase of POKA_LEXER_TEST_CASES) {
+    try {
+      pokaLexerRunTest(testCase);
+      result.push("  OK | " + testCase.text.replace("\n", "\\n"));
+    } catch (exc) {
+      result.push("FAIL | " + testCase.text.replace("\n", "\\n") + ": " + exc);
+    }
+  }
+
+  return result;
 }
