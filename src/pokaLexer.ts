@@ -428,7 +428,7 @@ function pokaLexerTestSimple(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestSimple: Unexpected token: " +
+      "pokaLexerTestSimple: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -461,7 +461,7 @@ function pokaLexerTestList(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestList: Unexpected token: " +
+      "pokaLexerTestList: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -486,7 +486,7 @@ function pokaLexerTestSigil(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestSigil: Unexpected token: " +
+      "pokaLexerTestSigil: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -511,7 +511,7 @@ function pokaLexerTestForm(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestForm: Unexpected token: " +
+      "pokaLexerTestForm: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -536,7 +536,7 @@ function pokaLexerTestFloat(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestFloat: Unexpected token: " +
+      "pokaLexerTestFloat: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -561,7 +561,7 @@ function pokaLexerTestWhitespace(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestWhitespace: Unexpected token: " +
+      "pokaLexerTestWhitespace: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -586,7 +586,7 @@ function pokaLexerTestNewline(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestNewline: Unexpected token: " +
+      "pokaLexerTestNewline: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
@@ -611,7 +611,7 @@ function pokaLexerTestTabs(): void {
   }
   if (!pokaLexerPeekEOL(state)) {
     throw (
-      "pokaLexerTestTabs: Unexpected token: " +
+      "pokaLexerTestTabs: Expected EOL Got: " +
       pokaLexerShowLexeme(pokaLexerPeek(state))
     );
   }
