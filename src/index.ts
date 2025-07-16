@@ -13,8 +13,7 @@ type PokaValue =
   | PokaRecord;
 
 interface InterpreterState {
-  lexemes: PokaLexeme[];
-  pos: number;
+  lexer: PokaLexerState;
   stack: PokaValue[];
   error: string;
   env: { [word: string]: PokaValue };
@@ -53,12 +52,12 @@ function pokaInterpreterShow(state: InterpreterState): string {
 function consumeList(state: InterpreterState): void {
   const values: PokaValue[] = [];
   const origStack = state.stack;
-  pokaLexerPopListStart(state);
-  while (pokaLexerPeek(state)._kind !== "ListEnd") {
+  pokaLexerPopListStart(state.lexer);
+  while (pokaLexerPeek(state.lexer)._kind !== "ListEnd") {
     state.stack = origStack.slice();
-    while (pokaLexerPeek(state)._kind !== "ListEnd") {
-      if (pokaLexerPeek(state)._kind === "Comma") {
-        pokaLexerPopComma(state);
+    while (pokaLexerPeek(state.lexer)._kind !== "ListEnd") {
+      if (pokaLexerPeek(state.lexer)._kind === "Comma") {
+        pokaLexerPopComma(state.lexer);
         break;
       }
       consumeExpression(state);
@@ -69,23 +68,23 @@ function consumeList(state: InterpreterState): void {
     }
     values.push(value);
   }
-  pokaLexerPopListEnd(state);
+  pokaLexerPopListEnd(state.lexer);
   state.stack = origStack;
   state.stack.push(pokaListMake(values));
 }
 
 function consumeNumber(state: InterpreterState): void {
-  const token = pokaLexerPopNumber(state);
+  const token = pokaLexerPopNumber(state.lexer);
   state.stack.push(pokaScalarNumberMake(token.value));
 }
 
 function consumeString(state: InterpreterState): void {
-  const token = pokaLexerPopString(state);
+  const token = pokaLexerPopString(state.lexer);
   state.stack.push(pokaScalarStringMake(token.text));
 }
 
 function consumeSigilIdentifier(state: InterpreterState): void {
-  const token = pokaLexerPopSigilIdentifier(state);
+  const token = pokaLexerPopSigilIdentifier(state.lexer);
   if (token.sigil === "$") {
     const variableName = token.value;
     const value = state.env[variableName];
@@ -108,7 +107,7 @@ function consumeSigilIdentifier(state: InterpreterState): void {
 }
 
 function consumePlainIdentifier(state: InterpreterState): void {
-  const token = pokaLexerPopPlainIdentifer(state);
+  const token = pokaLexerPopPlainIdentifer(state.lexer);
   const word = POKA_WORDS4[token.text];
   if (word === undefined) {
     throw "No such function: " + token.text;
@@ -117,7 +116,7 @@ function consumePlainIdentifier(state: InterpreterState): void {
 }
 
 function consumeExpression(state: InterpreterState): void {
-  const token = pokaLexerPeek(state);
+  const token = pokaLexerPeek(state.lexer);
   if (token._kind === "Number") {
     consumeNumber(state);
   } else if (token._kind === "String") {
@@ -139,8 +138,7 @@ function pokaInterpreterMake(
 ): InterpreterState {
   const lex = pokaLex(line);
   const state: InterpreterState = {
-    lexemes: lex.lexemes,
-    pos: 0,
+    lexer: lex,
     stack: [],
     error: lex.error ? lex.error : "",
     env: {},
@@ -159,7 +157,7 @@ function pokaInterpreterEvaluate(state: InterpreterState): void {
   }
   let error = "";
   try {
-    while (!pokaLexerPeekEOL(state)) {
+    while (!pokaLexerPeekEOL(state.lexer)) {
       consumeExpression(state);
     }
   } catch (exc) {
