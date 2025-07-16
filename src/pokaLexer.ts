@@ -409,225 +409,146 @@ function pokaLexerShowLexeme(lex: PokaLexeme): string {
   }
 }
 
-function pokaLexerTestSimple(): void {
-  const state = pokaLex("1 2 add");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestSimple: " + state.error;
-  }
-  const t1 = pokaLexerPopNumber(state);
-  if (t1.value !== 1) {
-    throw "pokaLexerTestSimple: Expected: 1 Got: " + t1.value;
-  }
-  const t2 = pokaLexerPopNumber(state);
-  if (t2.value !== 2) {
-    throw "pokaLexerTestSimple: Expected: 2 Got: " + t2.value;
-  }
-  const t3 = pokaLexerPopPlainIdentifer(state);
-  if (t3.text !== "add") {
-    throw "pokaLexerTestSimple: Expected: add Got: " + t3.text;
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestSimple: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
+interface PokaLexerTestCase {
+  text: string;
+  lexemes: PokaLexeme[];
 }
 
-function pokaLexerTestList(): void {
-  const state = pokaLex("[1, 2]");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestList: " + state.error;
-  }
-  const t1 = pokaLexerPopListStart(state);
-  if (t1._kind !== "ListStart") {
-    throw "pokaLexerTestList: Expected: [ Got: " + pokaLexerShowLexeme(t1);
-  }
-  const t2 = pokaLexerPopNumber(state);
-  if (t2.value !== 1) {
-    throw "pokaLexerTestList: Expected: 1 Got: " + t2.value;
-  }
-  const t3 = pokaLexerPopComma(state);
-  if (t3._kind !== "Comma") {
-    throw "pokaLexerTestList: Expected: , Got: " + pokaLexerShowLexeme(t3);
-  }
-  const t4 = pokaLexerPopNumber(state);
-  if (t4.value !== 2) {
-    throw "pokaLexerTestList: Expected: 2 Got: " + t4.value;
-  }
-  const t5 = pokaLexerPopListEnd(state);
-  if (t5._kind !== "ListEnd") {
-    throw "pokaLexerTestList: Expected: ] Got: " + pokaLexerShowLexeme(t5);
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestList: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
-
-function pokaLexerTestSigil(): void {
-  const state = pokaLex('"hi" =a $a');
-  if (state.error !== undefined) {
-    throw "pokaLexerTestSigil: " + state.error;
-  }
-  const t1 = pokaLexerPopString(state);
-  if (t1.text !== "hi") {
-    throw 'pokaLexerTestSigil: Expected: "hi" Got: "' + t1.text + '"';
-  }
-  const t2 = pokaLexerPopSigilIdentifier(state);
-  if (t2.sigil !== "=" || t2.value !== "a") {
-    throw "pokaLexerTestSigil: Expected: =a Got: " + pokaLexerShowLexeme(t2);
-  }
-  const t3 = pokaLexerPopSigilIdentifier(state);
-  if (t3.sigil !== "$" || t3.value !== "a") {
-    throw "pokaLexerTestSigil: Expected: $a Got: " + pokaLexerShowLexeme(t3);
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestSigil: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
-
-function pokaLexerTestForm(): void {
-  const state = pokaLex("FOR x EACH");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestForm: " + state.error;
-  }
-  const t1 = pokaLexerPopForm(state);
-  if (t1.text !== "FOR") {
-    throw "pokaLexerTestForm: Expected: FOR Got: " + t1.text;
-  }
-  const t2 = pokaLexerPopPlainIdentifer(state);
-  if (t2.text !== "x") {
-    throw "pokaLexerTestForm: Expected: x Got: " + t2.text;
-  }
-  const t3 = pokaLexerPopForm(state);
-  if (t3.text !== "EACH") {
-    throw "pokaLexerTestForm: Expected: EACH Got: " + t3.text;
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestForm: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
-
-function pokaLexerTestFloat(): void {
-  const state = pokaLex("-1.5 3.2 mul");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestFloat: " + state.error;
-  }
-  const t1 = pokaLexerPopNumber(state);
-  if (t1.value !== -1.5) {
-    throw "pokaLexerTestFloat: Expected: -1.5 Got: " + t1.value;
-  }
-  const t2 = pokaLexerPopNumber(state);
-  if (t2.value !== 3.2) {
-    throw "pokaLexerTestFloat: Expected: 3.2 Got: " + t2.value;
-  }
-  const t3 = pokaLexerPopPlainIdentifer(state);
-  if (t3.text !== "mul") {
-    throw "pokaLexerTestFloat: Expected: mul Got: " + t3.text;
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestFloat: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
-
-function pokaLexerTestWhitespace(): void {
-  const state = pokaLex("1   2   add");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestWhitespace: " + state.error;
-  }
-  const t1 = pokaLexerPopNumber(state);
-  if (t1.value !== 1) {
-    throw "pokaLexerTestWhitespace: Expected: 1 Got: " + t1.value;
-  }
-  const t2 = pokaLexerPopNumber(state);
-  if (t2.value !== 2) {
-    throw "pokaLexerTestWhitespace: Expected: 2 Got: " + t2.value;
-  }
-  const t3 = pokaLexerPopPlainIdentifer(state);
-  if (t3.text !== "add") {
-    throw "pokaLexerTestWhitespace: Expected: add Got: " + t3.text;
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestWhitespace: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
-
-function pokaLexerTestNewline(): void {
-  const state = pokaLex("1\n 2 add");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestNewline: " + state.error;
-  }
-  const t1 = pokaLexerPopNumber(state);
-  if (t1.value !== 1) {
-    throw "pokaLexerTestNewline: Expected: 1 Got: " + t1.value;
-  }
-  const t2 = pokaLexerPopNumber(state);
-  if (t2.value !== 2) {
-    throw "pokaLexerTestNewline: Expected: 2 Got: " + t2.value;
-  }
-  const t3 = pokaLexerPopPlainIdentifer(state);
-  if (t3.text !== "add") {
-    throw "pokaLexerTestNewline: Expected: add Got: " + t3.text;
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestNewline: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
-
-function pokaLexerTestTabs(): void {
-  const state = pokaLex("1\t\n 2\tadd");
-  if (state.error !== undefined) {
-    throw "pokaLexerTestTabs: " + state.error;
-  }
-  const t1 = pokaLexerPopNumber(state);
-  if (t1.value !== 1) {
-    throw "pokaLexerTestTabs: Expected: 1 Got: " + t1.value;
-  }
-  const t2 = pokaLexerPopNumber(state);
-  if (t2.value !== 2) {
-    throw "pokaLexerTestTabs: Expected: 2 Got: " + t2.value;
-  }
-  const t3 = pokaLexerPopPlainIdentifer(state);
-  if (t3.text !== "add") {
-    throw "pokaLexerTestTabs: Expected: add Got: " + t3.text;
-  }
-  if (!pokaLexerPeekEOL(state)) {
-    throw (
-      "pokaLexerTestTabs: Expected EOL Got: " +
-      pokaLexerShowLexeme(pokaLexerPeek(state))
-    );
-  }
-}
+const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
+  {
+    text: "1 2 add",
+    lexemes: [
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
+      { _kind: "PlainIdentifier", text: "add" },
+    ],
+  },
+  {
+    text: "[1, 2]",
+    lexemes: [
+      { _kind: "ListStart" },
+      { _kind: "Number", value: 1 },
+      { _kind: "Comma" },
+      { _kind: "Number", value: 2 },
+      { _kind: "ListEnd" },
+    ],
+  },
+  {
+    text: '"hi" =a $a',
+    lexemes: [
+      { _kind: "String", text: "hi" },
+      { _kind: "SigilIdentifier", sigil: "=", value: "a" },
+      { _kind: "SigilIdentifier", sigil: "$", value: "a" },
+    ],
+  },
+  {
+    text: "FOR x EACH",
+    lexemes: [
+      { _kind: "Form", text: "FOR" },
+      { _kind: "PlainIdentifier", text: "x" },
+      { _kind: "Form", text: "EACH" },
+    ],
+  },
+  {
+    text: "-1.5 3.2 mul",
+    lexemes: [
+      { _kind: "Number", value: -1.5 },
+      { _kind: "Number", value: 3.2 },
+      { _kind: "PlainIdentifier", text: "mul" },
+    ],
+  },
+  {
+    text: "1   2   add",
+    lexemes: [
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
+      { _kind: "PlainIdentifier", text: "add" },
+    ],
+  },
+  {
+    text: "1\n 2 add",
+    lexemes: [
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
+      { _kind: "PlainIdentifier", text: "add" },
+    ],
+  },
+  {
+    text: "1\t\n 2\tadd",
+    lexemes: [
+      { _kind: "Number", value: 1 },
+      { _kind: "Number", value: 2 },
+      { _kind: "PlainIdentifier", text: "add" },
+    ],
+  },
+];
 
 function pokaLexerRunTests(): string {
   const result: string[] = [];
   try {
-    pokaLexerTestSimple();
-    pokaLexerTestList();
-    pokaLexerTestSigil();
-    pokaLexerTestForm();
-    pokaLexerTestFloat();
-    pokaLexerTestWhitespace();
-    pokaLexerTestNewline();
-    pokaLexerTestTabs();
+    for (const test of POKA_LEXER_TEST_CASES) {
+      const state = pokaLex(test.text);
+      if (state.error !== undefined) {
+        throw "pokaLexerRunTests: " + state.error;
+      }
+      for (const expected of test.lexemes) {
+        const got = pokaLexerPeek(state);
+        if (
+          expected._kind === "Number" &&
+          got._kind === "Number" &&
+          expected.value === got.value
+        ) {
+          pokaLexerPopNumber(state);
+        } else if (
+          expected._kind === "String" &&
+          got._kind === "String" &&
+          expected.text === got.text
+        ) {
+          pokaLexerPopString(state);
+        } else if (
+          expected._kind === "PlainIdentifier" &&
+          got._kind === "PlainIdentifier" &&
+          expected.text === got.text
+        ) {
+          pokaLexerPopPlainIdentifer(state);
+        } else if (
+          expected._kind === "SigilIdentifier" &&
+          got._kind === "SigilIdentifier" &&
+          expected.sigil === got.sigil &&
+          expected.value === got.value
+        ) {
+          pokaLexerPopSigilIdentifier(state);
+        } else if (
+          expected._kind === "Form" &&
+          got._kind === "Form" &&
+          expected.text === got.text
+        ) {
+          pokaLexerPopForm(state);
+        } else if (expected._kind === "Comma" && got._kind === "Comma") {
+          pokaLexerPopComma(state);
+        } else if (
+          expected._kind === "ListStart" &&
+          got._kind === "ListStart"
+        ) {
+          pokaLexerPopListStart(state);
+        } else if (expected._kind === "ListEnd" && got._kind === "ListEnd") {
+          pokaLexerPopListEnd(state);
+        } else {
+          throw (
+            "pokaLexerRunTests: Expected: " +
+            pokaLexerShowLexeme(expected) +
+            " Got: " +
+            pokaLexerShowLexeme(got)
+          );
+        }
+      }
+      if (!pokaLexerPeekEOL(state)) {
+        throw (
+          "pokaLexerRunTests: Expected EOL Got: " +
+          pokaLexerShowLexeme(pokaLexerPeek(state))
+        );
+      }
+    }
     result.push("pokaLexerRunTests: OK");
   } catch (exc) {
     result.push(String(exc));
