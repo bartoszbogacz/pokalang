@@ -10,7 +10,8 @@ type PokaValue =
   | PokaMatrixString
   | PokaList
   | PokaRecordEntry
-  | PokaRecord;
+  | PokaRecord
+  | PokaException;
 
 interface InterpreterState {
   lexer: PokaLexerState;
@@ -114,6 +115,40 @@ function consumePlainIdentifier(state: InterpreterState): void {
   word.fun(state.stack);
 }
 
+function consumeFormTRY(state: InterpreterState): void {
+  pokaLexerPopForm(state.lexer, "TRY");
+  pokaLexerPopStartScope(state.lexer);
+  let pokaExc: PokaException | undefined = undefined;
+  const origStack = state.stack.slice();
+  try {
+    while (!pokaLexerPeekEndScope(state.lexer)) {
+      consumeExpression(state);
+    }
+  } catch (exc) {
+    pokaExc = pokaExceptionMake("" + exc);
+  }
+  if (pokaExc !== undefined) {
+    while (!pokaLexerPeekEndScope(state.lexer)) {
+      pokaLexerPopLexeme(state.lexer);
+    }
+  }
+  pokaLexerPopEndScope(state.lexer);
+  pokaLexerPopForm(state.lexer, "CATCH");
+  pokaLexerPopStartScope(state.lexer);
+  if (pokaExc !== undefined) {
+    state.stack = origStack;
+    state.stack.push(pokaExc);
+    while (!pokaLexerPeekEndScope(state.lexer)) {
+      consumeExpression(state);
+    }
+  } else {
+    while (!pokaLexerPeekEndScope(state.lexer)) {
+      pokaLexerPopLexeme(state.lexer);
+    }
+  }
+  pokaLexerPopEndScope(state.lexer);
+}
+
 function consumeExpression(state: InterpreterState): void {
   const token = pokaLexerPeek(state.lexer);
   if (token._kind === "Number") {
@@ -126,6 +161,8 @@ function consumeExpression(state: InterpreterState): void {
     consumePlainIdentifier(state);
   } else if (token._kind === "ListStart") {
     consumeList(state);
+  } else if (token._kind === "Form" && token.text === "TRY") {
+    consumeFormTRY(state);
   } else {
     throw "Unexpected token: `" + pokaLexerShowLexeme(token) + "`";
   }
