@@ -38,16 +38,6 @@ interface PokaLexemeListEnd {
   text: string;
 }
 
-interface PokaLexemeStartScope {
-  _kind: "StartScope";
-  text: string;
-}
-
-interface PokaLexemeEndScope {
-  _kind: "EndScope";
-  text: string;
-}
-
 type PokaLexeme =
   | PokaLexemeNumber
   | PokaLexemeString
@@ -56,9 +46,7 @@ type PokaLexeme =
   | PokaLexemeForm
   | PokaLexemeComma
   | PokaLexemeListStart
-  | PokaLexemeListEnd
-  | PokaLexemeStartScope
-  | PokaLexemeEndScope;
+  | PokaLexemeListEnd;
 
 interface PokaLexerState {
   line: string;
@@ -149,16 +137,6 @@ function pokaLexerConsumeListStart(state: PokaLexerState): void {
 
 function pokaLexerConsumeListEnd(state: PokaLexerState): void {
   state.lexemes.push({ _kind: "ListEnd", text: "]" });
-  state.textPos++;
-}
-
-function pokaLexerConsumeStartScope(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "StartScope", text: "{" });
-  state.textPos++;
-}
-
-function pokaLexerConsumeEndScope(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "EndScope", text: "}" });
   state.textPos++;
 }
 
@@ -279,10 +257,6 @@ function pokaLexerConsume(state: PokaLexerState): void {
       pokaLexerConsumeListStart(state);
     } else if (pokaLexerIsListEnd(state)) {
       pokaLexerConsumeListEnd(state);
-    } else if (pokaLexerIsStartScope(state)) {
-      pokaLexerConsumeStartScope(state);
-    } else if (pokaLexerIsEndScope(state)) {
-      pokaLexerConsumeEndScope(state);
     } else if (pokaLexerIsComma(state)) {
       pokaLexerConsumeComma(state);
     } else {
@@ -424,35 +398,6 @@ function pokaLexerPopListEnd(state: PokaLexerState): PokaLexemeListEnd {
   return lex;
 }
 
-function pokaLexerPopStartScope(state: PokaLexerState): PokaLexemeStartScope {
-  const lex = state.lexemes[state.lexemePos];
-  if (lex === undefined) {
-    throw "Expected: StartScope Got: End of input.";
-  }
-  if (lex._kind !== "StartScope") {
-    throw "Expected: StartScope Got: " + pokaLexerShowLexeme(lex);
-  }
-  state.lexemePos++;
-  return lex;
-}
-
-function pokaLexerPopEndScope(state: PokaLexerState): PokaLexemeEndScope {
-  const lex = state.lexemes[state.lexemePos];
-  if (lex === undefined) {
-    throw "Expected: EndScope Got: End of input.";
-  }
-  if (lex._kind !== "EndScope") {
-    throw "Expected: EndScope Got: " + pokaLexerShowLexeme(lex);
-  }
-  state.lexemePos++;
-  return lex;
-}
-
-function pokaLexerPeekEndScope(state: PokaLexerState): boolean {
-  const lex = state.lexemes[state.lexemePos];
-  return lex !== undefined && lex._kind === "EndScope";
-}
-
 function pokaLexerPopLexeme(state: PokaLexerState): void {
   if (state.lexemePos >= state.lexemes.length) {
     throw "Unexpected end of input.";
@@ -536,19 +481,6 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
       { _kind: "PlainIdentifier", text: "add" },
     ],
   },
-  {
-    text: "TRY { 0 } CATCH { 1 }",
-    lexemes: [
-      { _kind: "Form", text: "TRY" },
-      { _kind: "StartScope", text: "{" },
-      { _kind: "Number", text: "0" },
-      { _kind: "EndScope", text: "}" },
-      { _kind: "Form", text: "CATCH" },
-      { _kind: "StartScope", text: "{" },
-      { _kind: "Number", text: "1" },
-      { _kind: "EndScope", text: "}" },
-    ],
-  },
 ];
 
 function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
@@ -583,12 +515,6 @@ function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
           break;
         case "ListEnd":
           pokaLexerPopListEnd(state);
-          break;
-        case "StartScope":
-          pokaLexerPopStartScope(state);
-          break;
-        case "EndScope":
-          pokaLexerPopEndScope(state);
           break;
       }
     } else {

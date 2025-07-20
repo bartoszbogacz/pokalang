@@ -1356,8 +1356,6 @@ function pokaWordShow(stack: PokaValue[]): void {
     }
     const text = pokaCallWordString(pokaWordShow, [asList]);
     result = text;
-  } else if (a._type === "PokaException") {
-    result = pokaExceptionShow(a).value;
   } else {
     throw "Unreachable";
   }
