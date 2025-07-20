@@ -76,25 +76,34 @@ function consumeList(state: InterpreterState): void {
 
 function consumeNumber(state: InterpreterState): void {
   const token = pokaLexerPopNumber(state.lexer);
-  state.stack.push(pokaScalarNumberMake(token.value));
+  const value = parseFloat(token.text);
+  if (Number.isNaN(value)) {
+    throw "Invalid number: " + token.text;
+  }
+  state.stack.push(pokaScalarNumberMake(value));
 }
 
 function consumeString(state: InterpreterState): void {
   const token = pokaLexerPopString(state.lexer);
-  state.stack.push(pokaScalarStringMake(token.text));
+  if (!token.text.startsWith('"') || !token.text.endsWith('"')) {
+    throw "Invalid string literal";
+  }
+  const inner = token.text.slice(1, -1);
+  const unescaped = inner.replace(/\\n/g, "\n");
+  state.stack.push(pokaScalarStringMake(unescaped));
 }
 
 function consumeSigilIdentifier(state: InterpreterState): void {
   const token = pokaLexerPopSigilIdentifier(state.lexer);
-  if (token.sigil === "$") {
-    const variableName = token.value;
+  const sigil = token.text.charAt(0);
+  const variableName = token.text.slice(1);
+  if (sigil === "$") {
     const value = state.env[variableName];
     if (value === undefined) {
       throw "No such variable: " + variableName;
     }
     state.stack.push(value);
-  } else if (token.sigil === "=") {
-    const variableName = token.value;
+  } else if (sigil === "=") {
     const value = state.stack.pop();
     if (value === undefined) {
       throw "Stack underflow";
