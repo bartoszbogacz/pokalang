@@ -1,52 +1,17 @@
-interface PokaLexemeNumber {
-  _kind: "Number";
+type PokaLexemeKind =
+  | "Number"
+  | "String"
+  | "PlainIdentifier"
+  | "SigilIdentifier"
+  | "Form"
+  | "Comma"
+  | "ListStart"
+  | "ListEnd";
+
+interface PokaLexeme {
+  _kind: PokaLexemeKind;
   text: string;
 }
-
-interface PokaLexemeString {
-  _kind: "String";
-  text: string;
-}
-
-interface PokaLexemePlainIdentifier {
-  _kind: "PlainIdentifier";
-  text: string;
-}
-
-interface PokaLexemeSigilIdentifier {
-  _kind: "SigilIdentifier";
-  text: string;
-}
-
-interface PokaLexemeForm {
-  _kind: "Form";
-  text: string;
-}
-
-interface PokaLexemeComma {
-  _kind: "Comma";
-  text: string;
-}
-
-interface PokaLexemeListStart {
-  _kind: "ListStart";
-  text: string;
-}
-
-interface PokaLexemeListEnd {
-  _kind: "ListEnd";
-  text: string;
-}
-
-type PokaLexeme =
-  | PokaLexemeNumber
-  | PokaLexemeString
-  | PokaLexemePlainIdentifier
-  | PokaLexemeSigilIdentifier
-  | PokaLexemeForm
-  | PokaLexemeComma
-  | PokaLexemeListStart
-  | PokaLexemeListEnd;
 
 interface PokaLexerState {
   line: string;
@@ -287,7 +252,7 @@ function pokaLexerPeekEOL(state: PokaLexerState): boolean {
   return state.lexemePos >= state.lexemes.length;
 }
 
-function pokaLexerPopNumber(state: PokaLexerState): PokaLexemeNumber {
+function pokaLexerPopNumber(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: Number Got: End of input.";
@@ -299,7 +264,7 @@ function pokaLexerPopNumber(state: PokaLexerState): PokaLexemeNumber {
   return lex;
 }
 
-function pokaLexerPopString(state: PokaLexerState): PokaLexemeString {
+function pokaLexerPopString(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: String Got: End of input.";
@@ -311,9 +276,7 @@ function pokaLexerPopString(state: PokaLexerState): PokaLexemeString {
   return lex;
 }
 
-function pokaLexerPopPlainIdentifer(
-  state: PokaLexerState,
-): PokaLexemePlainIdentifier {
+function pokaLexerPopPlainIdentifer(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: PlainIdentifier Got: End of input.";
@@ -325,9 +288,7 @@ function pokaLexerPopPlainIdentifer(
   return lex;
 }
 
-function pokaLexerPopSigilIdentifier(
-  state: PokaLexerState,
-): PokaLexemeSigilIdentifier {
+function pokaLexerPopSigilIdentifier(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: SigilIdentifier Got: End of input.";
@@ -339,10 +300,7 @@ function pokaLexerPopSigilIdentifier(
   return lex;
 }
 
-function pokaLexerPopForm(
-  state: PokaLexerState,
-  value?: string,
-): PokaLexemeForm {
+function pokaLexerPopForm(state: PokaLexerState, value?: string): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: Form Got: End of input.";
@@ -357,7 +315,7 @@ function pokaLexerPopForm(
   return lex;
 }
 
-function pokaLexerPopComma(state: PokaLexerState): PokaLexemeComma {
+function pokaLexerPopComma(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: Comma Got: End of input.";
@@ -369,7 +327,7 @@ function pokaLexerPopComma(state: PokaLexerState): PokaLexemeComma {
   return lex;
 }
 
-function pokaLexerPopListStart(state: PokaLexerState): PokaLexemeListStart {
+function pokaLexerPopListStart(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: ListStart Got: End of input.";
@@ -381,7 +339,7 @@ function pokaLexerPopListStart(state: PokaLexerState): PokaLexemeListStart {
   return lex;
 }
 
-function pokaLexerPopListEnd(state: PokaLexerState): PokaLexemeListEnd {
+function pokaLexerPopListEnd(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
     throw "Expected: ListEnd Got: End of input.";
