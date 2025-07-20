@@ -20,39 +20,8 @@ interface PokaLexerState {
   error?: string;
 }
 
-function pokaLexerIsIdentifierStart(state: PokaLexerState): boolean {
-  const c = state.line.charAt(state.textPos);
-  return c === "$" || c === "=" || (c >= "a" && c <= "z");
-}
-
-function pokaLexerIsForm(state: PokaLexerState): boolean {
-  const c = state.line.charAt(state.textPos);
-  return c >= "A" && c <= "Z";
-}
-
 function pokaLexerIsEol(state: PokaLexerState): boolean {
   return state.textPos >= state.line.length;
-}
-
-function pokaLexerIsNumber(state: PokaLexerState): boolean {
-  const c = state.line.charAt(state.textPos);
-  return c === "-" || (c >= "0" && c <= "9");
-}
-
-function pokaLexerIsString(state: PokaLexerState): boolean {
-  return state.line.charAt(state.textPos) === '"';
-}
-
-function pokaLexerIsComma(state: PokaLexerState): boolean {
-  return state.line.charAt(state.textPos) === ",";
-}
-
-function pokaLexerIsListStart(state: PokaLexerState): boolean {
-  return state.line.charAt(state.textPos) === "[";
-}
-
-function pokaLexerIsListEnd(state: PokaLexerState): boolean {
-  return state.line.charAt(state.textPos) === "]";
 }
 
 function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
@@ -69,24 +38,40 @@ function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
   return count;
 }
 
-function pokaLexerConsumeComma(state: PokaLexerState): void {
+function pokaLexerConsumeComma(state: PokaLexerState): boolean {
+  if (state.line.charAt(state.textPos) !== ",") {
+    return false;
+  }
   state.lexemes.push({ _kind: "Comma", text: "," });
   state.textPos++;
+  return true;
 }
 
-function pokaLexerConsumeListStart(state: PokaLexerState): void {
+function pokaLexerConsumeListStart(state: PokaLexerState): boolean {
+  if (state.line.charAt(state.textPos) !== "[") {
+    return false;
+  }
   state.lexemes.push({ _kind: "ListStart", text: "[" });
   state.textPos++;
+  return true;
 }
 
-function pokaLexerConsumeListEnd(state: PokaLexerState): void {
+function pokaLexerConsumeListEnd(state: PokaLexerState): boolean {
+  if (state.line.charAt(state.textPos) !== "]") {
+    return false;
+  }
   state.lexemes.push({ _kind: "ListEnd", text: "]" });
   state.textPos++;
+  return true;
 }
 
-function pokaLexerConsumeNumber(state: PokaLexerState): void {
+function pokaLexerConsumeNumber(state: PokaLexerState): boolean {
+  const c0 = state.line.charAt(state.textPos);
+  if (!(c0 === "-" || (c0 >= "0" && c0 <= "9"))) {
+    return false;
+  }
   const start = state.textPos;
-  if (state.line.charAt(state.textPos) === "-") {
+  if (c0 === "-") {
     state.textPos++;
   }
   while (state.textPos < state.line.length) {
@@ -113,9 +98,13 @@ function pokaLexerConsumeNumber(state: PokaLexerState): void {
     _kind: "Number",
     text,
   });
+  return true;
 }
 
-function pokaLexerConsumeString(state: PokaLexerState): void {
+function pokaLexerConsumeString(state: PokaLexerState): boolean {
+  if (state.line.charAt(state.textPos) !== '"') {
+    return false;
+  }
   const start = state.textPos;
   state.textPos++; // opening quote
   while (
@@ -130,9 +119,14 @@ function pokaLexerConsumeString(state: PokaLexerState): void {
     _kind: "String",
     text,
   });
+  return true;
 }
 
-function pokaLexerConsumeIdentifier(state: PokaLexerState): void {
+function pokaLexerConsumeIdentifier(state: PokaLexerState): boolean {
+  const c0 = state.line.charAt(state.textPos);
+  if (!(c0 === "$" || c0 === "=" || (c0 >= "a" && c0 <= "z"))) {
+    return false;
+  }
   const start = state.textPos;
   state.textPos++;
   while (true) {
@@ -151,9 +145,14 @@ function pokaLexerConsumeIdentifier(state: PokaLexerState): void {
     _kind: "Identifier",
     text: state.line.slice(start, state.textPos),
   });
+  return true;
 }
 
-function pokaLexerConsumeForm(state: PokaLexerState): void {
+function pokaLexerConsumeForm(state: PokaLexerState): boolean {
+  const c0 = state.line.charAt(state.textPos);
+  if (!(c0 >= "A" && c0 <= "Z")) {
+    return false;
+  }
   const start = state.textPos;
   state.textPos++;
   while (true) {
@@ -168,6 +167,7 @@ function pokaLexerConsumeForm(state: PokaLexerState): void {
     _kind: "Form",
     text: state.line.slice(start, state.textPos),
   });
+  return true;
 }
 
 function pokaLexerConsume(state: PokaLexerState): void {
@@ -176,20 +176,20 @@ function pokaLexerConsume(state: PokaLexerState): void {
     if (pokaLexerIsEol(state)) {
       break;
     }
-    if (pokaLexerIsNumber(state)) {
-      pokaLexerConsumeNumber(state);
-    } else if (pokaLexerIsString(state)) {
-      pokaLexerConsumeString(state);
-    } else if (pokaLexerIsIdentifierStart(state)) {
-      pokaLexerConsumeIdentifier(state);
-    } else if (pokaLexerIsForm(state)) {
-      pokaLexerConsumeForm(state);
-    } else if (pokaLexerIsListStart(state)) {
-      pokaLexerConsumeListStart(state);
-    } else if (pokaLexerIsListEnd(state)) {
-      pokaLexerConsumeListEnd(state);
-    } else if (pokaLexerIsComma(state)) {
-      pokaLexerConsumeComma(state);
+    if (pokaLexerConsumeNumber(state)) {
+      continue;
+    } else if (pokaLexerConsumeString(state)) {
+      continue;
+    } else if (pokaLexerConsumeIdentifier(state)) {
+      continue;
+    } else if (pokaLexerConsumeForm(state)) {
+      continue;
+    } else if (pokaLexerConsumeListStart(state)) {
+      continue;
+    } else if (pokaLexerConsumeListEnd(state)) {
+      continue;
+    } else if (pokaLexerConsumeComma(state)) {
+      continue;
     } else {
       throw "Unknown token";
     }
