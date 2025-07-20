@@ -1,8 +1,7 @@
 type PokaLexemeKind =
   | "Number"
   | "String"
-  | "PlainIdentifier"
-  | "SigilIdentifier"
+  | "Identifier"
   | "Form"
   | "Comma"
   | "ListStart"
@@ -154,7 +153,7 @@ function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
     }
   }
   state.lexemes.push({
-    _kind: "PlainIdentifier",
+    _kind: "Identifier",
     text: state.line.slice(start, state.textPos),
   });
 }
@@ -175,7 +174,7 @@ function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
     }
   }
   state.lexemes.push({
-    _kind: "SigilIdentifier",
+    _kind: "Identifier",
     text: state.line.slice(start, state.textPos),
   });
 }
@@ -276,25 +275,13 @@ function pokaLexerPopString(state: PokaLexerState): PokaLexeme {
   return lex;
 }
 
-function pokaLexerPopPlainIdentifer(state: PokaLexerState): PokaLexeme {
+function pokaLexerPopIdentifier(state: PokaLexerState): PokaLexeme {
   const lex = state.lexemes[state.lexemePos];
   if (lex === undefined) {
-    throw "Expected: PlainIdentifier Got: End of input.";
+    throw "Expected: Identifier Got: End of input.";
   }
-  if (lex._kind !== "PlainIdentifier") {
-    throw "Expected: PlainIdentifier Got: " + pokaLexerShowLexeme(lex);
-  }
-  state.lexemePos++;
-  return lex;
-}
-
-function pokaLexerPopSigilIdentifier(state: PokaLexerState): PokaLexeme {
-  const lex = state.lexemes[state.lexemePos];
-  if (lex === undefined) {
-    throw "Expected: SigilIdentifier Got: End of input.";
-  }
-  if (lex._kind !== "SigilIdentifier") {
-    throw "Expected: SigilIdentifier Got: " + pokaLexerShowLexeme(lex);
+  if (lex._kind !== "Identifier") {
+    throw "Expected: Identifier Got: " + pokaLexerShowLexeme(lex);
   }
   state.lexemePos++;
   return lex;
@@ -373,7 +360,7 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     lexemes: [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "PlainIdentifier", text: "add" },
+      { _kind: "Identifier", text: "add" },
     ],
   },
   {
@@ -390,15 +377,15 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     text: '"hi" =a $a',
     lexemes: [
       { _kind: "String", text: '"hi"' },
-      { _kind: "SigilIdentifier", text: "=a" },
-      { _kind: "SigilIdentifier", text: "$a" },
+      { _kind: "Identifier", text: "=a" },
+      { _kind: "Identifier", text: "$a" },
     ],
   },
   {
     text: "FOR x EACH",
     lexemes: [
       { _kind: "Form", text: "FOR" },
-      { _kind: "PlainIdentifier", text: "x" },
+      { _kind: "Identifier", text: "x" },
       { _kind: "Form", text: "EACH" },
     ],
   },
@@ -407,7 +394,7 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     lexemes: [
       { _kind: "Number", text: "-1.5" },
       { _kind: "Number", text: "3.2" },
-      { _kind: "PlainIdentifier", text: "mul" },
+      { _kind: "Identifier", text: "mul" },
     ],
   },
   {
@@ -415,7 +402,7 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     lexemes: [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "PlainIdentifier", text: "add" },
+      { _kind: "Identifier", text: "add" },
     ],
   },
   {
@@ -423,7 +410,7 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     lexemes: [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "PlainIdentifier", text: "add" },
+      { _kind: "Identifier", text: "add" },
     ],
   },
   {
@@ -431,7 +418,7 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     lexemes: [
       { _kind: "Number", text: "1" },
       { _kind: "Number", text: "2" },
-      { _kind: "PlainIdentifier", text: "add" },
+      { _kind: "Identifier", text: "add" },
     ],
   },
 ];
@@ -451,11 +438,8 @@ function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
         case "String":
           pokaLexerPopString(state);
           break;
-        case "PlainIdentifier":
-          pokaLexerPopPlainIdentifer(state);
-          break;
-        case "SigilIdentifier":
-          pokaLexerPopSigilIdentifier(state);
+        case "Identifier":
+          pokaLexerPopIdentifier(state);
           break;
         case "Form":
           pokaLexerPopForm(state);

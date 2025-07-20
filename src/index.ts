@@ -92,35 +92,29 @@ function consumeString(state: InterpreterState): void {
   state.stack.push(pokaScalarStringMake(unescaped));
 }
 
-function consumeSigilIdentifier(state: InterpreterState): void {
-  const token = pokaLexerPopSigilIdentifier(state.lexer);
-  const sigil = token.text.charAt(0);
-  const variableName = token.text.slice(1);
-  if (sigil === "$") {
+function consumeIdentifier(state: InterpreterState): void {
+  const token = pokaLexerPopIdentifier(state.lexer);
+  if (token.text.startsWith("$")) {
+    const variableName = token.text.slice(1);
     const value = state.env[variableName];
     if (value === undefined) {
       throw "No such variable: " + variableName;
     }
     state.stack.push(value);
-  } else if (sigil === "=") {
+  } else if (token.text.startsWith("=")) {
+    const variableName = token.text.slice(1);
     const value = state.stack.pop();
     if (value === undefined) {
       throw "Stack underflow";
     }
     state.env[variableName] = value;
-    return;
   } else {
-    throw "Invalid sigil";
+    const word = POKA_WORDS4[token.text];
+    if (word === undefined) {
+      throw "No such function: " + token.text;
+    }
+    word.fun(state.stack);
   }
-}
-
-function consumePlainIdentifier(state: InterpreterState): void {
-  const token = pokaLexerPopPlainIdentifer(state.lexer);
-  const word = POKA_WORDS4[token.text];
-  if (word === undefined) {
-    throw "No such function: " + token.text;
-  }
-  word.fun(state.stack);
 }
 
 function consumeExpression(state: InterpreterState): void {
@@ -129,10 +123,8 @@ function consumeExpression(state: InterpreterState): void {
     consumeNumber(state);
   } else if (token._kind === "String") {
     consumeString(state);
-  } else if (token._kind === "SigilIdentifier") {
-    consumeSigilIdentifier(state);
-  } else if (token._kind === "PlainIdentifier") {
-    consumePlainIdentifier(state);
+  } else if (token._kind === "Identifier") {
+    consumeIdentifier(state);
   } else if (token._kind === "ListStart") {
     consumeList(state);
   } else {
