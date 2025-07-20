@@ -56,10 +56,6 @@ interface PokaLexerState {
   error?: string;
 }
 
-function pokaLexerIsDigit(c: string): boolean {
-  return c >= "0" && c <= "9";
-}
-
 function pokaLexerIsPlainIdentifierStart(state: PokaLexerState): boolean {
   const c = state.line.charAt(state.textPos);
   return c >= "a" && c <= "z";
@@ -79,15 +75,12 @@ function pokaLexerIsEol(state: PokaLexerState): boolean {
   return state.textPos >= state.line.length;
 }
 
-function pokaLexerIsNumberStart(state: PokaLexerState): boolean {
+function pokaLexerIsNumber(state: PokaLexerState): boolean {
   const c = state.line.charAt(state.textPos);
-  return (
-    pokaLexerIsDigit(c) ||
-    (c === "-" && pokaLexerIsDigit(state.line.charAt(state.textPos + 1)))
-  );
+  return c === "-" || (c >= "0" && c <= "9");
 }
 
-function pokaLexerIsStringStart(state: PokaLexerState): boolean {
+function pokaLexerIsString(state: PokaLexerState): boolean {
   return state.line.charAt(state.textPos) === '"';
 }
 
@@ -101,14 +94,6 @@ function pokaLexerIsListStart(state: PokaLexerState): boolean {
 
 function pokaLexerIsListEnd(state: PokaLexerState): boolean {
   return state.line.charAt(state.textPos) === "]";
-}
-
-function pokaLexerIsStartScope(state: PokaLexerState): boolean {
-  return state.line.charAt(state.textPos) === "{";
-}
-
-function pokaLexerIsEndScope(state: PokaLexerState): boolean {
-  return state.line.charAt(state.textPos) === "}";
 }
 
 function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
@@ -145,13 +130,23 @@ function pokaLexerConsumeNumber(state: PokaLexerState): void {
   if (state.line.charAt(state.textPos) === "-") {
     state.textPos++;
   }
-  while (pokaLexerIsDigit(state.line.charAt(state.textPos))) {
-    state.textPos++;
+  while (state.textPos < state.line.length) {
+    const c = state.line.charAt(state.textPos);
+    if (c >= "0" && c <= "9") {
+      state.textPos++;
+    } else {
+      break;
+    }
   }
   if (state.line.charAt(state.textPos) === ".") {
     state.textPos++;
-    while (pokaLexerIsDigit(state.line.charAt(state.textPos))) {
-      state.textPos++;
+    while (state.textPos < state.line.length) {
+      const c = state.line.charAt(state.textPos);
+      if (c >= "0" && c <= "9") {
+        state.textPos++;
+      } else {
+        break;
+      }
     }
   }
   const text = state.line.slice(start, state.textPos);
@@ -243,9 +238,9 @@ function pokaLexerConsume(state: PokaLexerState): void {
     if (pokaLexerIsEol(state)) {
       break;
     }
-    if (pokaLexerIsNumberStart(state)) {
+    if (pokaLexerIsNumber(state)) {
       pokaLexerConsumeNumber(state);
-    } else if (pokaLexerIsStringStart(state)) {
+    } else if (pokaLexerIsString(state)) {
       pokaLexerConsumeString(state);
     } else if (pokaLexerIsSigilIdentifierStart(state)) {
       pokaLexerConsumeSigilIdentifier(state);
