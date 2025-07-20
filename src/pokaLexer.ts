@@ -618,6 +618,10 @@ function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
       pokaLexerPopListStart(state);
     } else if (expected._kind === "ListEnd" && got._kind === "ListEnd") {
       pokaLexerPopListEnd(state);
+    } else if (expected._kind === "StartScope" && got._kind === "StartScope") {
+      pokaLexerPopStartScope(state);
+    } else if (expected._kind === "EndScope" && got._kind === "EndScope") {
+      pokaLexerPopEndScope(state);
     } else {
       throw (
         "pokaLexerRunTests: Expected: " +
