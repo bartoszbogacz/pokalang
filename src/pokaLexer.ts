@@ -1,6 +1,6 @@
 interface PokaLexemeNumber {
   _kind: "Number";
-  value: number;
+  text: string;
 }
 
 interface PokaLexemeString {
@@ -15,8 +15,7 @@ interface PokaLexemePlainIdentifier {
 
 interface PokaLexemeSigilIdentifier {
   _kind: "SigilIdentifier";
-  sigil: string;
-  value: string;
+  text: string;
 }
 
 interface PokaLexemeForm {
@@ -26,22 +25,27 @@ interface PokaLexemeForm {
 
 interface PokaLexemeComma {
   _kind: "Comma";
+  text: string;
 }
 
 interface PokaLexemeListStart {
   _kind: "ListStart";
+  text: string;
 }
 
 interface PokaLexemeListEnd {
   _kind: "ListEnd";
+  text: string;
 }
 
 interface PokaLexemeStartScope {
   _kind: "StartScope";
+  text: string;
 }
 
 interface PokaLexemeEndScope {
   _kind: "EndScope";
+  text: string;
 }
 
 type PokaLexeme =
@@ -134,27 +138,27 @@ function pokaLexerConsumeWhitespace(state: PokaLexerState): number {
 }
 
 function pokaLexerConsumeComma(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "Comma" });
+  state.lexemes.push({ _kind: "Comma", text: "," });
   state.textPos++;
 }
 
 function pokaLexerConsumeListStart(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "ListStart" });
+  state.lexemes.push({ _kind: "ListStart", text: "[" });
   state.textPos++;
 }
 
 function pokaLexerConsumeListEnd(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "ListEnd" });
+  state.lexemes.push({ _kind: "ListEnd", text: "]" });
   state.textPos++;
 }
 
 function pokaLexerConsumeStartScope(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "StartScope" });
+  state.lexemes.push({ _kind: "StartScope", text: "{" });
   state.textPos++;
 }
 
 function pokaLexerConsumeEndScope(state: PokaLexerState): void {
-  state.lexemes.push({ _kind: "EndScope" });
+  state.lexemes.push({ _kind: "EndScope", text: "}" });
   state.textPos++;
 }
 
@@ -173,30 +177,26 @@ function pokaLexerConsumeNumber(state: PokaLexerState): void {
     }
   }
   const text = state.line.slice(start, state.textPos);
-  const value = parseFloat(text);
-  if (Number.isNaN(value)) {
-    throw "Invalid number: " + text;
-  }
   state.lexemes.push({
     _kind: "Number",
-    value,
+    text,
   });
 }
 
 function pokaLexerConsumeString(state: PokaLexerState): void {
-  state.textPos++; // opening quote
   const start = state.textPos;
+  state.textPos++; // opening quote
   while (
     state.textPos < state.line.length &&
     state.line.charAt(state.textPos) !== '"'
   ) {
     state.textPos++;
   }
-  const value = state.line.slice(start, state.textPos);
   state.textPos++; // closing quote
+  const text = state.line.slice(start, state.textPos);
   state.lexemes.push({
     _kind: "String",
-    text: value.replace(/\\n/g, "\n"),
+    text,
   });
 }
 
@@ -222,9 +222,8 @@ function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
 }
 
 function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
-  const sigil = state.line.charAt(state.textPos);
-  state.textPos++; // consume sigil
   const start = state.textPos;
+  state.textPos++; // consume sigil
   while (true) {
     const c = state.line.charAt(state.textPos);
     if (
@@ -239,8 +238,7 @@ function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
   }
   state.lexemes.push({
     _kind: "SigilIdentifier",
-    sigil,
-    value: state.line.slice(start, state.textPos),
+    text: state.line.slice(start, state.textPos),
   });
 }
 
@@ -463,28 +461,7 @@ function pokaLexerPopLexeme(state: PokaLexerState): void {
 }
 
 function pokaLexerShowLexeme(lex: PokaLexeme): string {
-  switch (lex._kind) {
-    case "Number":
-      return lex.value.toString();
-    case "String":
-      return '"' + lex.text + '"';
-    case "PlainIdentifier":
-      return lex.text;
-    case "SigilIdentifier":
-      return lex.sigil + lex.value;
-    case "Form":
-      return lex.text;
-    case "Comma":
-      return ",";
-    case "ListStart":
-      return "[";
-    case "ListEnd":
-      return "]";
-    case "StartScope":
-      return "{";
-    case "EndScope":
-      return "}";
-  }
+  return lex.text;
 }
 
 interface PokaLexerTestCase {
@@ -496,27 +473,27 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
   {
     text: "1 2 add",
     lexemes: [
-      { _kind: "Number", value: 1 },
-      { _kind: "Number", value: 2 },
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   },
   {
     text: "[1, 2]",
     lexemes: [
-      { _kind: "ListStart" },
-      { _kind: "Number", value: 1 },
-      { _kind: "Comma" },
-      { _kind: "Number", value: 2 },
-      { _kind: "ListEnd" },
+      { _kind: "ListStart", text: "[" },
+      { _kind: "Number", text: "1" },
+      { _kind: "Comma", text: "," },
+      { _kind: "Number", text: "2" },
+      { _kind: "ListEnd", text: "]" },
     ],
   },
   {
     text: '"hi" =a $a',
     lexemes: [
-      { _kind: "String", text: "hi" },
-      { _kind: "SigilIdentifier", sigil: "=", value: "a" },
-      { _kind: "SigilIdentifier", sigil: "$", value: "a" },
+      { _kind: "String", text: '"hi"' },
+      { _kind: "SigilIdentifier", text: "=a" },
+      { _kind: "SigilIdentifier", text: "$a" },
     ],
   },
   {
@@ -530,32 +507,32 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
   {
     text: "-1.5 3.2 mul",
     lexemes: [
-      { _kind: "Number", value: -1.5 },
-      { _kind: "Number", value: 3.2 },
+      { _kind: "Number", text: "-1.5" },
+      { _kind: "Number", text: "3.2" },
       { _kind: "PlainIdentifier", text: "mul" },
     ],
   },
   {
     text: "1   2   add",
     lexemes: [
-      { _kind: "Number", value: 1 },
-      { _kind: "Number", value: 2 },
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   },
   {
     text: "1\n 2 add",
     lexemes: [
-      { _kind: "Number", value: 1 },
-      { _kind: "Number", value: 2 },
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   },
   {
     text: "1\t\n 2\tadd",
     lexemes: [
-      { _kind: "Number", value: 1 },
-      { _kind: "Number", value: 2 },
+      { _kind: "Number", text: "1" },
+      { _kind: "Number", text: "2" },
       { _kind: "PlainIdentifier", text: "add" },
     ],
   },
@@ -563,13 +540,13 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
     text: "TRY { 0 } CATCH { 1 }",
     lexemes: [
       { _kind: "Form", text: "TRY" },
-      { _kind: "StartScope" },
-      { _kind: "Number", value: 0 },
-      { _kind: "EndScope" },
+      { _kind: "StartScope", text: "{" },
+      { _kind: "Number", text: "0" },
+      { _kind: "EndScope", text: "}" },
       { _kind: "Form", text: "CATCH" },
-      { _kind: "StartScope" },
-      { _kind: "Number", value: 1 },
-      { _kind: "EndScope" },
+      { _kind: "StartScope", text: "{" },
+      { _kind: "Number", text: "1" },
+      { _kind: "EndScope", text: "}" },
     ],
   },
 ];
@@ -581,47 +558,39 @@ function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
   }
   for (const expected of testCase.lexemes) {
     const got = pokaLexerPeek(state);
-    if (
-      expected._kind === "Number" &&
-      got._kind === "Number" &&
-      expected.value === got.value
-    ) {
-      pokaLexerPopNumber(state);
-    } else if (
-      expected._kind === "String" &&
-      got._kind === "String" &&
-      expected.text === got.text
-    ) {
-      pokaLexerPopString(state);
-    } else if (
-      expected._kind === "PlainIdentifier" &&
-      got._kind === "PlainIdentifier" &&
-      expected.text === got.text
-    ) {
-      pokaLexerPopPlainIdentifer(state);
-    } else if (
-      expected._kind === "SigilIdentifier" &&
-      got._kind === "SigilIdentifier" &&
-      expected.sigil === got.sigil &&
-      expected.value === got.value
-    ) {
-      pokaLexerPopSigilIdentifier(state);
-    } else if (
-      expected._kind === "Form" &&
-      got._kind === "Form" &&
-      expected.text === got.text
-    ) {
-      pokaLexerPopForm(state);
-    } else if (expected._kind === "Comma" && got._kind === "Comma") {
-      pokaLexerPopComma(state);
-    } else if (expected._kind === "ListStart" && got._kind === "ListStart") {
-      pokaLexerPopListStart(state);
-    } else if (expected._kind === "ListEnd" && got._kind === "ListEnd") {
-      pokaLexerPopListEnd(state);
-    } else if (expected._kind === "StartScope" && got._kind === "StartScope") {
-      pokaLexerPopStartScope(state);
-    } else if (expected._kind === "EndScope" && got._kind === "EndScope") {
-      pokaLexerPopEndScope(state);
+    if (expected._kind === got._kind && expected.text === got.text) {
+      switch (got._kind) {
+        case "Number":
+          pokaLexerPopNumber(state);
+          break;
+        case "String":
+          pokaLexerPopString(state);
+          break;
+        case "PlainIdentifier":
+          pokaLexerPopPlainIdentifer(state);
+          break;
+        case "SigilIdentifier":
+          pokaLexerPopSigilIdentifier(state);
+          break;
+        case "Form":
+          pokaLexerPopForm(state);
+          break;
+        case "Comma":
+          pokaLexerPopComma(state);
+          break;
+        case "ListStart":
+          pokaLexerPopListStart(state);
+          break;
+        case "ListEnd":
+          pokaLexerPopListEnd(state);
+          break;
+        case "StartScope":
+          pokaLexerPopStartScope(state);
+          break;
+        case "EndScope":
+          pokaLexerPopEndScope(state);
+          break;
+      }
     } else {
       throw (
         "pokaLexerRunTests: Expected: " +
