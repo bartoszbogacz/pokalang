@@ -20,14 +20,9 @@ interface PokaLexerState {
   error?: string;
 }
 
-function pokaLexerIsPlainIdentifierStart(state: PokaLexerState): boolean {
+function pokaLexerIsIdentifierStart(state: PokaLexerState): boolean {
   const c = state.line.charAt(state.textPos);
-  return c >= "a" && c <= "z";
-}
-
-function pokaLexerIsSigilIdentifierStart(state: PokaLexerState): boolean {
-  const c = state.line.charAt(state.textPos);
-  return c === "$" || c === "=";
+  return c === "$" || c === "=" || (c >= "a" && c <= "z");
 }
 
 function pokaLexerIsForm(state: PokaLexerState): boolean {
@@ -137,30 +132,9 @@ function pokaLexerConsumeString(state: PokaLexerState): void {
   });
 }
 
-function pokaLexerConsumePlainIdentifier(state: PokaLexerState): void {
+function pokaLexerConsumeIdentifier(state: PokaLexerState): void {
   const start = state.textPos;
   state.textPos++;
-  while (true) {
-    const c = state.line.charAt(state.textPos);
-    if (
-      (c >= "a" && c <= "z") ||
-      (c >= "A" && c <= "Z") ||
-      (c >= "0" && c <= "9")
-    ) {
-      state.textPos++;
-    } else {
-      break;
-    }
-  }
-  state.lexemes.push({
-    _kind: "Identifier",
-    text: state.line.slice(start, state.textPos),
-  });
-}
-
-function pokaLexerConsumeSigilIdentifier(state: PokaLexerState): void {
-  const start = state.textPos;
-  state.textPos++; // consume sigil
   while (true) {
     const c = state.line.charAt(state.textPos);
     if (
@@ -206,10 +180,8 @@ function pokaLexerConsume(state: PokaLexerState): void {
       pokaLexerConsumeNumber(state);
     } else if (pokaLexerIsString(state)) {
       pokaLexerConsumeString(state);
-    } else if (pokaLexerIsSigilIdentifierStart(state)) {
-      pokaLexerConsumeSigilIdentifier(state);
-    } else if (pokaLexerIsPlainIdentifierStart(state)) {
-      pokaLexerConsumePlainIdentifier(state);
+    } else if (pokaLexerIsIdentifierStart(state)) {
+      pokaLexerConsumeIdentifier(state);
     } else if (pokaLexerIsForm(state)) {
       pokaLexerConsumeForm(state);
     } else if (pokaLexerIsListStart(state)) {
