@@ -15,9 +15,9 @@ const files = [
   "MatrixString.js",
   "pokaList.js",
   "pokaRecord.js",
-  "index.js",
-  "pokaWords.js",
   "pokaLexer.js",
+  "pokaInterpreter.js",
+  "pokaWords.js",
   "aoc2025.js",
   "pokaTestsCommon.js",
 ];
