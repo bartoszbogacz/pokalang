@@ -18,6 +18,7 @@ const files = [
   "index.js",
   "pokaWords.js",
   "pokaLexer.js",
+  "testPokaLexer.js",
   "aoc2025.js",
   "pokaTestsCommon.js",
 ];
