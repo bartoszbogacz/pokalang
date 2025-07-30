@@ -15,12 +15,12 @@ type PokaValue =
 interface InterpreterState {
   lexer: PokaLexerState;
   stack: PokaValue[];
-  error: string;
   env: { [word: string]: PokaValue };
 }
 
 interface PokaWord4 {
   doc: string[];
+  docTest?: string[];
   fun: (stack: PokaValue[]) => void;
 }
 
@@ -46,7 +46,7 @@ function pokaInterpreterShow(state: InterpreterState): string {
     const text = pokaCallWordString(pokaWordShow, [value]);
     result.push(text);
   }
-  return state.error + "\n" + result.join("\n");
+  return result.join("\n");
 }
 
 function consumeList(state: InterpreterState): void {
@@ -132,36 +132,21 @@ function consumeExpression(state: InterpreterState): void {
   }
 }
 
-function pokaInterpreterMake(
-  line: string,
+function pokaInterpreterEvaluate(
   environment: { [word: string]: PokaValue },
-): InterpreterState {
-  const lex = pokaLex(line);
+  program: string,
+): string {
+  const lex = pokaLex(program);
+
   const state: InterpreterState = {
+    env: environment,
     lexer: lex,
     stack: [],
-    error: lex.error ? lex.error : "",
-    env: {},
   };
 
-  for (const [word, value] of Object.entries(environment)) {
-    state.env[word] = value;
+  while (!pokaLexerPeekEOL(state.lexer)) {
+    consumeExpression(state);
   }
 
-  return state;
-}
-
-function pokaInterpreterEvaluate(state: InterpreterState): void {
-  if (state.error !== "") {
-    return;
-  }
-  let error = "";
-  try {
-    while (!pokaLexerPeekEOL(state.lexer)) {
-      consumeExpression(state);
-    }
-  } catch (exc) {
-    error = "" + exc;
-  }
-  state.error = error;
+  return pokaInterpreterShow(state);
 }

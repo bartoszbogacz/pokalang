@@ -1322,7 +1322,7 @@ function pokaWordShow(stack: PokaValue[]): void {
 
   let result: string;
   if (a._type === "ScalarBoolean") {
-    result = a.value ? "True" : "False";
+    result = a.value ? "true" : "false";
   } else if (a._type === "ScalarNumber") {
     result = a.value.toString();
   } else if (a._type === "ScalarString") {
@@ -1365,7 +1365,8 @@ function pokaWordShow(stack: PokaValue[]): void {
 
 POKA_WORDS4["show"] = {
   doc: [
-    'true show "True" equals',
+    'true show "true" equals',
+    'false show "false" equals',
     '1 show "1" equals',
     '"a" show "a" equals false equals',
     '[true, false] [true, true] equals show "[X,.]" equals',

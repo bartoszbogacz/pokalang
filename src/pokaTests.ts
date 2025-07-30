@@ -4,7 +4,7 @@ function pokaTestsShow(): void {
     throw "Test output div not found";
   }
   elem.innerText =
-    pokaTestsAocRun() + "\n" + pokaTestsRun() + "\n" + pokaDocTests4Run();
+    pokaLexerRunTests().join("\n") + "\n" + pokaTestsRun() + "\n";
 }
 
 pokaTestsShow();

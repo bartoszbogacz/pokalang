@@ -28,9 +28,9 @@ for (const file of files) {
 }
 
 const output = [
-  global.pokaTestsAocRun(),
+  global.pokaLexerRunTests().join("\n"),
+  global.pokaTestsRunAoc(),
   global.pokaTestsRun(),
-  global.pokaDocTests4Run(),
 ].join("\n");
 console.log(output);
 if (output.includes("FAIL") || output.includes("EXC")) {

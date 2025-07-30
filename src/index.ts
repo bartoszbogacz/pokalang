@@ -14,9 +14,7 @@ function replOnInput() {
   for (const [varName, varValue] of Object.entries(REPL_ENV)) {
     env[varName] = varValue;
   }
-  const state = pokaInterpreterMake(commandline.value, env);
-  pokaInterpreterEvaluate(state);
-  preview.innerText = pokaInterpreterShow(state);
+  preview.innerText = pokaInterpreterEvaluate(env, commandline.value);
 }
 
 function replClipboardRead(): void {

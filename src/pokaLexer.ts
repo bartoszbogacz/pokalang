@@ -15,9 +15,8 @@ interface PokaLexeme {
 interface PokaLexerState {
   line: string;
   textPos: number;
-  lexemePos: number;
   lexemes: PokaLexeme[];
-  error?: string;
+  lexemePos: number;
 }
 
 function pokaLexerIsEol(state: PokaLexerState): boolean {
@@ -203,11 +202,7 @@ function pokaLex(line: string): PokaLexerState {
     lexemePos: 0,
     lexemes: [],
   };
-  try {
-    pokaLexerConsume(state);
-  } catch (exc) {
-    state.error = "" + exc;
-  }
+  pokaLexerConsume(state);
   return state;
 }
 
@@ -397,9 +392,7 @@ const POKA_LEXER_TEST_CASES: PokaLexerTestCase[] = [
 
 function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
   const state = pokaLex(testCase.text);
-  if (state.error !== undefined) {
-    throw "pokaLexerRunTests: " + state.error;
-  }
+
   for (const expected of testCase.lexemes) {
     const got = pokaLexerPeek(state);
     if (expected._kind === got._kind && expected.text === got.text) {
@@ -444,16 +437,18 @@ function pokaLexerRunTest(testCase: PokaLexerTestCase): void {
 }
 
 function pokaLexerRunTests(): string[] {
-  const result: string[] = [];
+  const testResults: string[] = [];
 
   for (const testCase of POKA_LEXER_TEST_CASES) {
     try {
       pokaLexerRunTest(testCase);
-      result.push("  OK | " + testCase.text.replace("\n", "\\n"));
+      testResults.push("  OK | " + testCase.text.replace("\n", "\\n"));
     } catch (exc) {
-      result.push("FAIL | " + testCase.text.replace("\n", "\\n") + ": " + exc);
+      testResults.push(
+        "FAIL | " + testCase.text.replace("\n", "\\n") + ": " + exc,
+      );
     }
   }
 
-  return result;
+  return testResults;
 }
